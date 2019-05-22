@@ -13,7 +13,7 @@ use Illuminate\Support\Arr;
  *
  * @package Foundry\Requests\Types
  */
-abstract class BaseType implements Arrayable {
+abstract class BaseType implements Arrayable, \JsonSerializable {
 
 	use HasConditions;
 
@@ -63,7 +63,7 @@ abstract class BaseType implements Arrayable {
 	 *
 	 * @return BaseType|InputType
 	 */
-	public function setCast( string $cast ): void {
+	public function setCast( string $cast ) {
 		$this->cast = $cast;
 
 		return $this;

@@ -4,7 +4,6 @@ namespace Foundry\Core\Requests;
 
 use Foundry\Core\Exceptions\FormRequestException;
 use Foundry\Core\Requests\Contracts\ViewableFormRequestInterface;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * FormRequestHandler
@@ -57,15 +56,14 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 	 *
 	 * @param $key
 	 * @param $request
-	 * @param Model|string|int $id
 	 *
 	 * @return Response
 	 * @throws FormRequestException
 	 */
-	public function handle( $key, $request, $id = null ): Response {
-		$form = $this->getFormRequest( $key );
+	public function handle( $key, $request ): Response {
+		$form = $this->getFormRequest( $key, $request );
 
-		return $form->handle( $id );
+		return $form->handle( );
 	}
 
 	/**
@@ -73,20 +71,16 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 	 *
 	 * @param $key
 	 * @param $request
-	 * @param $id
 	 *
 	 * @return Response
 	 * @throws FormRequestException
 	 */
-	public function view( $key, $request, $id = null ): Response {
-		$class = $this->getFormRequestClass( $key );
-
-		if ( $class instanceof ViewableFormRequestInterface ) {
-			$view = $class::view( $id );
-
-			return Response::success( $view );
+	public function view( $key, $request ): Response {
+		$form = $this->getFormRequest( $key, $request );
+		if ( $form instanceof ViewableFormRequestInterface ) {
+			return Response::success( $form->view() );
 		} else {
-			throw new FormRequestException( sprintf( 'Requested form %s must be an instance of ViewableFormRequestInterface to be viewable', $class ) );
+			throw new FormRequestException( sprintf( 'Requested form %s must be an instance of ViewableFormRequestInterface to be viewable', get_class($form) ) );
 		}
 	}
 
@@ -98,14 +92,13 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 	 * @return FormRequest
 	 * @throws FormRequestException
 	 */
-	protected function getFormRequest( $key ): string {
+	protected function getFormRequest( $key, $request ): FormRequest {
 
 		/**
 		 * @var FormRequest $class
 		 */
 		$class = $this->getFormRequestClass( $key );
-
-		return $class::createFromGlobals();
+		return $class::createFrom($request);
 	}
 
 	/**

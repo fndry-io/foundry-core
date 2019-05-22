@@ -31,8 +31,8 @@ abstract class Inputs {
 	 * @param $inputs
 	 */
 	public function __construct($inputs) {
-		$this->fill($inputs);
 		$this->types = $this->types();
+		$this->fill($inputs);
 	}
 
 	/**
@@ -94,6 +94,16 @@ abstract class Inputs {
 			}
 		}
 		$this->cast();
+	}
+
+	public function all()
+	{
+		return $this->inputs();
+	}
+
+	public function keys()
+	{
+		return $this->types()->keys();
 	}
 
 	/**

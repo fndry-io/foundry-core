@@ -26,8 +26,6 @@ abstract class FormRequest extends LaravelFormRequest {
 	protected $entity = null;
 
 	/**
-	 * FormRequest constructor.
-	 *
 	 * @param array $query
 	 * @param array $request
 	 * @param array $attributes
@@ -36,9 +34,9 @@ abstract class FormRequest extends LaravelFormRequest {
 	 * @param array $server
 	 * @param null $content
 	 */
-	public function __construct( array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null ) {
-		parent::__construct( $query, $request, $attributes, $cookies, $files, $server, $content );
-		$this->input = $this->makeInput($this->all());
+	public function initialize( array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null ) {
+		parent::initialize( $query, $request, $attributes, $cookies, $files, $server, $content );
+		$this->setInput($this->makeInput($this->all()));
 		if ($id = $this->input('_id')) {
 			$this->getEntity($id);
 		}
@@ -105,7 +103,7 @@ abstract class FormRequest extends LaravelFormRequest {
 
 		$form
 			->setEntity($this->entity)
-			->attachInputCollection($this->input)
+			->attachInputCollection($this->input->types())
 			->setAction( route('system.request.handle', $params ) )
 		;
 		$form
@@ -137,5 +135,12 @@ abstract class FormRequest extends LaravelFormRequest {
 	public function getInput()
 	{
 		return $this->input;
+	}
+
+	/**
+	 * @param Inputs $input
+	 */
+	public function setInput( Inputs $input ): void {
+		$this->input = $input;
 	}
 }

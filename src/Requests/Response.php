@@ -2,6 +2,8 @@
 
 namespace Foundry\Core\Requests;
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
 
@@ -93,8 +95,7 @@ class Response {
 	public function jsonSerialize() {
 		$array = [
 			'status' => $this->status,
-			'code'   => $this->code,
-			'data'   => $this->data
+			'code'   => $this->code
 		];
 		if ( $this->error ) {
 			$array['error'] = $this->error;
@@ -102,6 +103,14 @@ class Response {
 		if ( $this->message ) {
 			$array['message'] = $this->message;
 		}
+
+		$data = $this->data;
+		if ($data instanceof \JsonSerializable) {
+			$data = $data->jsonSerialize();
+		} elseif ($data instanceof Arrayable) {
+			$data = $data->toArray();
+		}
+		$array['data'] = $data;
 
 		return $array;
 	}
