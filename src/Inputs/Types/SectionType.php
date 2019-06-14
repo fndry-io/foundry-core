@@ -6,6 +6,7 @@ use Foundry\Core\Inputs\Types\Traits\HasClass;
 use Foundry\Core\Inputs\Types\Traits\HasDescription;
 use Foundry\Core\Inputs\Types\Traits\HasId;
 use Foundry\Core\Inputs\Types\Traits\HasTitle;
+use Illuminate\Support\Str;
 
 /**
  * Class Type
@@ -34,11 +35,12 @@ class SectionType extends ParentType {
 	 * @param string|null $id
 	 */
 	public function __construct( string $title, string $description = null, string $id = null ) {
+		parent::__construct();
 		$this->setType( 'section' );
 
 		$this->setTitle( $title );
 		$this->setDescription( $description );
-		$id = $id ? $id : camel_case( str_slug( $title ) . 'Section' );
+		$id = $id ? $id : Str::camel( Str::slug( $title ) . 'Section' );
 		$this->setId( $id );
 	}
 

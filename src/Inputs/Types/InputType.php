@@ -19,7 +19,7 @@ use Foundry\Core\Inputs\Types\Traits\HasReadonly;
 use Foundry\Core\Inputs\Types\Traits\HasRequired;
 use Foundry\Core\Inputs\Types\Traits\HasRules;
 use Foundry\Core\Inputs\Types\Traits\HasValue;
-use Foundry\Core\Inputs\Types\Traits\IsSortable;
+use Foundry\Core\Inputs\Types\Traits\HasSortable;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -36,13 +36,12 @@ abstract class InputType extends BaseType implements Inputable {
 		HasRules,
 		HasClass,
 		HasName,
-		HasPosition,
 		HasRequired,
 		HasPlaceholder,
 		HasHelp,
 		HasReadonly,
 		HasErrors,
-		IsSortable,
+		HasSortable,
 		HasEntity,
 		HasMask
 	;
@@ -58,13 +57,14 @@ abstract class InputType extends BaseType implements Inputable {
 		string $placeholder = null,
 		string $type = 'text'
 	) {
+		parent::__construct();
+
 		$this->setName( $name );
 		$this->setType( $type );
 		$this->setRequired( $required );
 
 		$this->setLabel( $label ? $label : $name );
 		$this->setValue( $value );
-		$this->setPosition( $position );
 		$this->setRules( $rules );
 
 		$this->setId( $id );
@@ -104,6 +104,13 @@ abstract class InputType extends BaseType implements Inputable {
 				$_rules = implode( '|', $_rules );
 			}
 			$field['rules'] = $_rules;
+		}
+
+		if (!empty($this->buttons)) {
+			$field['buttons'] = [];
+			foreach ($this->buttons as $button) {
+				$field['buttons'][] = $button->toArray();
+			}
 		}
 
 		//set the fillable etc values

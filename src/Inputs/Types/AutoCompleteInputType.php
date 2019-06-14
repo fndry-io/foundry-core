@@ -57,7 +57,7 @@ class AutoCompleteInputType extends TextInputType {
 
 		$options = $this->getOptions($value);
 
-		if ( $value === '' || $value === null || ( $this->multiple && empty( $value ) ) ) {
+		if ( $value === '' || $value === null || ( $this->isMultiple() && empty( $value ) ) ) {
 			return null;
 		}
 

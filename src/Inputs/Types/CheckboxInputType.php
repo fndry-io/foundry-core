@@ -1,9 +1,9 @@
 <?php
 
 namespace Foundry\Core\Inputs\Types;
+
 use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Foundry\Core\Inputs\Types\Traits\HasOptions;
-
 
 /**
  * Class CheckboxType
@@ -13,8 +13,6 @@ use Foundry\Core\Inputs\Types\Traits\HasOptions;
 class CheckboxInputType extends InputType implements Choosable {
 
 	use HasOptions;
-
-	protected $checked;
 
 	public function __construct(
 		string $name,
@@ -34,11 +32,11 @@ class CheckboxInputType extends InputType implements Choosable {
 	}
 
 	public function isChecked() {
-		return $this->checked;
+		return $this->getAttribute('checked', false);
 	}
 
 	public function setChecked( bool $checked = true ) {
-		$this->checked = $checked;
+		$this->setAttribute('checked', $checked);
 
 		return $this;
 	}
@@ -51,7 +49,7 @@ class CheckboxInputType extends InputType implements Choosable {
 
 		$options = $this->getOptions($value);
 
-		if ( $value === '' || $value === null || ( $this->multiple && empty( $value ) ) ) {
+		if ( $value === '' || $value === null || ( $this->isMultiple() && empty( $value ) ) ) {
 			return null;
 		}
 

@@ -4,16 +4,19 @@ namespace Foundry\Core\Inputs\Types;
 
 class MoneyInputType extends NumberInputType {
 
-	protected $symbol = "$";
+	public function MoneyInputType()
+	{
+		$this->setAttribute('symbol', '$');
+	}
 
 	public function getSymbol()
 	{
-		return $this->symbol;
+		return $this->getAttribute('symbol');
 	}
 
 	public function setSymbol($symbol)
 	{
-		$this->symbol = $symbol;
+		$this->setAttribute('symbol', $symbol);
 		return $this;
 	}
 
@@ -26,7 +29,7 @@ class MoneyInputType extends NumberInputType {
 		} else {
 			$value = "--";
 		}
-		return $this->symbol . "" . $value;
+		return $this->getAttribute('symbol') . "" . $value;
 	}
 
 }

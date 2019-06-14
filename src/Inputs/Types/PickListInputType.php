@@ -14,6 +14,8 @@ class PickListInputType extends ChoiceInputType {
      *
      * @param string $key
      * @param string $label
+     * @param string $cast
+     *
      * @return array
      */
     static function list( $identifier , $key = 'id', $label='label', $cast = 'int'): array {

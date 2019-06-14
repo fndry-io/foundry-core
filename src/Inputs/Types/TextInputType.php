@@ -14,16 +14,13 @@ class TextInputType extends InputType {
 
 	use HasMinMax;
 
-	protected $multiline = null;
-
 	public function setMultiline( int $number = null ) {
-		$this->multiline = $number;
-
+		$this->setAttribute('multiline', $number);
 		return $this;
 	}
 
 	public function getMultiline() {
-		return $this->multiline;
+		return $this->getAttribute('multiline');
 	}
 
 }

@@ -2,31 +2,22 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-use Foundry\Core\Inputs\Types\InputType;
-
 trait HasTitle {
-
-	/**
-	 * Title
-	 *
-	 * @var string $title
-	 */
-	protected $title;
 
 	/**
 	 * @return string
 	 */
 	public function getTitle() {
-		return $this->title;
+		return $this->getAttribute('title');
 	}
 
 	/**
 	 * @param string $title
 	 *
-	 * @return InputType
+	 * @return $this
 	 */
 	public function setTitle( string $title = null ) {
-		$this->title = $title;
+		$this->setAttribute('title', $title);
 
 		return $this;
 	}

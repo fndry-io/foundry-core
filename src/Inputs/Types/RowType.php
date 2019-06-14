@@ -12,12 +12,8 @@ use Foundry\Core\Inputs\Types\Contracts\Inputable;
 class RowType extends ParentType {
 
 	public function __construct() {
+		parent::__construct();
 		$this->setType( 'row' );
-	}
-
-	//TODO remove references to this across the projects
-	static function withInputs( Inputable ...$inputs ) {
-		return ( new static() )->addChildren( ...$inputs );
 	}
 
 	static function withChildren( BaseType ...$inputs ) {

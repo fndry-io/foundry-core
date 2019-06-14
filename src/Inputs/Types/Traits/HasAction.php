@@ -5,38 +5,32 @@ namespace Foundry\Core\Inputs\Types\Traits;
 
 trait HasAction {
 
-	protected $action;
-
-	protected $method;
-
-	protected $query;
-
 	public function getAction() {
-		return $this->action;
+		return $this->getAttribute('action');
 	}
 
 	public function setAction( string $value = null ) {
-		$this->action = $value;
+		$this->setAttribute('action', $value);
 
 		return $this;
 	}
 
 	public function getQuery() {
-		return $this->query;
+		return $this->getAttribute('query');
 	}
 
 	public function setQuery( array $value = null ) {
-		$this->query = $value;
+		$this->setAttribute('query', $value);
 
 		return $this;
 	}
 
 	public function getMethod() {
-		return $this->method;
+		return $this->getAttribute('method');
 	}
 
 	public function setMethod( string $value = null ) {
-		$this->method = $value;
+		$this->setAttribute('method', $value);
 
 		return $this;
 	}

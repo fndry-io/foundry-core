@@ -12,7 +12,6 @@ use Foundry\Core\Inputs\Types\Traits\HasId;
  */
 class DocType extends ParentType {
 
-
 	use HasId,
 		HasClass;
 
@@ -22,6 +21,7 @@ class DocType extends ParentType {
 	 * @param null $id
 	 */
 	public function __construct( $id = null ) {
+		parent::__construct();
 		$this->setId( $id );
 		$this->setType( 'doc' );
 	}

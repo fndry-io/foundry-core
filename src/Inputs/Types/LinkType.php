@@ -4,10 +4,10 @@ namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\Traits\HasClass;
+use Foundry\Core\Inputs\Types\Traits\HasEntity;
 use Foundry\Core\Inputs\Types\Traits\HasHelp;
 use Foundry\Core\Inputs\Types\Traits\HasId;
 use Foundry\Core\Inputs\Types\Traits\HasLabel;
-use Foundry\Core\Inputs\Types\Traits\HasModel;
 use Foundry\Core\Inputs\Types\Traits\HasName;
 use Foundry\Core\Inputs\Types\Traits\HasTitle;
 use Foundry\Core\Inputs\Types\Traits\HasValue;
@@ -24,19 +24,10 @@ class LinkType extends BaseType implements Inputable {
 		HasClass,
 		HasTitle,
         HasName,
-        HasModel,
+        HasEntity,
         HasValue,
         HasHelp
 		;
-
-	/**
-	 * The form row this field belongs to
-	 *
-	 * @var FormRow $row
-	 */
-	protected $row;
-
-	protected $title;
 
 	public function __construct(
 		string $name,
@@ -44,6 +35,7 @@ class LinkType extends BaseType implements Inputable {
 		string $title = null,
 		string $id = null
 	) {
+		parent::__construct();
 		$this->setLabel( $label );
 		$this->setName($name);
 		$this->setTitle( $title );

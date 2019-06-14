@@ -2,25 +2,19 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-
 trait HasConditions {
 
-	/**
-	 * @var array
-	 */
-	protected $conditions = [];
-
 	public function setConditions( array $conditions ) {
-		$this->conditions = $conditions;
+		$this->setAttribute('conditions', $conditions);
 		return $this;
 	}
 
 	public function addCondition( string $condition ) {
-		$this->conditions[] = $condition;
+		$this->appendToAttribute('conditions', $condition);
 		return $this;
 	}
 
 	public function getConditions() {
-		return $this->conditions;
+		return $this->getAttribute('conditions');
 	}
 }

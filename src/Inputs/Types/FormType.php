@@ -30,17 +30,7 @@ class FormType extends ParentType implements Entityable {
 		HasRules
 	;
 
-	protected $json_ignore = [
-		'entity',
-//		'inputs',
-		'request'
-	];
-
-	protected $action;
-
-	protected $method = 'POST';
-
-	protected $encoding;
+	protected $request;
 
 	/**
 	 * @var Entity
@@ -53,68 +43,66 @@ class FormType extends ParentType implements Entityable {
 	protected $inputs;
 
 	/**
-	 * @var bool If the form should display inline
-	 */
-	protected $inline;
-
-	/**
 	 * FormType constructor.
 	 *
 	 * @param $name
 	 * @param null $id
 	 */
 	public function __construct( $name, $id = null ) {
+		parent::__construct();
 		$this->setType( 'form' );
 		$this->setName( $name );
 		$this->setId( $id );
+		$this->setAttribute('method', 'POST');
 	}
 
-	public function setAction( $value ) {
-		$this->action = $value;
+	public function setAction( $action ) {
+		$this->setAttribute('action', $action);
 
 		return $this;
 	}
 
 	public function getAction() {
-		return $this->action;
+		return $this->getAttribute('action');
 	}
 
-	public function setMethod( $value ) {
-		$this->method = $value;
+	public function setMethod( $method ) {
+		$this->setAttribute('method', $method);
 
 		return $this;
 	}
 
 	public function getMethod() {
-		return $this->method;
+		return $this->getAttribute('method');
 	}
 
-	public function setEncoding( $value ) {
-		$this->action = $value;
+	public function setEncoding( $encoding ) {
+		$this->setAttribute('encoding', $encoding);
 
 		return $this;
 	}
 
 	public function getEncoding() {
-		$this->encoding;
+		$this->getAttribute('encoding');
 	}
 
 	/**
-	 * @param Entity|null $entity
+	 * Attach an input collection to this Form
+	 *
+	 * @param Entity $entity
 	 *
 	 * @return $this
 	 */
 	public function setEntity( Entity &$entity = null ) {
 		$this->entity = $entity;
-
 		return $this;
 	}
 
 	/**
-	 * @return Entity
+	 * @return Entity|null
 	 */
 	public function getEntity(): Entity {
-		$this->entity;
+		return $this->entity;
 	}
 
 	public function attachInputCollection( $collection ) {
@@ -126,6 +114,13 @@ class FormType extends ParentType implements Entityable {
 		return $this;
 	}
 
+	/**
+	 * Attached a series of inputs to this Form
+	 *
+	 * @param Inputable ...$inputs
+	 *
+	 * @return $this
+	 */
 	public function attachInputs( Inputable ...$inputs ) {
 		if ( $this->entity ) {
 			foreach ( $inputs as &$input ) {
@@ -147,12 +142,17 @@ class FormType extends ParentType implements Entityable {
 		return $this;
 	}
 
+	/**
+	 * Get the attached inputs
+	 *
+	 * @return InputType[]
+	 */
 	public function getInputs() {
 		return $this->inputs;
 	}
 
 	/**
-	 * Get the attached input
+	 * Get an attached input
 	 *
 	 * @param $name
 	 *
@@ -166,21 +166,6 @@ class FormType extends ParentType implements Entityable {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Is input fillable
-	 *
-	 * @param $key
-	 *
-	 * @return bool
-	 */
-	public function isInputFillable( $key ) {
-		if ( $input = $this->getInput( $key ) ) {
-
-		}
-
-		return true;
 	}
 
 	/**
@@ -306,15 +291,22 @@ class FormType extends ParentType implements Entityable {
 		return $this;
 	}
 
-
+	/**
+	 * @param bool $value
+	 *
+	 * @return $this
+	 */
 	public function setInline(bool $value = true){
-		$this->inline = true;
+		$this->setAttribute('inline', $value);
 		return $this;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function isInline()
 	{
-		return $this->inline;
+		return $this->getAttribute('inline');
 	}
 
 	/**
@@ -328,6 +320,22 @@ class FormType extends ParentType implements Entityable {
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function jsonSerialize(): array {
+		$json = parent::jsonSerialize();
+
+		if (!empty($this->buttons)) {
+			$json['buttons'] = [];
+			foreach ($this->buttons as $button) {
+				$json['buttons'][] = $button->toArray();
+			}
+		}
+
+		return $json;
 	}
 
 }

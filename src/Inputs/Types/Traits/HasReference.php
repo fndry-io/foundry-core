@@ -4,6 +4,7 @@ namespace Foundry\Core\Inputs\Types\Traits;
 
 
 use Foundry\Core\Inputs\Types\ButtonType;
+use Illuminate\Support\Str;
 
 trait HasReference {
 
@@ -11,7 +12,6 @@ trait HasReference {
 	 * @var string|object $reference
 	 */
 	protected $reference;
-
 
 	/**
 	 * The reference
@@ -72,8 +72,9 @@ trait HasReference {
 		$reference = $this->getReference();
 		if ($reference && is_string($reference) && $this->hasModel() && $reference = object_get($this->getModel(), $reference)) {
 			return $reference;
-		}elseif (is_object($reference))
-            return $reference;
+		}elseif (is_object($reference)) {
+			return $reference;
+		}
 
 		return null;
 	}
@@ -83,9 +84,10 @@ trait HasReference {
 		$params = [];
 		$value = null;
 		$key = $this->getReference();
-		if ($this->hasModel() && $reference = object_get($this->getModel(), $key)) {
+		if ($this->hasEntity() && $reference = object_get($this->getEntity(), $key)) {
+			//todo update this or implement equivalent in the Entity Abstract class
 			$value = $reference->getKey();
-			$placeholder = str_slug((new \ReflectionClass($reference))->getShortName(), '_');
+			$placeholder = Str::slug((new \ReflectionClass($reference))->getShortName(), '_');
 			$params[$placeholder] = $value;
 		}
 		return $params;

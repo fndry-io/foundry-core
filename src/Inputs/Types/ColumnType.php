@@ -10,6 +10,7 @@ namespace Foundry\Core\Inputs\Types;
 class ColumnType extends ParentType {
 
 	public function __construct() {
+		parent::__construct();
 		$this->setType( 'column' );
 	}
 

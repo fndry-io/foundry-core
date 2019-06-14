@@ -8,13 +8,6 @@ use Illuminate\Support\MessageBag;
 trait HasErrors {
 
 	/**
-	 * Errors
-	 *
-	 * @var MessageBag $errors
-	 */
-	protected $errors;
-
-	/**
 	 * Set the errors
 	 *
 	 * @param MessageBagContract|array $errors
@@ -25,7 +18,7 @@ trait HasErrors {
 		if ( is_array( $errors ) ) {
 			$errors = new MessageBag( $errors );
 		}
-		$this->errors = $errors;
+		$this->setAttribute('errors', $errors);
 
 		return $this;
 	}
@@ -36,12 +29,15 @@ trait HasErrors {
 	 * @return MessageBagContract
 	 */
 	public function getErrors(): MessageBagContract {
-		return ( $this->errors ) ? $this->errors : new MessageBag();
+		return ( $this->attributes['errors'] ) ? $this->getAttribute('errors') : new MessageBag();
 	}
 
-
+	/**
+	 * @return bool
+	 */
 	public function hasErrors() {
-		return ( $this->errors && $this->errors->isNotEmpty() );
+		$errors = $this->getErrors();
+		return ( $errors && $errors->isNotEmpty() );
 	}
 
 }

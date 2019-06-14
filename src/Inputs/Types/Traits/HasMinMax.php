@@ -4,17 +4,13 @@ namespace Foundry\Core\Inputs\Types\Traits;
 
 trait HasMinMax {
 
-	protected $max;
-
-	protected $min;
-
 	/**
 	 * @param null $value
 	 *
 	 * @return $this
 	 */
 	public function setMin( $value = null ) {
-		$this->min = $value;
+		$this->setAttribute('min', $value);
 		if ( method_exists( $this, 'addRule' ) && $value !== null ) {
 			$this->addRule( 'min:' . $value );
 		}
@@ -26,7 +22,7 @@ trait HasMinMax {
 	 * @return mixed
 	 */
 	public function getMin() {
-		return $this->min;
+		return $this->getAttribute('min');
 	}
 
 	/**
@@ -35,7 +31,7 @@ trait HasMinMax {
 	 * @return $this
 	 */
 	public function setMax( $value = null ) {
-		$this->max = $value;
+		$this->setAttribute('max', $value);
 		if ( method_exists( $this, 'addRule' ) && $value !== null ) {
 			$this->addRule( 'max:' . $value );
 		}
@@ -47,7 +43,7 @@ trait HasMinMax {
 	 * @return mixed
 	 */
 	public function getMax() {
-		return $this->max;
+		return $this->getAttribute('max');
 	}
 
 

@@ -22,14 +22,6 @@ class ButtonType extends BaseType {
 		HasAction
 		;
 
-	/**
-	 * The form row this field belongs to
-	 *
-	 */
-	protected $row;
-
-	protected $title;
-
 	public function __construct(
 		string $label,
 		string $action = null,
@@ -39,6 +31,7 @@ class ButtonType extends BaseType {
 		string $id = null,
 		string $type = 'action'
 	) {
+		parent::__construct();
 		$this->setLabel( $label );
 		$this->setAction( $action );
 		$this->setTitle( $title );
@@ -47,8 +40,5 @@ class ButtonType extends BaseType {
 		$this->setType( $type );
 		$this->setId( $id );
 	}
-
-
-
 
 }

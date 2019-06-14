@@ -5,7 +5,6 @@ namespace Foundry\Core\Inputs\Types;
 use Foundry\Core\Inputs\Types\Traits\HasDateFormat;
 use Foundry\Core\Inputs\Types\Traits\HasMinMax;
 
-
 /**
  * Class DateTimeType
  *

@@ -13,8 +13,8 @@ interface ViewableFormRequestInterface {
 	public function form() : FormType;
 
 	/**
-	 * @return DocType
+	 * @return FormType
 	 */
-	public function view() : DocType;
+	public function view() : FormType;
 
 }
