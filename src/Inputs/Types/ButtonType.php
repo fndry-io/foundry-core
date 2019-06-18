@@ -39,6 +39,19 @@ class ButtonType extends BaseType {
 		$this->setMethod( $method );
 		$this->setType( $type );
 		$this->setId( $id );
+
+		if ($type == 'submit') {
+			$this->setVariant('primary');
+		}
+	}
+
+	public function setVariant($variant){
+		$this->setAttribute('variant', $variant);
+		return $this;
+	}
+
+	public function getVariant(){
+		return $this->getAttribute('variant');
 	}
 
 }
