@@ -4,6 +4,7 @@ namespace Foundry\Core\Inputs;
 
 use Foundry\Core\Requests\Response;
 use Foundry\Core\Support\InputTypeCollection;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Validator;
  *
  * @package Foundry\Core\Inputs
  */
-abstract class Inputs {
+abstract class Inputs implements Arrayable {
 
 	/**
 	 * @var array The inputs
@@ -175,5 +176,9 @@ abstract class Inputs {
 		} else {
 			return false;
 		}
+	}
+
+	public function toArray() {
+		return $this->inputs();
 	}
 }
