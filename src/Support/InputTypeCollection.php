@@ -4,7 +4,7 @@ namespace Foundry\Core\Support;
 
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\InputType;
-use Foundry\System\Entities\Entity;
+use Foundry\Core\Entities\Entity;
 use Illuminate\Support\Collection;
 
 class InputTypeCollection extends Collection {

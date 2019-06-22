@@ -2,7 +2,11 @@
 
 namespace Foundry\Core\Repositories;
 
+use Doctrine\ORM\Query;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Request;
 use LaravelDoctrine\ORM\Pagination\PaginatesFromRequest;
 
 /**
@@ -14,37 +18,65 @@ use LaravelDoctrine\ORM\Pagination\PaginatesFromRequest;
  */
 abstract class EntityRepository extends \Doctrine\ORM\EntityRepository implements RepositoryInterface {
 
-	use PaginatesFromRequest;
-
 	abstract public function getAlias() : string;
 
 	/**
-	 * @param int $limit
+	 *
 	 * @param int $page
+	 * @param int $perPage
 	 *
 	 * @return \Illuminate\Pagination\LengthAwarePaginator
 	 */
-	public function all(int $limit = 20, int $page = 1) : LengthAwarePaginator
+	public function all(int $perPage = 20) : LengthAwarePaginator
 	{
-		return $this->paginateAll($limit, $page);
+		$query = $this->createQueryBuilder($this->getAlias());
+		return $this->paginate($query, 1, $perPage);
 	}
 
 	/**
 	 * Returns a list of results
 	 *
 	 * @param \Closure $builder(QueryBuilder $query) The closure to send the Query Builder to
+	 * @param int $page
 	 * @param int $perPage
-	 * @param string $pageName
 	 *
 	 * @return LengthAwarePaginator
 	 */
-	public function filter(\Closure $builder = null, int $perPage = 20, $pageName = 'page') : LengthAwarePaginator
+	public function filter(\Closure $builder = null, int $page = 1, int $perPage = 20) : LengthAwarePaginator
 	{
-		$query = $this->createQueryBuilder($this->getAlias());
+		$query = $this->_em->createQueryBuilder()->from($this->getEntityName(), $this->getAlias());
 		if ($builder) {
 			$query = $builder($query);
+		} else {
+			$query->select($this->getAlias());
 		}
-		return $this->paginate($query->getQuery(), $perPage, $pageName);
+		return $this->paginate($query->getQuery(), $page, $perPage);
+	}
+
+	/**
+	 * @param Query $query
+	 * @param $page
+	 * @param $perPage
+	 *
+	 * @return LengthAwarePaginator
+	 */
+	protected function paginate( $query, $page, $perPage ): LengthAwarePaginator
+	{
+		$offset = ( $page - 1 ) * $perPage;
+		$query->setFirstResult( $offset )->setMaxResults( $perPage );
+
+		$results = new Paginator( $query, $fetchJoinCollection = true );
+		$results->setUseOutputWalkers( false );
+
+		$items = [];
+		foreach ( $results->getIterator() as $item ) {
+			$items[] = $item;
+		}
+
+		$paginator = new \Illuminate\Pagination\LengthAwarePaginator( $items, count( $results ), $perPage, $page );
+		$paginator->setPath(Request::fullUrl());
+
+		return $paginator;
 	}
 
 	/**

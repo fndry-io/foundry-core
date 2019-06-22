@@ -3,7 +3,7 @@
 namespace Foundry\Core\Inputs\Contracts;
 
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
-use Foundry\System\Entities\Entity;
+use Foundry\Core\Entities\Entity;
 use Illuminate\Database\Eloquent\Model;
 
 /**

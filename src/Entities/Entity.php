@@ -4,6 +4,7 @@ namespace Foundry\Core\Entities;
 
 use Foundry\Core\Entities\Traits\Fillable;
 use Foundry\Core\Entities\Traits\Visible;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
 
 /**
@@ -13,7 +14,7 @@ use Illuminate\Support\Str;
  *
  * @package Foundry\System\Entities
  */
-abstract class Entity {
+abstract class Entity implements Arrayable {
 
 	use Fillable;
 	use Visible;
@@ -37,7 +38,11 @@ abstract class Entity {
 		$hidden = (isset($this->hidden) && !empty($this->hidden)) ? $this->hidden : [];
 		foreach ($this as $key => $value) {
 			if (!in_array($key, $hidden)) {
-				$data[$key] = $value;
+				if ($value instanceof Arrayable) {
+					$data[$key] = $value->toArray();
+				} else {
+					$data[$key] = $value;
+				}
 			}
 		}
 		return $data;
@@ -93,5 +98,38 @@ abstract class Entity {
 			$this->$name = $value;
 		}
 	}
+
+	public function get($key, $default = null) {
+		if (is_null($key) || trim($key) == '') {
+			return $this;
+		}
+
+		$parts = explode('.', $key);
+		$count = count($parts);
+		for ($i=0;$i<$count;$i++) {
+			$end = $count === ($i + 1);
+			if (isset($this->{$parts[$i]})) {
+				$item = $this->{$parts[$i]};
+
+				if ($end) {
+					return $item;
+				}
+
+				if (empty($item)){
+					return $item;
+				}
+
+				if ($item instanceof Entity) {
+					array_shift($parts);
+					return $item->get(implode('.', $parts), $default);
+				} else {
+					return $item;
+				}
+			}
+		}
+
+		return $default;
+	}
+
 
 }

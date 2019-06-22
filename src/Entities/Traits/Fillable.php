@@ -12,7 +12,7 @@ trait Fillable {
 	public function fill($params)
 	{
 		foreach ($params as $key => $value) {
-			if (!isset($this->fillable) || in_array($key, $this->fillable)) {
+			if ($this->isFillable($key)) {
 				$this->$key = $value;
 			}
 		}

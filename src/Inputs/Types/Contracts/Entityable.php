@@ -2,11 +2,11 @@
 
 namespace Foundry\Core\Inputs\Types\Contracts;
 
-use Foundry\System\Entities\Entity;
+use Foundry\Core\Entities\Entity;
 
 interface Entityable {
 
-	public function setEntity( Entity &$entity = null );
+	public function setEntity( Entity $entity = null );
 
 	public function getEntity(): Entity;
 

@@ -3,7 +3,7 @@
 namespace Foundry\Core\Inputs\Types\Traits;
 
 use Foundry\Core\Inputs\Types\InputType;
-use Foundry\System\Entities\Entity;
+use Foundry\Core\Entities\Entity;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 

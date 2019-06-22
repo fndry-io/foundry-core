@@ -14,7 +14,8 @@ use Illuminate\Support\Facades\Validator;
  *
  * @package Foundry\Core\Inputs
  */
-abstract class Inputs implements Arrayable {
+abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
+
 
 	/**
 	 * @var array The inputs
@@ -180,5 +181,31 @@ abstract class Inputs implements Arrayable {
 
 	public function toArray() {
 		return $this->inputs();
+	}
+
+	public function offsetExists($offset) {
+		return isset($this->inputs[$offset]);
+	}
+
+	public function offsetGet($offset){
+		return $this->inputs[$offset];
+	}
+
+	public function offsetSet($offset, $value){
+		$this->$offset = $value;
+	}
+
+	public function offsetUnset($offset) {
+		unset($this->inputs[$offset]);
+	}
+
+	/**
+	 * Get an iterator for the items.
+	 *
+	 * @return \ArrayIterator
+	 */
+	public function getIterator()
+	{
+		return new \ArrayIterator($this->inputs);
 	}
 }

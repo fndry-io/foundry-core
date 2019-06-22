@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Inputs\Types\Contracts;
 
-use Foundry\System\Entities\Entity;
+use Foundry\Core\Entities\Entity;
 
 /**
  * Interface Inputable

@@ -11,16 +11,13 @@ use Foundry\Core\Inputs\Types\Traits\HasHelp;
 use Foundry\Core\Inputs\Types\Traits\HasId;
 use Foundry\Core\Inputs\Types\Traits\HasLabel;
 use Foundry\Core\Inputs\Types\Traits\HasMask;
-use Foundry\Core\Inputs\Types\Traits\HasModel;
 use Foundry\Core\Inputs\Types\Traits\HasName;
 use Foundry\Core\Inputs\Types\Traits\HasPlaceholder;
-use Foundry\Core\Inputs\Types\Traits\HasPosition;
 use Foundry\Core\Inputs\Types\Traits\HasReadonly;
 use Foundry\Core\Inputs\Types\Traits\HasRequired;
 use Foundry\Core\Inputs\Types\Traits\HasRules;
 use Foundry\Core\Inputs\Types\Traits\HasValue;
 use Foundry\Core\Inputs\Types\Traits\HasSortable;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Type
@@ -83,7 +80,7 @@ abstract class InputType extends BaseType implements Inputable {
 
 		//set the value
 		if ( ! $field['value'] && $this->hasEntity() ) {
-			$field['value'] = $this->getModelValue( $this->getName() );
+			$field['value'] = $this->getEntityValue( $this->getName() );
 		}
 
 		//set the rules

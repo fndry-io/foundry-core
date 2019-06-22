@@ -2,6 +2,7 @@
 
 namespace Foundry\Core\Inputs\Types;
 
+use Foundry\Core\Entities\Entity;
 use Foundry\Core\Inputs\Types\Contracts\Entityable;
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
@@ -11,8 +12,8 @@ use Foundry\Core\Inputs\Types\Traits\HasId;
 use Foundry\Core\Inputs\Types\Traits\HasName;
 use Foundry\Core\Inputs\Types\Traits\HasRules;
 use Foundry\Core\Inputs\Types\Traits\HasTitle;
-use Foundry\System\Entities\Entity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 
@@ -95,7 +96,7 @@ class FormType extends ParentType implements Entityable {
 	 *
 	 * @return $this
 	 */
-	public function setEntity( Entity &$entity = null ) {
+	public function setEntity( Entity $entity = null ) {
 		$this->entity = $entity;
 		return $this;
 	}
@@ -124,6 +125,7 @@ class FormType extends ParentType implements Entityable {
 	 * @return $this
 	 */
 	public function attachInputs( Inputable ...$inputs ) {
+
 		if ( $this->entity ) {
 			foreach ( $inputs as &$input ) {
 				if ( ! $input->hasEntity() ) {
@@ -179,7 +181,7 @@ class FormType extends ParentType implements Entityable {
 	 */
 	public function getValue( $key ) {
 		if ( $this->entity ) {
-			return object_get( $this->entity, $key );
+			return $this->entity->get( $key );
 		}
 
 		return null;
@@ -201,6 +203,19 @@ class FormType extends ParentType implements Entityable {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Get the values for the form
+	 *
+	 * @return array
+	 */
+	public function getValues() {
+		$values = [];
+		foreach ($this->getInputs() as $input) {
+			Arr::set($values, $input->getName(), $input->getValue());
+		}
+		return $values;
 	}
 
 	/**
@@ -335,6 +350,9 @@ class FormType extends ParentType implements Entityable {
 			foreach ($this->buttons as $button) {
 				$json['buttons'][] = $button->toArray();
 			}
+		}
+		if ($this->inputs) {
+			$json['values'] = $this->getValues();
 		}
 
 		return $json;

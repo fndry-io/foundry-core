@@ -15,7 +15,7 @@ trait Uuidable
 	/**
 	 * @var \Ramsey\Uuid\UuidInterface
 	 *
-	 * @ORM\Column(type="uuid", unique=true)
+	 * @ORM\Column(type="string", unique=true)
 	 */
 	protected $uuid;
 

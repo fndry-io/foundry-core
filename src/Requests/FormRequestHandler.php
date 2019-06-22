@@ -3,7 +3,10 @@
 namespace Foundry\Core\Requests;
 
 use Foundry\Core\Exceptions\FormRequestException;
+use Foundry\Core\Requests\Contracts\EntityRequestInterface;
+use Foundry\Core\Requests\Contracts\InputInterface;
 use Foundry\Core\Requests\Contracts\ViewableFormRequestInterface;
+use Illuminate\Http\Request;
 
 /**
  * FormRequestHandler
@@ -77,6 +80,11 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 	 */
 	public function view( $key, $request ): Response {
 		$form = $this->getFormRequest( $key, $request );
+
+		if (!$form->authorize()) {
+			return Response::error(__('Not authorized'), 403);
+		}
+
 		if ( $form instanceof ViewableFormRequestInterface ) {
 			return Response::success( $form->view() );
 		} else {
@@ -88,6 +96,7 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 	 * Get the form request class
 	 *
 	 * @param $key
+	 * @param Request $request
 	 *
 	 * @return FormRequest
 	 * @throws FormRequestException
@@ -98,7 +107,24 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 		 * @var FormRequest $class
 		 */
 		$class = $this->getFormRequestClass( $key );
-		return $class::createFrom($request);
+
+		/**
+		 * @var FormRequest $form
+		 */
+		$form = $request::createFrom($request, new $class);
+
+
+		if ( $form instanceof InputInterface) {
+			$form->setInput( $form->makeInput( $form->all() ) );
+		}
+
+		if ( $form instanceof EntityRequestInterface && ($id = $form->input( '_id' )) ) {
+			if ($entity = $form->findEntity( $id )) {
+				$form->setEntity($entity);
+			}
+		}
+
+		return $form;
 	}
 
 	/**
