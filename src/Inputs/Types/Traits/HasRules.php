@@ -60,6 +60,8 @@ trait HasRules {
 			foreach ( $rules as $key => $value ) {
 				$this->addRule( $value, $key );
 			}
+		} else {
+			$this->setAttribute('rules', null);
 		}
 		return $this;
 	}

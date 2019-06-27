@@ -134,4 +134,17 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository implement
 		$this->_em->remove( $entity );
 		$this->_em->flush( $entity );
 	}
+
+
+	public function labelListFromArray($results)
+	{
+		$list = [];
+		foreach ($results as $result) {
+			$list[] = [
+				'value' => $result['id'],
+				'text' => $result['label'],
+			];
+		}
+		return $list;
+	}
 }
