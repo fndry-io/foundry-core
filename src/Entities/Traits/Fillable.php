@@ -2,6 +2,8 @@
 
 namespace Foundry\Core\Entities\Traits;
 
+use Foundry\Core\Entities\Entity;
+
 /**
  * Trait Fillable
  *
@@ -13,7 +15,11 @@ trait Fillable {
 	{
 		foreach ($params as $key => $value) {
 			if ($this->isFillable($key)) {
-				$this->$key = $value;
+				if ($this->$key instanceof Entity) {
+					$this->$key->fill($value);
+				} else {
+					$this->$key = $value;
+				}
 			}
 		}
 	}

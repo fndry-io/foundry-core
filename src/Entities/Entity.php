@@ -36,8 +36,9 @@ abstract class Entity implements Arrayable {
 	public function toArray() {
 		$data = [];
 		$hidden = (isset($this->hidden) && !empty($this->hidden)) ? $this->hidden : [];
+		$visible = (isset($this->visible) && !empty($this->visible)) ? $this->visible : [];
 		foreach ($this as $key => $value) {
-			if (!in_array($key, $hidden)) {
+			if (!in_array($key, $hidden) && in_array($key, $visible)) {
 				if ($value instanceof Arrayable) {
 					$data[$key] = $value->toArray();
 				} else {

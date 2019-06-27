@@ -22,15 +22,21 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository implement
 
 	/**
 	 *
-	 * @param int $page
-	 * @param int $perPage
+	 * @param int $limit
 	 *
 	 * @return \Illuminate\Pagination\LengthAwarePaginator
 	 */
-	public function all(int $perPage = 20) : LengthAwarePaginator
+	public function all(\Closure $builder = null, int $limit = 20) : LengthAwarePaginator
 	{
 		$query = $this->createQueryBuilder($this->getAlias());
-		return $this->paginate($query, 1, $perPage);
+		if ($builder) {
+			$query = $builder($query);
+		} else {
+			$query->select($this->getAlias());
+		}
+		$query->setFirstResult( 1 )->setMaxResults( $limit );
+
+		return $query->getResult(Query::HYDRATE_OBJECT);
 	}
 
 	/**
@@ -51,6 +57,16 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository implement
 			$query->select($this->getAlias());
 		}
 		return $this->paginate($query->getQuery(), $page, $perPage);
+	}
+
+	/**
+	 * Get a Query to execute with
+	 *
+	 * @return QueryBuilder
+	 */
+	public function query()
+	{
+		return $this->_em->createQueryBuilder()->from($this->getEntityName(), $this->getAlias());
 	}
 
 	/**

@@ -38,11 +38,12 @@ abstract class BaseType implements Arrayable, \JsonSerializable {
 		$class = new \ReflectionClass($this);
 		if ($uses = $class->getTraitNames()) {
 			foreach ($uses as $trait) {
-				if (method_exists($this, $trait)) {
+				if (method_exists($this, '__' . $trait)) {
 					call_user_func([$this, $trait]);
 				}
 			}
 		}
+		$this->setAttribute('visible', true);
 	}
 
 	/**

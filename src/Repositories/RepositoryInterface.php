@@ -15,4 +15,6 @@ interface RepositoryInterface extends ObjectRepository {
 
 	public function delete($entity);
 
+	public function save($entity);
+
 }

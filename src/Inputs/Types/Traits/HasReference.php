@@ -13,6 +13,11 @@ trait HasReference {
 	 */
 	protected $reference;
 
+	public function __HasReference(){
+		$this->setValueKey('value');
+		$this->setTextKey('text');
+	}
+
 	/**
 	 * The reference
 	 *
@@ -36,17 +41,6 @@ trait HasReference {
 		return $this->reference;
 	}
 
-	/**
-	 * Json serialise field
-	 *
-	 * @return array
-	 */
-	public function jsonSerialize(): array {
-
-		$this->reference = $this->getReferenceObject();
-		return parent::jsonSerialize();
-	}
-
 	public function addButton($label, $request, $title, $type)
 	{
 		$this->setButtons(
@@ -59,7 +53,7 @@ trait HasReference {
 	public function hasReference(): bool
 	{
 		$reference = $this->getReference();
-		if (is_object($reference) || ($this->hasModel() && $reference = object_get($this->getModel(), $reference))) {
+		if (is_object($reference) || ($this->hasEntity() && $reference = object_get($this->getEntity(), $reference))) {
 			return true;
 		}
 		return false;
@@ -70,7 +64,7 @@ trait HasReference {
 		//Do we have a reference
 		//Is it a string, meaning we need to locate it on the current model
 		$reference = $this->getReference();
-		if ($reference && is_string($reference) && $this->hasModel() && $reference = object_get($this->getModel(), $reference)) {
+		if ($reference && is_string($reference) && $this->hasEntity() && $reference = object_get($this->getEntity(), $reference)) {
 			return $reference;
 		}elseif (is_object($reference)) {
 			return $reference;
@@ -93,6 +87,25 @@ trait HasReference {
 		return $params;
 	}
 
+	public function setTextKey($key, $join = ' ')
+	{
+		if (is_array($key)) {
+			$this->setAttribute('textKey', ['fields' => $key, 'join' => $join]);
+		} else {
+			$this->setAttribute('textKey', $key);
+		}
+		return $this;
+	}
 
+	public function setValueKey($key)
+	{
+		$this->setAttribute('valueKey', $key);
+		return $this;
+	}
+
+	public function getValueKey()
+	{
+		return $this->getAttribute('valueKey');
+	}
 
 }

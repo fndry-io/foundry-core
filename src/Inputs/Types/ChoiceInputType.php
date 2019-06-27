@@ -20,9 +20,9 @@ class ChoiceInputType extends InputType implements Choosable {
 		string $name,
 		string $label = null,
 		bool $required = true,
-		bool $expanded,
-		bool $multiple,
-		?array $options,
+		array $options = [],
+		bool $expanded = false,
+		bool $multiple = false,
 		$value = null,
 		string $position = 'full',
 		string $rules = null,
@@ -46,6 +46,22 @@ class ChoiceInputType extends InputType implements Choosable {
 	public function isInline()
 	{
 		$this->getAttribute('inline', false);
+	}
+
+	public function jsonSerialize(): array {
+		$attributes = parent::jsonSerialize();
+		if (isset($attributes['options']) && !empty($attributes['options'])) {
+			$options = [];
+			foreach ($attributes['options'] as $value => $text) {
+				$options[] = [
+					'text' => $text,
+					'value' => $value
+				];
+			}
+			$attributes['options'] = $options;
+		}
+
+		return $attributes;
 	}
 
 	public function display($value = null) {

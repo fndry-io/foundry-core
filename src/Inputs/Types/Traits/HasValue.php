@@ -9,12 +9,12 @@ use Illuminate\Database\Eloquent\Model;
 
 trait HasValue {
 
-	public function HasValue() {
+	public function __HasValue() {
 		$this->setValue(null);
 	}
 
 	/**
-	 * @return string
+	 * @return mixed
 	 */
 	public function getValue() {
 		$value = $this->getAttribute('value');

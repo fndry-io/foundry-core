@@ -7,13 +7,6 @@ use Foundry\Core\Inputs\Inputs;
 interface InputInterface {
 
 	/**
-	 * The input class for this form request
-	 *
-	 * @return string|null
-	 */
-	static function getInputClass();
-
-	/**
 	 * The rules for this form request
 	 *
 	 * This is derived off of the input class rules method
@@ -27,7 +20,7 @@ interface InputInterface {
 	 *
 	 * @param $inputs
 	 *
-	 * @return mixed
+	 * @return Inputs
 	 */
 	public function makeInput( $inputs );
 

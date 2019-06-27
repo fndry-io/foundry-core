@@ -12,6 +12,7 @@ use Foundry\Core\Inputs\Types\Traits\HasId;
 use Foundry\Core\Inputs\Types\Traits\HasName;
 use Foundry\Core\Inputs\Types\Traits\HasRules;
 use Foundry\Core\Inputs\Types\Traits\HasTitle;
+use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -110,7 +111,7 @@ class FormType extends ParentType implements Entityable {
 
 	public function attachInputCollection( $collection ) {
 		/**
-		 * @var Collection $collection
+		 * @var InputTypeCollection $collection
 		 */
 		$this->attachInputs( ...array_values( $collection->all() ) );
 
@@ -301,7 +302,7 @@ class FormType extends ParentType implements Entityable {
 	 */
 	public function setRequest( Request $request = null ) {
 		$this->request = $request;
-		if ( $request && $request->session()->has( 'errors' ) && $request->session()->get( 'errors' )->hasBag( 'default' ) ) {
+		if ( $request && $request->hasSession() && $request->session()->has( 'errors' ) && $request->session()->get( 'errors' )->hasBag( 'default' ) ) {
 			$this->setErrors( $request->session()->get( 'errors' )->getBag( 'default' ) );
 		}
 
@@ -332,8 +333,8 @@ class FormType extends ParentType implements Entityable {
 	 * @return InputType|null
 	 */
 	public function get( $name ) {
-		if ( $this->inputs[ $name ] ) {
-			return $this->inputs[ $name ];
+		if ( $input = Arr::get($this->inputs, $name, null)) {
+			return $input;
 		}
 
 		return null;

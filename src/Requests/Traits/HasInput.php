@@ -12,13 +12,6 @@ trait HasInput {
 	protected $input;
 
 	/**
-	 * The input class for this form request
-	 *
-	 * @return string|null
-	 */
-	abstract static function getInputClass();
-
-	/**
 	 * The rules for this form request
 	 *
 	 * This is derived off of the input class rules method
@@ -36,13 +29,7 @@ trait HasInput {
 	 *
 	 * @return mixed
 	 */
-	public function makeInput( $inputs ) {
-		if ( $class = static::getInputClass() ) {
-			return new $class( $inputs );
-		} else {
-			return null;
-		}
-	}
+	abstract public function makeInput( $inputs );
 
 	/**
 	 * Get the input class for the request
@@ -58,5 +45,18 @@ trait HasInput {
 	 */
 	public function setInput( Inputs $input ): void {
 		$this->input = $input;
+	}
+
+	public function validate()
+	{
+		return $this->input->validate();
+	}
+
+	public function messages() {
+		return [];
+	}
+
+	public function attributes() {
+		return [];
 	}
 }

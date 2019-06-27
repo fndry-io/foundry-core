@@ -3,10 +3,14 @@
 namespace Foundry\Core\Services\Traits;
 
 use Foundry\Core\Entities\Entity;
+use Foundry\Core\Repositories\RepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 trait HasRepository {
 
+	/**
+	 * @var RepositoryInterface
+	 */
 	protected $repository;
 
 	protected function setRepository($repository)

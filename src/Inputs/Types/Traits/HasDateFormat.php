@@ -7,7 +7,7 @@ trait HasDateFormat {
 	/**
 	 *
 	 */
-	public function HasDateFormat()
+	public function __HasDateFormat()
 	{
 		if (!isset($this->format)) {
 			$this->setAttribute('format', $this->format);

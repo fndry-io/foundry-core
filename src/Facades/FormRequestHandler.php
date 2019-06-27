@@ -11,10 +11,11 @@ use Illuminate\Support\Facades\Facade;
  * @package Foundry\Facades
  * @see \Foundry\Core\Contracts\FormRequestHandler
  *
- * @method Response handle($key, $request, $id = null) Handle the request
- * @method Response view($key, $request, $id = null) Return a DocType of the Request for rendering it
- * @method array forms() Returns a list of the registered forms
+ * @method static Response handle($key, $request, $id = null) Handle the request
+ * @method static Response view($key, $request, $id = null) Return a DocType of the Request for rendering it
+ * @method static array forms() Returns a list of the registered forms
  * @method static void register($class) Register a form request class
+ * @method static void route($uri, $class) Registers the request form class and adds the route to it
  */
 class FormRequestHandler extends Facade {
 	protected static function getFacadeAccessor() {

@@ -19,7 +19,6 @@ class CheckboxInputType extends InputType implements Choosable {
 		string $label = null,
 		bool $required = true,
 		string $value = null,
-		bool $checked = false,
 		string $position = 'full',
 		string $rules = null,
 		string $id = null,
@@ -28,16 +27,29 @@ class CheckboxInputType extends InputType implements Choosable {
 		$type = 'switch';
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
 
-		$this->setChecked( $checked );
+		$this->setCheckedValue(true);
+		$this->setUncheckedValue(false);
+		$this->setAttribute('switch', true);
 	}
 
 	public function isChecked() {
-		return $this->getAttribute('checked', false);
+		return $this->getValue() === $this->getCheckedValue();
 	}
 
-	public function setChecked( bool $checked = true ) {
-		$this->setAttribute('checked', $checked);
+	public function setCheckedValue($value)
+	{
+		$this->setAttribute('checkedValue', $value);
+		return $this;
+	}
 
+	public function getCheckedValue()
+	{
+		return $this->getAttribute('checkedValue');
+	}
+
+	public function setUncheckedValue($value)
+	{
+		$this->setAttribute('uncheckedValue', $value);
 		return $this;
 	}
 

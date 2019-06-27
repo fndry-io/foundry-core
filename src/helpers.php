@@ -154,7 +154,7 @@ if ( ! function_exists( 'auth_user' ) ) {
 		}
 		$guards = (array) $guard;
 		foreach ($guards as $guard) {
-			if ($user = auth()->guard($guard)->user()) {
+			if ($user = auth($guard)->user()) {
 				return $user;
 			}
 		}

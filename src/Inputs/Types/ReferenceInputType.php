@@ -2,12 +2,14 @@
 
 namespace Foundry\Core\Inputs\Types;
 
+use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
 use Foundry\Core\Inputs\Types\Traits\HasOptions;
 use Foundry\Core\Inputs\Types\Traits\HasQueryOptions;
 use Foundry\Core\Inputs\Types\Traits\HasReference;
 use Foundry\Core\Inputs\Types\Traits\HasRoute;
+use Illuminate\Support\Arr;
 
 /**
  * Class ReferenceType
@@ -16,7 +18,7 @@ use Foundry\Core\Inputs\Types\Traits\HasRoute;
  *
  * @package Foundry\Requests\Types
  */
-class ReferenceInputType extends TextInputType implements Referencable {
+class ReferenceInputType extends TextInputType implements Referencable, Castable {
 
 	use HasButtons;
 	use HasQueryOptions;
@@ -66,6 +68,16 @@ class ReferenceInputType extends TextInputType implements Referencable {
 			}
 		}
 		return null;
+	}
+
+	public function getCastValue($value)
+	{
+		if (is_array($value)) {
+			$valueKey = $this->getValueKey();
+			return Arr::get($value, $valueKey);
+		} else {
+			return $value;
+		}
 	}
 
 }

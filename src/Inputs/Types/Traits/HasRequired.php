@@ -13,16 +13,21 @@ trait HasRequired {
 
 	/**
 	 * @param bool $required
+	 * @param bool $rule
 	 *
 	 * @return $this
 	 */
-	public function setRequired( bool $required = true ) {
+	public function setRequired( bool $required = true, bool $rule = true ) {
 		$this->setAttribute('required', $required);
 		$this->removeRules( 'required', 'nullable' );
-		if ( $this->isRequired() ) {
-			$this->addRule( 'required' );
-		} else {
-			$this->addRule( 'nullable' );
+		if ($rule === true) {
+			if ( $this->isRequired() ) {
+				$this->addRule( 'required' );
+			} else {
+				$this->addRule( 'nullable' );
+			}
+		} elseif ($rule) {
+			$this->addRule( $rule );
 		}
 
 		return $this;

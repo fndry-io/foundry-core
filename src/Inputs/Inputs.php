@@ -2,9 +2,12 @@
 
 namespace Foundry\Core\Inputs;
 
+use Foundry\Core\Inputs\Types\Contracts\Castable;
+use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Requests\Response;
 use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -26,6 +29,11 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 * @var InputTypeCollection The collection of input types
 	 */
 	protected $types;
+
+	/**
+	 * @var array The array of fillable input names
+	 */
+	protected $fillable = [];
 
 	/**
 	 * Inputs constructor.
@@ -62,6 +70,17 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	}
 
 	/**
+	 * @param $key
+	 * @param null $default
+	 *
+	 * @return mixed
+	 */
+	public function input($key, $default = null)
+	{
+		return Arr::get($this->inputs, $key, $default);
+	}
+
+	/**
 	 * Gets the rules for the inputs
 	 *
 	 * @return array
@@ -78,6 +97,9 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	protected function cast() {
 		foreach (array_keys($this->inputs) as $key) {
 			if ($type = $this->getType($key)) {
+				if ($type instanceof Castable) {
+					$this->inputs[$type->getName()] = $type->getCastValue($this->inputs[$type->getName()]);
+				}
 				settype($this->inputs[$type->getName()], $type->getCast());
 			}
 		}
@@ -86,14 +108,16 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	/**
 	 * Fill the inputs of this class
 	 *
-	 * @param $params
+	 * @param $inputs
 	 */
-	public function fill($params)
+	public function fill($inputs)
 	{
-		foreach ($params as $key => $value) {
-			if (!isset($this->fillable) || in_array($key, $this->fillable)) {
-				$this->inputs[$key] = $value;
+		if (!empty($this->fillable)) {
+			foreach ($this->fillable as $name) {
+				Arr::set($this->inputs, $name, Arr::get($inputs, $name));
 			}
+		} else {
+			$this->inputs = $inputs;
 		}
 		$this->cast();
 	}
@@ -136,7 +160,10 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 */
 	public function __set( $name, $value ) {
 		if ($type = $this->getType($name)) {
-			settype($value, $type->getCast());
+			if ($type instanceof Castable) {
+				$this->inputs[$type->getName()] = $type->getCastValue($this->inputs[$type->getName()]);
+			}
+			settype($this->inputs[$type->getName()], $type->getCast());
 		}
 		$this->inputs[$name] = $value;
 	}
