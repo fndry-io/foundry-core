@@ -3,6 +3,7 @@
 namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
+use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
 use Foundry\Core\Inputs\Types\Traits\HasClass;
 use Foundry\Core\Inputs\Types\Traits\HasEntity;
@@ -79,8 +80,13 @@ abstract class InputType extends BaseType implements Inputable {
 		$field = parent::jsonSerialize();
 
 		//set the value
-		if ( ! $field['value'] && $this->hasEntity() ) {
-			$field['value'] = $this->getEntityValue( $this->getName() );
+		if ( ! $field['value'] ) {
+
+			if ($this instanceof Referencable && $this->hasReference()) {
+				$field['value'] = $this->getReference( )->toArray();
+			} else {
+				$field['value'] = $this->getEntityValue( $this->getName() );
+			}
 		}
 
 		//set the rules
