@@ -83,7 +83,7 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 		}
 
 		if ($form instanceof InputInterface) {
-			$response = $form->getInput()->validate();
+			$response = $form->getInput()->validate($form->rules());
 			if (!$response->isSuccess()) {
 				return $response;
 			}

@@ -48,11 +48,15 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	/**
 	 * Validates the Inputs
 	 *
+	 * @param array|null $rules
 	 * @return Response
 	 */
-	public function validate() : Response
+	public function validate($rules = null) : Response
 	{
-		$validator = Validator::make($this->inputs(), $this->rules());
+		if (!$rules) {
+			$rules = $this->rules();
+		}
+		$validator = Validator::make($this->inputs(), $rules);
 		if ($validator->fails()) {
 			return Response::error(__('Error validating request'), 422, $validator->errors());
 		}
