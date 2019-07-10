@@ -87,6 +87,10 @@ abstract class InputType extends BaseType implements Inputable {
 			} else {
 				$field['value'] = $this->getEntityValue( $this->getName() );
 			}
+
+			if (empty($field['value']) && $default = $this->getDefault()) {
+				$field['value'] = $default;
+			}
 		}
 
 		//set the rules
