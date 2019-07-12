@@ -68,6 +68,18 @@ if ( ! function_exists( 'routeUri' ) ) {
 	}
 }
 
+if ( ! function_exists( 'resourceUri' ) ) {
+	/**
+	 * Get the resource uri string unresolved (original as defined)
+	 *
+	 * @param string $name The name of the route
+	 *
+	 * @return string The resource uri
+	 */
+	function resourceUri($name){
+		return '/' . \Illuminate\Support\Facades\Route::getRoutes()->getByName($name)->uri();
+	}
+}
 
 if ( ! function_exists( 'strip_non_utf8' ) ) {
 	/**

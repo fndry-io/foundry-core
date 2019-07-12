@@ -31,7 +31,7 @@ class NumberInputType extends TextInputType {
 
 	public function setDecimals( $decimals = null ) {
 		$this->setAttribute('decimals', $decimals);
-
+		$this->setAttribute('step', $decimals / ( $decimals * pow(10, $decimals)));
 		return $this;
 	}
 
