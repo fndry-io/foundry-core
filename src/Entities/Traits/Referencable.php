@@ -37,7 +37,7 @@ trait Referencable {
 	public function getReference()
 	{
 		if ($this->reference_id && $this->reference_type) {
-			return EntityManager::getRepository($this->$this->getReferenceType())->find($this->getReferenceId());
+			return EntityManager::getRepository($this->getReferenceType())->find($this->getReferenceId());
 		} else {
 			return null;
 		}
