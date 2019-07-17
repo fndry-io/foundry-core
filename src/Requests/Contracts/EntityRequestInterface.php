@@ -2,17 +2,17 @@
 
 namespace Foundry\Core\Requests\Contracts;
 
-use Foundry\Core\Entities\Contracts\EntityInterface;
+use Foundry\Core\Entities\Entity;
 
 interface EntityRequestInterface {
 
 	/**
-	 * @return EntityInterface|null
+	 * @return Entity|null
 	 */
 	public function getEntity();
 
 	/**
-	 * @param EntityInterface $entity
+	 * @param Entity $entity
 	 *
 	 * @return mixed
 	 */
@@ -23,7 +23,7 @@ interface EntityRequestInterface {
 	 *
 	 * @param $id
 	 *
-	 * @return EntityInterface|null
+	 * @return Entity|null
 	 */
 	public function findEntity($id);
 

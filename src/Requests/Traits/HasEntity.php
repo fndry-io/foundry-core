@@ -2,12 +2,12 @@
 
 namespace Foundry\Core\Requests\Traits;
 
-use Foundry\Core\Entities\Contracts\EntityInterface;
+use Foundry\Core\Entities\Entity;
 
 trait HasEntity {
 
 	/**
-	 * @var null|EntityInterface|object
+	 * @var null|Entity|object
 	 */
 	protected $entity = null;
 

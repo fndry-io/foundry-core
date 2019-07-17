@@ -2,10 +2,15 @@
 
 namespace Foundry\Core\Auth;
 
+use Carbon\Carbon;
+use Foundry\Core\Entities\Contracts\HasApiToken;
+use Foundry\System\Entities\User;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
+use Illuminate\Support\Str;
+use LaravelDoctrine\ORM\Facades\EntityManager;
 
 class TokenGuard implements Guard
 {
@@ -128,8 +133,26 @@ class TokenGuard implements Guard
 
         $credentials = [$this->storageKey => $credentials[$this->inputKey]];
 
-        if ($this->provider->retrieveByCredentials($credentials)) {
-            return true;
+	    /**
+	     * @var $user HasApiToken
+	     */
+        if ($user = $this->provider->retrieveByCredentials($credentials)) {
+
+	        /**
+	         * We must only allow tokens where the token is still valid within the token expiry date.
+	         *
+	         * If they are valid, we must extend the expiry period further to ensure it remains valid
+	         * for the "session" time.
+	         */
+        	$expires = Carbon::createFromTimestamp($user->getApiTokenExpiresAt()->getTimestamp());
+        	if ($expires->greaterThanOrEqualTo(new Carbon())) {
+        		$this->extendTokenExpires($user);
+        		EntityManager::persist($user);
+		        EntityManager::flush();
+		        return true;
+	        } else {
+        		return false;
+	        }
         }
 
         return false;
@@ -146,5 +169,33 @@ class TokenGuard implements Guard
         $this->request = $request;
 
         return $this;
+    }
+
+	/**
+	 * Sets the token on the user object
+	 *
+	 * @param HasApiToken $user
+	 *
+	 * @return string
+	 */
+    public function setToken(HasApiToken $user)
+    {
+	    $token = Str::random(60);
+	    $user->setApiToken($token);
+	    $this->extendTokenExpires($user);
+	    return $token;
+    }
+
+    public function getToken(HasApiToken $user)
+    {
+    	return $user->getApiToken();
+    }
+
+	/**
+	 * @param HasApiToken $user
+	 */
+    public function extendTokenExpires(HasApiToken $user)
+    {
+	    $user->setApiTokenExpiresAt(Carbon::now()->addDays(3));
     }
 }
