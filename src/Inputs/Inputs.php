@@ -3,7 +3,6 @@
 namespace Foundry\Core\Inputs;
 
 use Foundry\Core\Inputs\Types\Contracts\Castable;
-use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Requests\Response;
 use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Contracts\Support\Arrayable;
@@ -42,6 +41,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 */
 	public function __construct($inputs) {
 		$this->types = $this->types();
+		$this->fillable = array_merge($this->fillable, $this->types->names());
 		$this->fill($inputs);
 	}
 
@@ -126,6 +126,11 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 		$this->cast();
 	}
 
+	/**
+	 * Get all the inputs
+	 *
+	 * @return array
+	 */
 	public function all()
 	{
 		return $this->inputs();
