@@ -18,11 +18,14 @@ trait ApiTokenable {
 		return $this->api_token;
 	}
 
-	public function setApiToken(string $token){
+	/**
+	 * @param string|null $token
+	 */
+	public function setApiToken($token){
 		$this->api_token = $token;
 	}
 
-	public function setApiTokenExpiresAt(\DateTime $expires_at){
+	public function setApiTokenExpiresAt(\DateTime $expires_at = null){
 		$this->api_token_expires_at = $expires_at;
 	}
 

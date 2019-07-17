@@ -192,6 +192,19 @@ class TokenGuard implements Guard
     }
 
 	/**
+	 * Sets the token on the user object
+	 *
+	 * @param HasApiToken $user
+	 *
+	 * @return string
+	 */
+	public function clearToken(HasApiToken $user)
+	{
+		$user->setApiToken(null);
+		$user->setApiTokenExpiresAt(null);
+	}
+
+	/**
 	 * @param HasApiToken $user
 	 */
     public function extendTokenExpires(HasApiToken $user)
