@@ -120,8 +120,8 @@ class InputTypeCollection extends Collection {
 			$item = $this->get($key);
 
 			if ($item instanceof InputTypeCollection) {
-				foreach ($item->casts() as $name => $rule) {
-					$rules["$key.$name"] = $rule;
+				foreach ($item->casts() as $name => $cast) {
+					$casts["$key.$name"] = $cast;
 				}
 			} elseif (method_exists($item, 'cast')) {
 				$casts[ $item->getName() ] = call_user_func([$item, 'cast'], $item);

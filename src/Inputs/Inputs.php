@@ -104,7 +104,15 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 				if ($type instanceof Castable) {
 					$this->inputs[$type->getName()] = $type->getCastValue($this->inputs[$type->getName()]);
 				}
-				settype($this->inputs[$type->getName()], $type->getCast());
+				$cast = $type->getCast();
+				if ($cast === 'boolean' || $cast === 'bool') {
+					if ($this->inputs[$type->getName()] === 'true') {
+						$this->inputs[$type->getName()] = true;
+					} else {
+						$this->inputs[$type->getName()] = false;
+					}
+				}
+				settype($this->inputs[$type->getName()], $cast);
 			}
 		}
 	}

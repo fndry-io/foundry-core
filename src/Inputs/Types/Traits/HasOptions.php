@@ -27,9 +27,9 @@ trait HasOptions {
 	/**
 	 * @param null $value
 	 *
-	 * @return array
+	 * @return null|array
 	 */
-	public function getOptions($value = null): array {
+	public function getOptions($value = null) {
 
 		$options = $this->getAttribute('options');
 
