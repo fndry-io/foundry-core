@@ -69,6 +69,16 @@ abstract class InputType extends BaseType implements Inputable {
 		$this->setPlaceholder( $placeholder ? $placeholder : $label ? $label : $name );
 	}
 
+	public function setAutocomplete($state = true){
+		$this->setAttribute('autocomplete', $state);
+		return $this;
+	}
+
+	public function getAutocomplete()
+	{
+		return $this->getAttribute('autocomplete');
+	}
+
 	/**
 	 * Json serialise field
 	 *
