@@ -30,6 +30,8 @@ class TelInputType extends InputType {
 	) {
 		$type = 'tel';
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
+
+		$this->addRule('numeric');
 	}
 
 	public function display( $value = null ) {
