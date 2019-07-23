@@ -173,4 +173,32 @@ class InputTypeCollection extends Collection {
 		return $items;
 	}
 
+	/**
+	 * Gets all the default values for the collection
+	 *
+	 * @return array
+	 */
+	public function defaults(){
+		$values = [];
+		foreach ( $this->keys() as $key ) {
+			/**
+			 * @var Inputable $item
+			 */
+			$item = $this->get($key);
+
+			if ($item instanceof InputTypeCollection) {
+				if ($defaults = $item->defaults()) {
+					$values[ $item->getName() ] = $defaults;
+				}
+			} elseif (method_exists($item, 'getDefault')) {
+				$value = $item->getDefault();
+				if ($value !== null) {
+					$values[ $item->getName() ] = $value;
+				}
+			}
+		}
+
+		return $values;
+	}
+
 }

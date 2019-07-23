@@ -42,6 +42,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	public function __construct($inputs) {
 		$this->types = $this->types();
 		$this->fillable = array_merge($this->fillable, $this->types->names());
+		//$this->fill($this->types->defaults());
 		$this->fill($inputs);
 	}
 
@@ -101,18 +102,19 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	protected function cast() {
 		foreach (array_keys($this->inputs) as $key) {
 			if ($type = $this->getType($key)) {
+				$name = $type->getName();
 				if ($type instanceof Castable) {
-					$this->inputs[$type->getName()] = $type->getCastValue($this->inputs[$type->getName()]);
+					$this->inputs[$name] = $type->getCastValue($this->inputs[$name]);
 				}
 				$cast = $type->getCast();
 				if ($cast === 'boolean' || $cast === 'bool') {
-					if ($this->inputs[$type->getName()] === 'true') {
-						$this->inputs[$type->getName()] = true;
+					if ($this->inputs[$name] === 'true' || $this->inputs[$name] === true) {
+						$this->inputs[$name] = true;
 					} else {
-						$this->inputs[$type->getName()] = false;
+						$this->inputs[$name] = false;
 					}
 				}
-				settype($this->inputs[$type->getName()], $cast);
+				settype($this->inputs[$name], $cast);
 			}
 		}
 	}
