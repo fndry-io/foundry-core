@@ -27,7 +27,8 @@ class ReferenceType extends BaseType implements Referencable, Inputable {
 		HasName,
 		HasRoute,
 		HasSortable,
-		HasHelp
+		HasHelp,
+		HasAutocomplete
 	;
 
 	/**

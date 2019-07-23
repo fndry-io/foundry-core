@@ -4,6 +4,7 @@ namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\Contracts\Referencable;
+use Foundry\Core\Inputs\Types\Traits\HasAutocomplete;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
 use Foundry\Core\Inputs\Types\Traits\HasClass;
 use Foundry\Core\Inputs\Types\Traits\HasEntity;
@@ -41,7 +42,8 @@ abstract class InputType extends BaseType implements Inputable {
 		HasErrors,
 		HasSortable,
 		HasEntity,
-		HasMask
+		HasMask,
+		HasAutocomplete
 	;
 
 	public function __construct(
@@ -67,16 +69,6 @@ abstract class InputType extends BaseType implements Inputable {
 
 		$this->setId( $id );
 		$this->setPlaceholder( $placeholder ? $placeholder : $label ? $label : $name );
-	}
-
-	public function setAutocomplete($state = true){
-		$this->setAttribute('autocomplete', $state);
-		return $this;
-	}
-
-	public function getAutocomplete()
-	{
-		return $this->getAttribute('autocomplete');
 	}
 
 	/**
