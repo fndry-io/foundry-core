@@ -8,6 +8,7 @@ class MoneyInputType extends NumberInputType {
 	public function __construct( string $name, string $label = null, bool $required = true, string $value = null, string $position = 'full', string $rules = null, string $id = null, string $placeholder = null ) {
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder );
 		$this->setSymbol('$');
+		$this->setType('money');
 	}
 
 	public function getSymbol()
