@@ -41,7 +41,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 */
 	public function __construct($inputs) {
 		$this->types = $this->types();
-		$this->fillable = array_merge($this->fillable, $this->types->names());
+		$this->fillable = array_unique(array_merge($this->fillable, $this->types->names()));
 		//$this->fill($this->types->defaults());
 		$this->fill($inputs);
 	}
