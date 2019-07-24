@@ -2,6 +2,8 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
+use Illuminate\Support\Arr;
+
 trait HasOptions {
 
 	use HasMultiple;
@@ -46,6 +48,18 @@ trait HasOptions {
 	 * @return $this
 	 */
 	public function setOptions( $options = null ) {
+		if ($options && $first = Arr::first($options)) {
+			if (!is_array($first)) {
+				$_options = [];
+				foreach ($options as $value => $text) {
+					$_options[] = [
+						$this->getValueKey() => $value,
+						$this->getTextKey() => $text
+					];
+				}
+				$options = $_options;
+			}
+		}
 		$this->setAttribute('options', $options);
 
 		return $this;
@@ -102,6 +116,43 @@ trait HasOptions {
 	public function hasEmptyOption() {
 		$empty = $this->getEmpty();
 		return ! ! ( $empty );
+	}
+
+	public function setTextKey($key, $join = ' ')
+	{
+		if (is_array($key)) {
+			$this->setAttribute('textKey', ['fields' => $key, 'join' => $join]);
+		} else {
+			$this->setAttribute('textKey', $key);
+		}
+		return $this;
+	}
+
+	public function getTextKey()
+	{
+		return $this->getAttribute('textKey');
+	}
+
+	public function setValueKey($key)
+	{
+		$this->setAttribute('valueKey', $key);
+		return $this;
+	}
+
+	public function getValueKey()
+	{
+		return $this->getAttribute('valueKey');
+	}
+
+	public function setGroupKey($key)
+	{
+		$this->setAttribute('groupKey', $key);
+		return $this;
+	}
+
+	public function getGroupKey()
+	{
+		$this->getAttribute('groupKey');
 	}
 
 

@@ -87,25 +87,5 @@ trait HasReference {
 		return $params;
 	}
 
-	public function setTextKey($key, $join = ' ')
-	{
-		if (is_array($key)) {
-			$this->setAttribute('textKey', ['fields' => $key, 'join' => $join]);
-		} else {
-			$this->setAttribute('textKey', $key);
-		}
-		return $this;
-	}
-
-	public function setValueKey($key)
-	{
-		$this->setAttribute('valueKey', $key);
-		return $this;
-	}
-
-	public function getValueKey()
-	{
-		return $this->getAttribute('valueKey');
-	}
 
 }

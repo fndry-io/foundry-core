@@ -3,6 +3,7 @@
 namespace Foundry\Core\Inputs\Types\Traits;
 
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Arr;
 
 trait HasRules {
 
@@ -27,7 +28,7 @@ trait HasRules {
 			$options = $this->getOptions();
 			if ( is_array( $options ) && !empty($options) ) {
 
-				$options = array_keys($this->getOptions());
+				$options = Arr::pluck($options, $this->getValueKey());
 
 				if (isset($this->multiple) && $this->multiple) {
 					$this->addRule( function ($attribute, $values, $fail) use ($options) {

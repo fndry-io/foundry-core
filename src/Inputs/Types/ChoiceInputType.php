@@ -29,12 +29,16 @@ class ChoiceInputType extends InputType implements Choosable {
 		string $id = null,
 		string $placeholder = null
 	) {
+		$this->setValueKey('value');
+		$this->setTextKey('text');
+
 		$this->setMultiple( $multiple );
 		$this->setOptions( $options );
 		$this->setExpanded( $expanded );
 		$type = $expanded ? $multiple ? 'checkbox' : 'radio' : 'select';
 
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
+
 	}
 
 	public function setInline(bool $value = true)
@@ -48,21 +52,6 @@ class ChoiceInputType extends InputType implements Choosable {
 		$this->getAttribute('inline', false);
 	}
 
-	public function jsonSerialize(): array {
-		$attributes = parent::jsonSerialize();
-		if (isset($attributes['options']) && !empty($attributes['options'])) {
-			$options = [];
-			foreach ($attributes['options'] as $value => $text) {
-				$options[] = [
-					'text' => $text,
-					'value' => $value
-				];
-			}
-			$attributes['options'] = $options;
-		}
-
-		return $attributes;
-	}
 
 	public function display($value = null) {
 

@@ -20,6 +20,11 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 
 
 	/**
+	 * @var array Array of rules. These will be merged into the rules from the types
+	 */
+	public $rules = [];
+
+	/**
 	 * @var array The inputs
 	 */
 	protected $inputs = [];
@@ -88,10 +93,35 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	/**
 	 * Gets the rules for the inputs
 	 *
+	 * This will also merge the input rules into the final produce list of rules
+	 *
 	 * @return array
 	 */
 	public function rules() {
-		return $this->types()->rules();
+		$rules = $this->types()->rules();
+		if ($this->rules) {
+			foreach ($this->rules as $key => $rule) {
+				if ($rules[$key]) {
+					if (!is_array($rules[$key])) {
+						$rules[$key] = array(
+							$rules[$key]
+						);
+					}
+					array_push($rules[$key], $rule);
+				} else {
+					$rules[$key] = $rule;
+				}
+			}
+		}
+		return $rules;
+	}
+
+	/**
+	 * @param $key
+	 * @param $rule
+	 */
+	public function addRule($key, $rule){
+		$this->rules[$key] = $rule;
 	}
 
 	/**
