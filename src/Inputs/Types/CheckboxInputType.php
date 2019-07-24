@@ -14,6 +14,11 @@ class CheckboxInputType extends InputType implements Choosable {
 
 	use HasOptions;
 
+	/**
+	 * @var string The default cast type for the value of this type
+	 */
+	protected $cast = 'boolean';
+
 	public function __construct(
 		string $name,
 		string $label = null,
@@ -26,7 +31,6 @@ class CheckboxInputType extends InputType implements Choosable {
 	) {
 		$type = 'switch';
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
-
 		$this->setCheckedValue(true);
 		$this->setUncheckedValue(false);
 		$this->setAttribute('switch', true);

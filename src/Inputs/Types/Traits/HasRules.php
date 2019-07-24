@@ -4,6 +4,7 @@ namespace Foundry\Core\Inputs\Types\Traits;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\Rules\In;
 
 trait HasRules {
 
@@ -112,7 +113,7 @@ trait HasRules {
 	/**
 	 * Does the specified rule exist
 	 *
-	 * @param $rule
+	 * @param In $rule
 	 *
 	 * @return bool
 	 */

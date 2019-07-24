@@ -44,11 +44,18 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 *
 	 * @param $inputs
 	 */
-	public function __construct($inputs) {
-		$this->types = $this->types();
-		$this->fillable = array_unique(array_merge($this->fillable, $this->types->names()));
-		//$this->fill($this->types->defaults());
-		$this->fill($inputs);
+	public function __construct($inputs = null, $types = null) {
+		if ($types == null) {
+			$this->types = $this->types();
+		} else {
+			$this->types = $types;
+		}
+		if ($this->types) {
+			$this->fillable = array_unique(array_merge($this->fillable, $this->types->names()));
+		}
+		if ($inputs) {
+			$this->fill($inputs);
+		}
 	}
 
 	/**
@@ -77,6 +84,18 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	public function inputs()
 	{
 		return $this->inputs;
+	}
+
+	/**
+	 * Only extract the desired inputs
+	 *
+	 * @param array $inputs
+	 *
+	 * @return array
+	 */
+	public function only($inputs = [])
+	{
+		return Arr::only($this->inputs, $inputs);
 	}
 
 	/**
