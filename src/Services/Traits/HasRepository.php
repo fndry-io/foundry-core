@@ -19,6 +19,11 @@ trait HasRepository {
 		$this->repository = $repository;
 	}
 
+	/**
+	 * Get the repository for this service
+	 *
+	 * @return EntityRepository|RepositoryInterface
+	 */
 	public function getRepository()
 	{
 		return $this->repository;

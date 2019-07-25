@@ -5,11 +5,11 @@ namespace Foundry\Core\Entities\Traits;
 use Carbon\Carbon;
 
 /**
- * Trait Archivable
+ * Trait Archiveable
  *
  * @package Foundry\Core\Traits
  */
-trait Archivable
+trait Archiveable
 {
 	/**
 	 * @var Carbon
@@ -28,6 +28,21 @@ trait Archivable
 	 */
 	public function getArchivedAt(): Carbon {
 		return $this->archived_at;
+	}
+
+	/**
+	 * Restore the soft-deleted state
+	 */
+	public function unArchive(){
+		$this->archived_at = null;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isArchived()
+	{
+		return $this->archived_at && new \DateTime('now') >= $this->archived_at;
 	}
 
 }

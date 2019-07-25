@@ -2,12 +2,14 @@
 
 namespace Foundry\Core\Repositories;
 
+use Carbon\Carbon;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Foundry\Core\Entities\Contracts\IsArchiveable;
+use Foundry\Core\Entities\Contracts\IsSoftDeletable;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Request;
-use LaravelDoctrine\ORM\Pagination\PaginatesFromRequest;
 
 /**
  * Class EntityRepository
@@ -99,18 +101,22 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository implement
 	 * Create the entity and persist it to the database
 	 *
 	 * @param $entity
+	 * @param bool $flush
 	 */
-	public function create( $entity ) {
+	public function create( $entity, $flush = true ) {
 		$this->save( $entity );
+		if ($flush) $this->_em->flush( $entity );
 	}
 
 	/**
 	 * Update an entity and persist it to the database
 	 *
 	 * @param $entity
+	 * @param bool $flush
 	 */
-	public function update( $entity ) {
+	public function update( $entity, $flush = true ) {
 		$this->save( $entity );
+		if ($flush) $this->_em->flush( $entity );
 	}
 
 	/**
@@ -119,23 +125,101 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository implement
 	 * This will either insert or update the entity in the database
 	 *
 	 * @param $entity
+	 * @param bool $flush
 	 */
-	public function save( $entity ) {
+	public function save( $entity, $flush = true ) {
 		$this->_em->persist( $entity );
-		$this->_em->flush( $entity );
+		if ($flush) $this->_em->flush( $entity );
 	}
 
 	/**
 	 * Delete an entity in the database
 	 *
 	 * @param $entity
+	 * @param bool $flush
 	 */
-	public function delete( $entity ) {
-		$this->_em->remove( $entity );
-		$this->_em->flush( $entity );
+	public function delete( $entity, $flush = true ) {
+		if ($entity instanceof IsSoftDeletable) {
+			if ($entity->isDeleted()) {
+				$this->_em->remove( $entity );
+			} else {
+				$entity->setDeletedAt(new Carbon());
+			}
+		} else {
+			$this->_em->remove( $entity );
+		}
+
+		if ($flush) $this->_em->flush( $entity );
 	}
 
+	/**
+	 * Restore an entity in the database
+	 *
+	 * @param $entity
+	 * @param bool $flush
+	 *
+	 * @throws \Exception
+	 */
+	public function restore( $entity, $flush = true ) {
 
+		if (!$entity instanceof IsSoftDeletable) {
+			throw new \Exception(sprintf('Entity %s is not soft deletable', get_class($entity)));
+		}
+
+		if ($entity->isDeleted()) {
+			$entity->restore();
+		}
+
+		if ($flush) $this->_em->flush( $entity );
+	}
+
+	/**
+	 * Archive an entity in the database
+	 *
+	 * @param $entity
+	 * @param bool $flush
+	 *
+	 * @throws \Exception
+	 */
+	public function archive( $entity, $flush = true ) {
+		if (!$entity instanceof IsArchiveable) {
+			throw new \Exception(sprintf('Entity %s is not archiveable', get_class($entity)));
+		}
+
+		if ($entity->isArchived()) {
+			$this->_em->remove( $entity );
+		} else {
+			$entity->setArchivedAt(new Carbon());
+		}
+
+		if ($flush) $this->_em->flush( $entity );
+	}
+
+	/**
+	 * Un-Archive an entity in the database
+	 *
+	 * @param $entity
+	 * @param bool $flush
+	 *
+	 * @throws \Exception
+	 */
+	public function unArchive( $entity, $flush = true ) {
+		if (!$entity instanceof IsArchiveable) {
+			throw new \Exception(sprintf('Entity %s is not archiveable', get_class($entity)));
+		}
+
+		if ($entity->isArchived()) {
+			$entity->unArchive();
+		}
+
+		if ($flush) $this->_em->flush( $entity );
+	}
+
+	/**
+	 * @param $results
+	 *
+	 * @return array
+	 */
 	public function labelListFromArray($results)
 	{
 		$list = [];
