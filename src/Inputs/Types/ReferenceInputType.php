@@ -6,6 +6,7 @@ use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
 use Foundry\Core\Inputs\Types\Traits\HasOptions;
+use Foundry\Core\Inputs\Types\Traits\HasParams;
 use Foundry\Core\Inputs\Types\Traits\HasQueryOptions;
 use Foundry\Core\Inputs\Types\Traits\HasReference;
 use Foundry\Core\Inputs\Types\Traits\HasRoute;
@@ -25,6 +26,8 @@ class ReferenceInputType extends TextInputType implements Referencable, Castable
 	use HasOptions;
 	use HasReference;
 	use HasRoute;
+	use HasParams;
+
 
 	/**
 	 * Reference constructor

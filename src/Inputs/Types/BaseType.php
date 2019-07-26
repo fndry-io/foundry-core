@@ -240,5 +240,17 @@ abstract class BaseType implements Arrayable, \JsonSerializable {
 		return $this instanceof Choosable;
 	}
 
+	/**
+	 * Sets the type as a custom type
+	 *
+	 * This allows the form renderer to load the type based on a dynamically register type
+	 *
+	 * This applies when the renderer needs to render the type using another approach or custom element or component
+	 *
+	 * @param bool $value
+	 */
+	public function setCustom(bool $value){
+		$this->setAttribute('custom', $value);
+	}
 
 }

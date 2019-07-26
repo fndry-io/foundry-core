@@ -4,6 +4,7 @@ namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\Contracts\Referencable;
+use Foundry\Core\Inputs\Types\Traits\HasAutocomplete;
 use Foundry\Core\Inputs\Types\Traits\HasEntity;
 use Foundry\Core\Inputs\Types\Traits\HasHelp;
 use Foundry\Core\Inputs\Types\Traits\HasLabel;
@@ -48,6 +49,8 @@ class ReferenceType extends BaseType implements Referencable, Inputable {
 		$this->setReference($reference);
 		$this->setLabel( $label ? $label : $reference );
 		$this->setRoute($route);
+
+		$this->setAutocomplete(false);
 	}
 
 	public function display( $value = null ) {

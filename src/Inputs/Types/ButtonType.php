@@ -5,6 +5,7 @@ namespace Foundry\Core\Inputs\Types;
 use Foundry\Core\Inputs\Types\Traits\HasClass;
 use Foundry\Core\Inputs\Types\Traits\HasId;
 use Foundry\Core\Inputs\Types\Traits\HasLabel;
+use Foundry\Core\Inputs\Types\Traits\HasParams;
 use Foundry\Core\Inputs\Types\Traits\HasTitle;
 use Foundry\Core\Inputs\Types\Traits\HasAction;
 
@@ -19,7 +20,8 @@ class ButtonType extends BaseType {
 		HasLabel,
 		HasClass,
 		HasTitle,
-		HasAction
+		HasAction,
+		HasParams
 		;
 
 	public function __construct(
