@@ -3,6 +3,7 @@
 namespace Foundry\Core\Inputs;
 
 use Foundry\Core\Inputs\Types\Contracts\Castable;
+use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Foundry\Core\Requests\Response;
 use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Contracts\Support\Arrayable;
@@ -152,6 +153,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 		foreach (array_keys($this->inputs) as $key) {
 			if ($type = $this->getType($key)) {
 				$name = $type->getName();
+
 				if ($type instanceof Castable) {
 					$this->inputs[$name] = $type->getCastValue($this->inputs[$name]);
 				}
@@ -163,7 +165,20 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 						$this->inputs[$name] = false;
 					}
 				}
-				settype($this->inputs[$name], $cast);
+
+				if ($type instanceof Choosable && $type->isMultiple()) {
+					if ($this->inputs[$name]) {
+						$values = [];
+						foreach ($this->inputs[$name] as $value) {
+							settype($value, $cast);
+							$values[] = $value;
+						}
+						$this->inputs[$name] = $values;
+					}
+				} else {
+					settype($this->inputs[$name], $cast);
+				}
+
 			}
 		}
 	}
