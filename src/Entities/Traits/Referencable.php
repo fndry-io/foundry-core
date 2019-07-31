@@ -56,4 +56,13 @@ trait Referencable {
 	public function setReferenceType( string $reference_type ): void {
 		$this->reference_type = $reference_type;
 	}
+
+	/**
+	 * Detach the reference
+	 */
+	public function detachReference() {
+		$this->setReferenceId(null);
+		$this->setReferenceType(null);
+	}
+
 }

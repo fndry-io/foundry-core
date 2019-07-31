@@ -231,4 +231,14 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository implement
 		}
 		return $list;
 	}
+
+	/**
+	 * Send to the database
+	 *
+	 * @param null $entity
+	 */
+	public function flush( $entity = null )
+	{
+		$this->_em->flush( $entity );
+	}
 }
