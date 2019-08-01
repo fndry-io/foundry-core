@@ -2,12 +2,15 @@
 
 namespace Foundry\Core\Inputs\Types;
 
+use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
 use Foundry\Core\Inputs\Types\Traits\HasOptions;
+use Foundry\Core\Inputs\Types\Traits\HasParams;
 use Foundry\Core\Inputs\Types\Traits\HasQueryOptions;
 use Foundry\Core\Inputs\Types\Traits\HasReference;
 use Foundry\Core\Inputs\Types\Traits\HasRoute;
+use Illuminate\Support\Arr;
 
 /**
  * Class ReferenceType
@@ -16,13 +19,15 @@ use Foundry\Core\Inputs\Types\Traits\HasRoute;
  *
  * @package Foundry\Requests\Types
  */
-class ReferenceInputType extends TextInputType implements Referencable {
+class ReferenceInputType extends TextInputType implements Referencable, Castable {
 
 	use HasButtons;
 	use HasQueryOptions;
 	use HasOptions;
 	use HasReference;
 	use HasRoute;
+	use HasParams;
+
 
 	/**
 	 * Reference constructor
@@ -60,12 +65,22 @@ class ReferenceInputType extends TextInputType implements Referencable {
 
 	public function display( $value = null ) {
 		$reference = $this->getReference();
-		if (is_object($reference) || ($this->hasModel() && $reference = object_get($this->getModel(), $reference))) {
+		if (is_object($reference) || ($this->hasEntity() && $reference = object_get($this->getEntity(), $reference))) {
 			if (is_object($reference)) {
 				return $reference->label;
 			}
 		}
 		return null;
+	}
+
+	public function getCastValue($value)
+	{
+		if (is_array($value)) {
+			$valueKey = $this->getValueKey();
+			return Arr::get($value, $valueKey);
+		} else {
+			return $value;
+		}
 	}
 
 }

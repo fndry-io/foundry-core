@@ -3,45 +3,40 @@
 namespace Foundry\Core\Inputs\Types\Traits;
 
 use Foundry\Core\Inputs\Types\InputType;
+use Foundry\Core\Entities\Entity;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 trait HasValue {
 
-	/**
-	 * Value
-	 *
-	 * @var mixed $value
-	 */
-	protected $value = null;
+	public function __HasValue() {
+		$this->setValue(null);
+	}
 
 	/**
-	 * @var mixed the default value or values selected
-	 */
-	protected $default;
-
-	/**
-	 * @return string
+	 * @return mixed
 	 */
 	public function getValue() {
-		if ( old( $this->name ) !== null ) {
-			return old( $this->name );
-		} elseif ( $this->value !== null ) {
-			return $this->value;
-		} elseif ( $this->hasModel() ) {
-			return $this->getModelValue( $this->name );
-		} else {
-			return null;
+		$value = $this->getAttribute('value');
+		if ( method_exists($this, 'getName') && old( $this->getName() ) !== null ) {
+			return old( $this->$this->getName() );
+		} elseif ( $value !== null ) {
+			return $value;
+		} elseif ( isset($this->model) && method_exists($this, 'getName') ) {
+			return $this->getModelValue( $this->getName() );
+		} elseif ( isset($this->entity) && method_exists($this, 'getName') ) {
+			return $this->getEntityValue( $this->getName() );
 		}
+		return null;
 	}
 
 	/**
 	 * @param mixed $value
 	 *
-	 * @return InputType
+	 * @return $this
 	 */
 	public function setValue( $value = null ) {
-		$this->value = $value;
+		$this->setAttribute('value', $value);
 
 		return $this;
 	}
@@ -49,15 +44,14 @@ trait HasValue {
 
 	public function setDefault($value)
 	{
-		$this->default = $value;
+		$this->setAttribute('default', $value);
 		return $this;
 	}
 
 	public function getDefault()
 	{
-		return $this->default;
+		return $this->getAttribute('default');
 	}
-
 
 	public function isInvalid() {
 		return $this->hasErrors();
@@ -76,6 +70,31 @@ trait HasValue {
 					 */
 					foreach ($value as $key => $item) {
 						if (is_object($item) && $item instanceof Model) {
+							$value->offsetSet($key, $item->getKey());
+						}
+					}
+				}
+				$value = $value->toArray();
+			}
+		}
+		return $value;
+	}
+
+	private function getEntityValue( $name ) {
+		$value = object_get( $this->entity, $name );
+		if (is_object($value)) {
+			if ($value instanceof Entity) {
+				//todo correct this to the correct approach to getting the key
+				$value = $value->getKey();
+			} elseif ($value instanceof Collection) {
+				//if the type is a checkbox, radio, select, then we need to display these and set their value accordingly
+				if (in_array($this->type, ['checkbox', 'radio', 'select'])) {
+					/**
+					 * @var Collection $value
+					 */
+					foreach ($value as $key => $item) {
+						if (is_object($item) && $item instanceof Entity) {
+							//todo correct this to the correct approach to getting the key
 							$value->offsetSet($key, $item->getKey());
 						}
 					}

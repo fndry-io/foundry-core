@@ -26,5 +26,7 @@ class EmailInputType extends InputType {
 	) {
 		$type = 'email';
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
+
+		$this->addRule('email');
 	}
 }

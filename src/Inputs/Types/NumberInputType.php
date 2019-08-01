@@ -14,8 +14,6 @@ class NumberInputType extends TextInputType {
 
 	use HasMinMax;
 
-	protected $decimals;
-
 	public function __construct(
 		string $name,
 		string $label = null,
@@ -32,13 +30,13 @@ class NumberInputType extends TextInputType {
 	}
 
 	public function setDecimals( $decimals = null ) {
-		$this->decimals = $decimals;
-
+		$this->setAttribute('decimals', $decimals);
+		$this->setAttribute('step', $decimals / ( $decimals * pow(10, $decimals)));
 		return $this;
 	}
 
 	public function getDecimals() {
-		return $this->decimals;
+		return $this->getAttribute('decimals');
 	}
 
 

@@ -2,8 +2,6 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-use Foundry\Core\Inputs\Types\InputType;
-
 trait HasHelp {
 
 	/**
@@ -17,16 +15,16 @@ trait HasHelp {
 	 * @return string
 	 */
 	public function getHelp() {
-		return $this->help;
+		return $this->getAttribute('help');
 	}
 
 	/**
 	 * @param string $help
 	 *
-	 * @return InputType
+	 * @return $this
 	 */
 	public function setHelp( string $help = null ) {
-		$this->help = $help;
+		$this->setAttribute('help', $help);
 
 		return $this;
 	}

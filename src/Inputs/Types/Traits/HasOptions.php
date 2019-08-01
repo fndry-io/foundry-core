@@ -2,30 +2,17 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
+use Illuminate\Support\Arr;
+
 trait HasOptions {
 
 	use HasMultiple;
 
 	/**
-	 * @var array|\Closure $options Available options
-	 */
-	protected $options = [];
-
-	/**
-	 * @var bool Determines if the options are expanded, such as in a series of checkboxes or radios
-	 */
-	protected $expanded = false;
-
-	/**
-	 * @var mixed The empty option. Null or false for none. True for default text or a string for the displayed text
-	 */
-	protected $empty;
-
-	/**
 	 * @return mixed
 	 */
 	public function isExpanded() : bool {
-		return $this->expanded;
+		return (bool) $this->getAttribute('expanded', false);
 	}
 
 	/**
@@ -34,21 +21,25 @@ trait HasOptions {
 	 * @return $this
 	 */
 	public function setExpanded( bool $expanded = true ) {
-		$this->expanded = $expanded;
+		$this->setAttribute('expanded', $expanded);
 
 		return $this;
 	}
 
 	/**
-	 * @return array
+	 * @param null $value
+	 *
+	 * @return null|array
 	 */
-	public function getOptions($value = null): array {
+	public function getOptions($value = null) {
 
-		if ( is_callable( $this->options ) ) {
-			$call = $this->options;
-			$this->options = $call(null, $value);
+		$options = $this->getAttribute('options');
+
+		if ( is_callable( $options ) ) {
+			$call = $options;
+			$this->setOptions($call(null, $value));
 		}
-		return $this->options;
+		return $this->getAttribute('options');
 	}
 
 	/**
@@ -57,7 +48,19 @@ trait HasOptions {
 	 * @return $this
 	 */
 	public function setOptions( $options = null ) {
-		$this->options = $options;
+		if ($options && $first = Arr::first($options)) {
+			if (!is_array($first)) {
+				$_options = [];
+				foreach ($options as $value => $text) {
+					$_options[] = [
+						$this->getValueKey() => $value,
+						$this->getTextKey() => $text
+					];
+				}
+				$options = $_options;
+			}
+		}
+		$this->setAttribute('options', $options);
 
 		return $this;
 	}
@@ -70,39 +73,86 @@ trait HasOptions {
 	 * @return bool
 	 */
 	public function isOptionChecked( $key ) {
-		if ( is_array( $this->value ) ) {
-			return in_array( $key, $this->value );
-		} elseif ( is_string( $this->value ) ) {
-			return $key == $this->value;
+
+		$value = null;
+		if (method_exists($this, 'getValue')) {
+			$value = $this->getValue();
+		}
+
+		if ( is_array( $value ) ) {
+			return in_array( $key, $value );
+		} elseif ( is_string( $value ) ) {
+			return $key == $value;
 		}
 
 		return false;
 	}
 
 	public function setEmpty( $value = null ) {
-		$this->empty = $value;
+		$this->setAttribute('empty', $value);
 
 		return $this;
 	}
 
-	public function getEmpty( $value ) {
-		return $this->empty;
+	public function getEmpty( ) {
+		return $this->getAttribute('empty');
 	}
 
 	public function getEmptyLabel( $default = null ) {
-		if ( $this->empty === true ) {
+
+		$empty = $this->getEmpty();
+
+		if ( $empty === true ) {
 			if ( $default !== null ) {
 				return $default;
 			} else {
 				return __( 'Select...' );
 			}
-		} elseif ( is_string( $this->empty ) ) {
-			return $this->empty;
+		} elseif ( is_string( $empty ) ) {
+			return $empty;
 		}
 	}
 
 	public function hasEmptyOption() {
-		return ! ! ( $this->empty );
+		$empty = $this->getEmpty();
+		return ! ! ( $empty );
+	}
+
+	public function setTextKey($key, $join = ' ')
+	{
+		if (is_array($key)) {
+			$this->setAttribute('textKey', ['fields' => $key, 'join' => $join]);
+		} else {
+			$this->setAttribute('textKey', $key);
+		}
+		return $this;
+	}
+
+	public function getTextKey()
+	{
+		return $this->getAttribute('textKey');
+	}
+
+	public function setValueKey($key)
+	{
+		$this->setAttribute('valueKey', $key);
+		return $this;
+	}
+
+	public function getValueKey()
+	{
+		return $this->getAttribute('valueKey');
+	}
+
+	public function setGroupKey($key)
+	{
+		$this->setAttribute('groupKey', $key);
+		return $this;
+	}
+
+	public function getGroupKey()
+	{
+		$this->getAttribute('groupKey');
 	}
 
 

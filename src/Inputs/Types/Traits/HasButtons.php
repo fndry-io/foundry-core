@@ -3,7 +3,6 @@
 namespace Foundry\Core\Inputs\Types\Traits;
 
 use Foundry\Core\Inputs\Types\ButtonType;
-use Foundry\Core\Inputs\Types\InputType;
 
 trait HasButtons {
 

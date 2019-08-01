@@ -2,14 +2,11 @@
 
 namespace Foundry\Core\Entities\Traits;
 
-use Carbon\Carbon;
 use DateTime;
-use Doctrine\ORM\Mapping as ORM;
 
-trait SoftDeletable
+trait SoftDeleteable
 {
 	/**
-	 * @ORM\Column(name="deleted_at", type="datetime", nullable=true)
 	 * @var DateTime
 	 */
 	protected $deleted_at;
@@ -23,9 +20,9 @@ trait SoftDeletable
 	}
 
 	/**
-	 * @param Carbon|null $deleted_at
+	 * @param DateTime|null $deleted_at
 	 */
-	public function setDeletedAt(Carbon $deleted_at = null)
+	public function setDeletedAt(\DateTime $deleted_at = null)
 	{
 		$this->deleted_at = $deleted_at;
 	}

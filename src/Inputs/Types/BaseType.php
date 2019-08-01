@@ -13,11 +13,9 @@ use Illuminate\Support\Arr;
  *
  * @package Foundry\Requests\Types
  */
-abstract class BaseType implements Arrayable {
+abstract class BaseType implements Arrayable, \JsonSerializable {
 
 	use HasConditions;
-
-    protected $json_ignore = ['model'];
 
 	/**
 	 * Type of the input to display
@@ -26,12 +24,27 @@ abstract class BaseType implements Arrayable {
 	 */
 	protected $type;
 
+	/**
+	 * @var string The default cast type for the value of this type
+	 */
 	protected $cast = 'string';
 
 	/**
-	 * @var array|null A store for additional information
+	 * @var array
 	 */
-	protected $data = null;
+	protected $attributes = [];
+
+	public function __construct() {
+		$class = new \ReflectionClass($this);
+		if ($uses = $class->getTraitNames()) {
+			foreach ($uses as $trait) {
+				if (method_exists($this, '__' . $trait)) {
+					call_user_func([$this, $trait]);
+				}
+			}
+		}
+		$this->setAttribute('visible', true);
+	}
 
 	/**
 	 * @return mixed
@@ -47,11 +60,12 @@ abstract class BaseType implements Arrayable {
 	 */
 	public function setType( $type = null ) {
 		$this->type = $type;
-
 		return $this;
 	}
 
 	/**
+	 * Get the variable cast type
+	 *
 	 * @return string
 	 */
 	public function getCast(): string {
@@ -63,20 +77,19 @@ abstract class BaseType implements Arrayable {
 	 *
 	 * @return BaseType|InputType
 	 */
-	public function setCast( string $cast ): void {
+	public function setCast( string $cast ) {
 		$this->cast = $cast;
-
 		return $this;
 	}
 
-	public function getData($key = null, $default = null)
+	/**
+	 * Get a value from the data property
+	 *
+	 * @return mixed
+	 */
+	public function getData()
 	{
-		if ($key) {
-			return Arr::get($this->data, $key, $default);
-		} else {
-			return $this->data;
-		}
-
+		return $this->getAttribute('data');
 	}
 
 	/**
@@ -84,19 +97,86 @@ abstract class BaseType implements Arrayable {
 	 *
 	 * @param array $data
 	 *
-	 * @return InputType
+	 * @return $this
 	 */
 	public function setData(array $data = [])
 	{
-		$this->data = $data;
+		$this->setAttribute('data', $data);
 		return $this;
 	}
 
-	public function isType($type)
+	/**
+	 * @param $key
+	 * @param $value
+	 *
+	 * @return $this
+	 */
+	public function appendData($key, $value)
 	{
-		return ($this->type === $type);
+		if (!$this->hasAttribute('data')) {
+			$this->setData();
+		}
+		Arr::set($this->attributes['data'], $key, $value);
+		return $this;
 	}
 
+	/**
+	 * @param string|integer $key
+	 * @param mixed $value
+	 *
+	 * @return $this
+	 */
+	public function setAttribute($key, $value)
+	{
+		Arr::set($this->attributes, $key, $value);
+		return $this;
+	}
+
+	/**
+	 * @param string|integer $key
+	 * @param null $default
+	 *
+	 * @return mixed
+	 */
+	public function getAttribute($key, $default = null)
+	{
+		return Arr::get($this->attributes, $key, $default);
+	}
+
+	/**
+	 * Append a value to an array attribute
+	 *
+	 * @param $key
+	 * @param $value
+	 *
+	 * @return $this
+	 * @throws \Exception
+	 */
+	public function appendToAttribute($key, $value)
+	{
+		if (!$this->hasAttribute($key)) {
+			$this->setAttribute($key, []);
+		}
+		if (!is_array($this->attributes[$key])) {
+			throw new \Exception(sprintf('Attribute %s is not an array', $key));
+		}
+		$this->attributes[$key][] = $value;
+		return $this;
+	}
+
+	/**
+	 * @param $key
+	 *
+	 * @return bool
+	 */
+	public function hasAttribute($key)
+	{
+		return Arr::exists($this->attributes, $key);
+	}
+
+	/**
+	 * @return array
+	 */
 	public function toArray() {
 		return $this->jsonSerialize();
 	}
@@ -108,14 +188,9 @@ abstract class BaseType implements Arrayable {
 	 */
 	public function jsonSerialize(): array {
 
-		$field = array();
+		$json = array();
 
-		//set all the object properties
-		foreach ( $this as $key => $value ) {
-
-			if ( $key == 'json_ignore' || in_array( $key, $this->json_ignore ) ) {
-				continue;
-			}
+		foreach ( $this->attributes as $key => $value ) {
 
 			if ( is_array( $value ) ) {
 				$_value = [];
@@ -130,22 +205,52 @@ abstract class BaseType implements Arrayable {
 			} elseif ( $value instanceof \Closure) {
 				$value = call_user_func($value);
 			}
-
-			$field[ $key ] = $value;
+			$json[ $key ] = $value;
 		}
 
-		//set required into the rules
+		$json['type'] = $this->getType();
+		$json['cast'] = $this->getCast();
 
-		return $field;
+		return $json;
 	}
 
+	/**
+	 * Determine if the type is of the one specified
+	 *
+	 * @param $type
+	 *
+	 * @return bool
+	 */
+	public function isType($type)
+	{
+		return ($this->type === $type);
+	}
+
+	/**
+	 * @return bool
+	 */
 	public function isInputType() {
 		return $this instanceof Inputable;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isChoiceType() {
 		return $this instanceof Choosable;
 	}
 
+	/**
+	 * Sets the type as a custom type
+	 *
+	 * This allows the form renderer to load the type based on a dynamically register type
+	 *
+	 * This applies when the renderer needs to render the type using another approach or custom element or component
+	 *
+	 * @param bool $value
+	 */
+	public function setCustom(bool $value){
+		$this->setAttribute('custom', $value);
+	}
 
 }

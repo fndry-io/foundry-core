@@ -2,24 +2,18 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-use Foundry\Core\Inputs\Types\InputType;
 use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Support\Arr;
+use Illuminate\Validation\Rules\In;
 
 trait HasRules {
-
-	/**
-	 * Rules to display
-	 *
-	 * @var array $rules
-	 */
-	protected $rules = null;
 
 	/**
 	 * @return string|array
 	 */
 	public function getRules() {
-		if ( isset( $this->required ) ) {
-			if ( $this->required ) {
+		if ( method_exists($this, 'isRequired') ) {
+			if ( $this->isRequired() ) {
 				$this->addRule( 'required' );
 			} else {
 				$this->addRule( 'nullable' );
@@ -31,10 +25,11 @@ trait HasRules {
 		if ( isset( $this->max ) && $this->max !== null ) {
 			$this->addRule( 'max:' . $this->max );
 		}
-		if ( isset( $this->options ) ) {
-			if ( is_array( $this->options ) && !empty($this->options) ) {
+		if ( method_exists( $this, 'getOptions' ) ) {
+			$options = $this->getOptions();
+			if ( is_array( $options ) && !empty($options) ) {
 
-				$options = array_keys($this->getOptions());
+				$options = Arr::pluck($options, $this->getValueKey());
 
 				if (isset($this->multiple) && $this->multiple) {
 					$this->addRule( function ($attribute, $values, $fail) use ($options) {
@@ -51,8 +46,7 @@ trait HasRules {
 			}
 		}
 
-
-		return $this->rules;
+		return $this->getAttribute('rules');
 	}
 
 	/**
@@ -68,9 +62,9 @@ trait HasRules {
 			foreach ( $rules as $key => $value ) {
 				$this->addRule( $value, $key );
 			}
+		} else {
+			$this->setAttribute('rules', null);
 		}
-		$this->rules = $rules;
-
 		return $this;
 	}
 
@@ -83,13 +77,15 @@ trait HasRules {
 	 * @return $this
 	 */
 	public function addRule( $rule, $key = null ) {
-		if ( empty( $this->rules ) ) {
-			$this->rules = [];
-		}
-		if ( $key && is_string( $key ) ) {
-			$this->rules[ $key ] = $rule;
-		} else {
-			$this->rules[] = $rule;
+		if (!$this->ruleExists($rule)) {
+			if ( !isset($this->attributes['rules']) || empty( $this->attributes['rules'] ) ) {
+				$this->attributes['rules'] = [];
+			}
+			if ( $key && is_string( $key ) ) {
+				$this->attributes['rules'][ $key ] = $rule;
+			} else {
+				$this->attributes['rules'][] = $rule;
+			}
 		}
 
 		return $this;
@@ -103,15 +99,26 @@ trait HasRules {
 	 * @return $this
 	 */
 	public function removeRules( ...$rules ) {
-		if ( ! empty( $this->rules ) ) {
+		if ( ! empty( $this->attributes['rules'] ) ) {
 			foreach ( $rules as $rule ) {
-				$index = array_search( $rule, $this->rules );
+				$index = array_search( $rule, $this->attributes['rules'] );
 				if ( $index !== false ) {
-					unset( $this->required[ $index ] );
+					unset( $this->attributes['rules'][ $index ] );
 				}
 			}
 		}
-
 		return $this;
+	}
+
+	/**
+	 * Does the specified rule exist
+	 *
+	 * @param In $rule
+	 *
+	 * @return bool
+	 */
+	public function ruleExists($rule)
+	{
+		return (isset($this->attributes['rules']) && in_array($rule, $this->attributes['rules']));
 	}
 }

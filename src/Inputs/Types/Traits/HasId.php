@@ -3,6 +3,7 @@
 namespace Foundry\Core\Inputs\Types\Traits;
 
 use Foundry\Core\Inputs\Types\InputType;
+use Illuminate\Support\Str;
 
 trait HasId {
 
@@ -17,24 +18,23 @@ trait HasId {
 	 * @return string
 	 */
 	public function getId(): string {
-		return $this->id;
+		return $this->getAttribute('id');
 	}
 
 	/**
 	 * @param string|null $id
 	 *
-	 * @return InputType
+	 * @return $this
 	 */
 	public function setId( $id = null ) {
 		if ( $id == null ) {
 			if ( method_exists( $this, 'getName' ) ) {
-				$this->id = ucfirst(camel_case( str_slug( str_replace('.', '_', $this->getName()) . '_' . $this->getType() ) ));
+				$id = ucfirst(Str::camel( Str::slug( str_replace('.', '_', $this->getName()) . '_' . $this->getType() ) ));
 			} else {
-				$this->id = uniqid( 'Id' );
+				$id = uniqid( 'Id' );
 			}
-		} else {
-			$this->id = $id;
 		}
+		$this->setAttribute('id', $id);
 
 		return $this;
 	}

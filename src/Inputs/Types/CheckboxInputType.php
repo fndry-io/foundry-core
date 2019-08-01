@@ -1,9 +1,9 @@
 <?php
 
 namespace Foundry\Core\Inputs\Types;
+
 use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Foundry\Core\Inputs\Types\Traits\HasOptions;
-
 
 /**
  * Class CheckboxType
@@ -14,14 +14,16 @@ class CheckboxInputType extends InputType implements Choosable {
 
 	use HasOptions;
 
-	protected $checked;
+	/**
+	 * @var string The default cast type for the value of this type
+	 */
+	protected $cast = 'boolean';
 
 	public function __construct(
 		string $name,
 		string $label = null,
 		bool $required = true,
 		string $value = null,
-		bool $checked = false,
 		string $position = 'full',
 		string $rules = null,
 		string $id = null,
@@ -29,17 +31,29 @@ class CheckboxInputType extends InputType implements Choosable {
 	) {
 		$type = 'switch';
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
-
-		$this->setChecked( $checked );
+		$this->setCheckedValue(true);
+		$this->setUncheckedValue(false);
+		$this->setAttribute('switch', true);
 	}
 
 	public function isChecked() {
-		return $this->checked;
+		return $this->getValue() === $this->getCheckedValue();
 	}
 
-	public function setChecked( bool $checked = true ) {
-		$this->checked = $checked;
+	public function setCheckedValue($value)
+	{
+		$this->setAttribute('checkedValue', $value);
+		return $this;
+	}
 
+	public function getCheckedValue()
+	{
+		return $this->getAttribute('checkedValue');
+	}
+
+	public function setUncheckedValue($value)
+	{
+		$this->setAttribute('uncheckedValue', $value);
 		return $this;
 	}
 
@@ -51,7 +65,7 @@ class CheckboxInputType extends InputType implements Choosable {
 
 		$options = $this->getOptions($value);
 
-		if ( $value === '' || $value === null || ( $this->multiple && empty( $value ) ) ) {
+		if ( $value === '' || $value === null || ( $this->isMultiple() && empty( $value ) ) ) {
 			return null;
 		}
 

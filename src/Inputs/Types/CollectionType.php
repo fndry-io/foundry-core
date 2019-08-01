@@ -15,6 +15,7 @@ class CollectionType extends ParentType {
 		HasName;
 
 	public function __construct( $name ) {
+		parent::__construct();
 		$this->setName( $name );
 		$this->setType( 'collection' );
 	}

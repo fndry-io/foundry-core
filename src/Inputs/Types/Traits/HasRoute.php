@@ -4,17 +4,16 @@ namespace Foundry\Core\Inputs\Types\Traits;
 
 trait HasRoute {
 
-	protected $route;
-
 	public function setRoute($value)
 	{
-		$this->route = $value;
+		$this->setAttribute('route', $value);
+
 		return $this;
 	}
 
 	public function getRoute() : ?string
 	{
-		return $this->route;
+		return $this->getAttribute('route');
 	}
 
 }

@@ -2,31 +2,22 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-use Foundry\Core\Inputs\Types\InputType;
-
 trait HasDescription {
-
-	/**
-	 * Description
-	 *
-	 * @var string $description
-	 */
-	protected $description;
 
 	/**
 	 * @return string
 	 */
 	public function getDescription() {
-		return $this->description;
+		return $this->getAttribute('description');
 	}
 
 	/**
 	 * @param string $description
 	 *
-	 * @return InputType
+	 * @return $this
 	 */
 	public function setDescription( string $description = null ) {
-		$this->description = $description;
+		$this->setAttribute('description', $description);
 
 		return $this;
 	}

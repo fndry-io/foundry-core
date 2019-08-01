@@ -4,31 +4,32 @@ namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\Contracts\Referencable;
+use Foundry\Core\Inputs\Types\Traits\HasAutocomplete;
+use Foundry\Core\Inputs\Types\Traits\HasEntity;
 use Foundry\Core\Inputs\Types\Traits\HasHelp;
 use Foundry\Core\Inputs\Types\Traits\HasLabel;
-use Foundry\Core\Inputs\Types\Traits\HasModel;
 use Foundry\Core\Inputs\Types\Traits\HasName;
 use Foundry\Core\Inputs\Types\Traits\HasReference;
 use Foundry\Core\Inputs\Types\Traits\HasRoute;
-use Foundry\Core\Inputs\Types\Traits\HasValue;
-use Foundry\Core\Inputs\Types\Traits\IsSortable;
+use Foundry\Core\Inputs\Types\Traits\HasSortable;
 
 /**
- * Class RelatableType
+ * Class ReferenceType
  *
- * A relatable type allows us to display what is being related
+ * A reference type allows us to display what (an Entity) is being referenced or linked
  *
  * @package Foundry\Requests\Types
  */
 class ReferenceType extends BaseType implements Referencable, Inputable {
 
 	use HasReference,
-		HasModel,
+		HasEntity,
 		HasLabel,
 		HasName,
 		HasRoute,
-		IsSortable,
-		HasHelp
+		HasSortable,
+		HasHelp,
+		HasAutocomplete
 	;
 
 	/**
@@ -43,17 +44,20 @@ class ReferenceType extends BaseType implements Referencable, Inputable {
 		string $label,
 		string $route = null
 	) {
+		parent::__construct();
 		$this->setType( 'reference' );
 		$this->setReference($reference);
 		$this->setLabel( $label ? $label : $reference );
 		$this->setRoute($route);
+
+		$this->setAutocomplete(false);
 	}
 
 	public function display( $value = null ) {
 		$reference = $this->getReference();
-		if (is_object($reference) || ($this->hasModel() && $reference = object_get($this->getModel(), $reference))) {
-			$model = $this->getModel();
-			return $reference->label . (method_exists($model, 'name') ? ' (' . $model::name() . ')' : '');
+		if (is_object($reference) || ($this->hasEntity() && $reference = object_get($this->getEntity(), $reference))) {
+			$entity = $this->getEntity();
+			return $reference->label . (method_exists($entity, 'name') ? ' (' . $entity::name() . ')' : '');
 		}
 		return null;
 	}

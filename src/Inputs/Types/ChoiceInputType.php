@@ -10,47 +10,48 @@ use Foundry\Core\Inputs\Types\Traits\HasOptions;
  * Class ChoiceType
  *
  * @package Foundry\Requests\Types
- * @todo Update ChoiceType and others of a similar nature to rather use traits for the additional properties and methods
  */
 class ChoiceInputType extends InputType implements Choosable {
 
 	use HasOptions;
 	use HasMinMax;
 
-	protected $inline;
-
 	public function __construct(
 		string $name,
 		string $label = null,
 		bool $required = true,
-		bool $expanded,
-		bool $multiple,
-		?array $options,
+		array $options = [],
+		bool $expanded = false,
+		bool $multiple = false,
 		$value = null,
 		string $position = 'full',
 		string $rules = null,
 		string $id = null,
 		string $placeholder = null
 	) {
+		$this->setValueKey('value');
+		$this->setTextKey('text');
+
 		$this->setMultiple( $multiple );
 		$this->setOptions( $options );
 		$this->setExpanded( $expanded );
 		$type = $expanded ? $multiple ? 'checkbox' : 'radio' : 'select';
 
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
+
 	}
 
-
-	public function setInline($value = true)
+	public function setInline(bool $value = true)
 	{
-		$this->inline = $value;
+		$this->setAttribute('inline', $value);
 		return $this;
 	}
 
-	public function getInline()
+	public function isInline()
 	{
-		return $this->inline;
+		$this->getAttribute('inline', false);
 	}
+
 
 	public function display($value = null) {
 

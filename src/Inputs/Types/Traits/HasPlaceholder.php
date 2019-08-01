@@ -2,8 +2,6 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-use Foundry\Core\Inputs\Types\InputType;
-
 trait HasPlaceholder {
 
 	/**
@@ -17,16 +15,16 @@ trait HasPlaceholder {
 	 * @return string
 	 */
 	public function getPlaceholder(): string {
-		return $this->placeholder;
+		return $this->getAttribute('placeholder');
 	}
 
 	/**
 	 * @param string $placeholder
 	 *
-	 * @return InputType
+	 * @return $this
 	 */
 	public function setPlaceholder( string $placeholder = null ) {
-		$this->placeholder = $placeholder;
+		$this->setAttribute('placeholder', $placeholder);
 
 		return $this;
 	}

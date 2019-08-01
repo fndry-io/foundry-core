@@ -6,6 +6,9 @@ use Foundry\Core\Inputs\Types\BaseType;
 
 trait HasChildren {
 
+	/**
+	 * @var BaseType[]
+	 */
 	protected $children = [];
 
 	/**

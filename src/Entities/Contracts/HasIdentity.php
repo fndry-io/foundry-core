@@ -2,7 +2,11 @@
 
 namespace Foundry\Core\Entities\Contracts;
 
-interface EntityInterface {
+interface HasIdentity {
 
+	/**
+	 * @return mixed
+	 */
 	public function getId();
+
 }

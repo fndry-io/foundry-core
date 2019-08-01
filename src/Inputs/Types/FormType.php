@@ -2,6 +2,7 @@
 
 namespace Foundry\Core\Inputs\Types;
 
+use Foundry\Core\Entities\Entity;
 use Foundry\Core\Inputs\Types\Contracts\Entityable;
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
@@ -10,8 +11,10 @@ use Foundry\Core\Inputs\Types\Traits\HasErrors;
 use Foundry\Core\Inputs\Types\Traits\HasId;
 use Foundry\Core\Inputs\Types\Traits\HasName;
 use Foundry\Core\Inputs\Types\Traits\HasRules;
-use Foundry\System\Entities\Entity;
+use Foundry\Core\Inputs\Types\Traits\HasTitle;
+use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 
@@ -27,20 +30,11 @@ class FormType extends ParentType implements Entityable {
 		HasId,
 		HasButtons,
 		HasErrors,
-		HasRules
+		HasRules,
+		HasTitle
 	;
 
-	protected $json_ignore = [
-		'entity',
-//		'inputs',
-		'request'
-	];
-
-	protected $action;
-
-	protected $method = 'POST';
-
-	protected $encoding;
+	protected $request;
 
 	/**
 	 * @var Entity
@@ -53,80 +47,86 @@ class FormType extends ParentType implements Entityable {
 	protected $inputs;
 
 	/**
-	 * @var bool If the form should display inline
-	 */
-	protected $inline;
-
-	/**
 	 * FormType constructor.
 	 *
 	 * @param $name
 	 * @param null $id
 	 */
 	public function __construct( $name, $id = null ) {
+		parent::__construct();
 		$this->setType( 'form' );
 		$this->setName( $name );
 		$this->setId( $id );
+		$this->setAttribute('method', 'POST');
 	}
 
-	public function setAction( $value ) {
-		$this->action = $value;
+	public function setAction( $action ) {
+		$this->setAttribute('action', $action);
 
 		return $this;
 	}
 
 	public function getAction() {
-		return $this->action;
+		return $this->getAttribute('action');
 	}
 
-	public function setMethod( $value ) {
-		$this->method = $value;
+	public function setMethod( $method ) {
+		$this->setAttribute('method', $method);
 
 		return $this;
 	}
 
 	public function getMethod() {
-		return $this->method;
+		return $this->getAttribute('method');
 	}
 
-	public function setEncoding( $value ) {
-		$this->action = $value;
+	public function setEncoding( $encoding ) {
+		$this->setAttribute('encoding', $encoding);
 
 		return $this;
 	}
 
 	public function getEncoding() {
-		$this->encoding;
+		$this->getAttribute('encoding');
 	}
 
 	/**
-	 * @param Entity|null $entity
+	 * Attach an input collection to this Form
+	 *
+	 * @param Entity $entity
 	 *
 	 * @return $this
 	 */
-	public function setEntity( Entity &$entity = null ) {
+	public function setEntity( Entity $entity = null ) {
 		$this->entity = $entity;
-
 		return $this;
 	}
 
 	/**
-	 * @return Entity
+	 * @return Entity|null
 	 */
 	public function getEntity(): Entity {
-		$this->entity;
+		return $this->entity;
 	}
 
 	public function attachInputCollection( $collection ) {
 		/**
-		 * @var Collection $collection
+		 * @var InputTypeCollection $collection
 		 */
 		$this->attachInputs( ...array_values( $collection->all() ) );
 
 		return $this;
 	}
 
+	/**
+	 * Attached a series of inputs to this Form
+	 *
+	 * @param Inputable ...$inputs
+	 *
+	 * @return $this
+	 */
 	public function attachInputs( Inputable ...$inputs ) {
+
 		if ( $this->entity ) {
 			foreach ( $inputs as &$input ) {
 				if ( ! $input->hasEntity() ) {
@@ -147,12 +147,17 @@ class FormType extends ParentType implements Entityable {
 		return $this;
 	}
 
+	/**
+	 * Get the attached inputs
+	 *
+	 * @return InputType[]
+	 */
 	public function getInputs() {
 		return $this->inputs;
 	}
 
 	/**
-	 * Get the attached input
+	 * Get an attached input
 	 *
 	 * @param $name
 	 *
@@ -169,21 +174,6 @@ class FormType extends ParentType implements Entityable {
 	}
 
 	/**
-	 * Is input fillable
-	 *
-	 * @param $key
-	 *
-	 * @return bool
-	 */
-	public function isInputFillable( $key ) {
-		if ( $input = $this->getInput( $key ) ) {
-
-		}
-
-		return true;
-	}
-
-	/**
 	 * Get the value for a given key on the entity
 	 *
 	 * @param $key
@@ -192,7 +182,7 @@ class FormType extends ParentType implements Entityable {
 	 */
 	public function getValue( $key ) {
 		if ( $this->entity ) {
-			return object_get( $this->entity, $key );
+			return $this->entity->get( $key );
 		}
 
 		return null;
@@ -214,6 +204,19 @@ class FormType extends ParentType implements Entityable {
 		}
 
 		return $this;
+	}
+
+	/**
+	 * Get the values for the form
+	 *
+	 * @return array
+	 */
+	public function getValues() {
+		$values = [];
+		foreach ($this->getInputs() as $input) {
+			Arr::set($values, $input->getName(), $input->getValue());
+		}
+		return $values;
 	}
 
 	/**
@@ -299,22 +302,29 @@ class FormType extends ParentType implements Entityable {
 	 */
 	public function setRequest( Request $request = null ) {
 		$this->request = $request;
-		if ( $request && $request->session()->has( 'errors' ) && $request->session()->get( 'errors' )->hasBag( 'default' ) ) {
+		if ( $request && $request->hasSession() && $request->session()->has( 'errors' ) && $request->session()->get( 'errors' )->hasBag( 'default' ) ) {
 			$this->setErrors( $request->session()->get( 'errors' )->getBag( 'default' ) );
 		}
 
 		return $this;
 	}
 
-
+	/**
+	 * @param bool $value
+	 *
+	 * @return $this
+	 */
 	public function setInline(bool $value = true){
-		$this->inline = true;
+		$this->setAttribute('inline', $value);
 		return $this;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function isInline()
 	{
-		return $this->inline;
+		return $this->getAttribute('inline');
 	}
 
 	/**
@@ -323,11 +333,30 @@ class FormType extends ParentType implements Entityable {
 	 * @return InputType|null
 	 */
 	public function get( $name ) {
-		if ( $this->inputs[ $name ] ) {
-			return $this->inputs[ $name ];
+		if ( $input = Arr::get($this->inputs, $name, null)) {
+			return $input;
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function jsonSerialize(): array {
+		$json = parent::jsonSerialize();
+
+		if (!empty($this->buttons)) {
+			$json['buttons'] = [];
+			foreach ($this->buttons as $button) {
+				$json['buttons'][] = $button->toArray();
+			}
+		}
+		if ($this->inputs) {
+			$json['values'] = $this->getValues();
+		}
+
+		return $json;
 	}
 
 }

@@ -2,30 +2,22 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-use Foundry\Core\Inputs\Types\InputType;
-
 trait HasLabel {
-	/**
-	 * Label to display
-	 *
-	 * @var string $label
-	 */
-	protected $label;
 
 	/**
 	 * @return string
 	 */
 	public function getLabel(): string {
-		return $this->label;
+		return $this->getAttribute('label');
 	}
 
 	/**
 	 * @param string $label
 	 *
-	 * @return InputType
+	 * @return $this
 	 */
 	public function setLabel( string $label = null ) {
-		$this->label = $label;
+		$this->setAttribute('label', $label);
 
 		return $this;
 	}

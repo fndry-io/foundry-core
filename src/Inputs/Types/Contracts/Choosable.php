@@ -4,7 +4,10 @@ namespace Foundry\Core\Inputs\Types\Contracts;
 
 interface Choosable {
 
-	public function getOptions(): array;
+	/**
+	 * @return null|array
+	 */
+	public function getOptions();
 
 	public function isExpanded() : bool;
 

@@ -3,8 +3,11 @@
 namespace Foundry\Core\Requests;
 
 use Foundry\Core\Exceptions\FormRequestException;
+use Foundry\Core\Requests\Contracts\EntityRequestInterface;
+use Foundry\Core\Requests\Contracts\InputInterface;
 use Foundry\Core\Requests\Contracts\ViewableFormRequestInterface;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Route;
 
 /**
  * FormRequestHandler
@@ -52,20 +55,41 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 		$this->forms[ $key ] = $class;
 	}
 
+
 	/**
 	 * Handle the requested form with the request
 	 *
 	 * @param $key
 	 * @param $request
-	 * @param Model|string|int $id
+	 * @param $id
 	 *
 	 * @return Response
 	 * @throws FormRequestException
 	 */
 	public function handle( $key, $request, $id = null ): Response {
-		$form = $this->getFormRequest( $key );
+		$form = $this->getFormRequest( $key, $request );
 
-		return $form->handle( $id );
+		if ($form instanceof EntityRequestInterface) {
+			$entity = $form->findEntity($id);
+			if (!$entity) {
+				return Response::error(__('Item not found'), 404);
+			} else {
+				$form->setEntity($entity);
+			}
+		}
+
+		if (!$form->authorize()) {
+			return Response::error(__('Unauthorized'), 403);
+		}
+
+		if ($form instanceof InputInterface) {
+			$response = $form->getInput()->validate($form->rules());
+			if (!$response->isSuccess()) {
+				return $response;
+			}
+		}
+
+		return $form->handle( );
 	}
 
 	/**
@@ -79,14 +103,25 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 	 * @throws FormRequestException
 	 */
 	public function view( $key, $request, $id = null ): Response {
-		$class = $this->getFormRequestClass( $key );
+		$form = $this->getFormRequest( $key, $request );
 
-		if ( $class instanceof ViewableFormRequestInterface ) {
-			$view = $class::view( $id );
+		if ($form instanceof EntityRequestInterface) {
+			$entity = $form->findEntity($id);
+			if (!$entity) {
+				return Response::error(__('Item not found'), 404);
+			} else {
+				$form->setEntity($entity);
+			}
+		}
 
-			return Response::success( $view );
+		if (!$form->authorize()) {
+			return Response::error(__('Unauthorized'), 403);
+		}
+
+		if ( $form instanceof ViewableFormRequestInterface ) {
+			return Response::success( $form->view() );
 		} else {
-			throw new FormRequestException( sprintf( 'Requested form %s must be an instance of ViewableFormRequestInterface to be viewable', $class ) );
+			throw new FormRequestException( sprintf( 'Requested form %s must be an instance of ViewableFormRequestInterface to be viewable', get_class($form) ) );
 		}
 	}
 
@@ -94,18 +129,35 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 	 * Get the form request class
 	 *
 	 * @param $key
+	 * @param Request $request
 	 *
 	 * @return FormRequest
 	 * @throws FormRequestException
 	 */
-	protected function getFormRequest( $key ): string {
+	protected function getFormRequest( $key, $request ): FormRequest {
 
 		/**
 		 * @var FormRequest $class
 		 */
 		$class = $this->getFormRequestClass( $key );
 
-		return $class::createFromGlobals();
+		/**
+		 * @var FormRequest $form
+		 */
+		$form = $request::createFrom($request, new $class);
+
+
+		if ( $form instanceof InputInterface) {
+			$form->setInput( $form->makeInput( $form->all() ) );
+		}
+
+		if ( $form instanceof EntityRequestInterface && ($id = $form->input( '_id' )) ) {
+			if ($entity = $form->findEntity( $id )) {
+				$form->setEntity($entity);
+			}
+		}
+
+		return $form;
 	}
 
 	/**
@@ -131,6 +183,19 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 	 */
 	public function forms(): array {
 		return array_keys( $this->forms );
+	}
+
+	/**
+	 * @param $uri
+	 * @param $class
+	 *
+	 * @return Route
+	 * @throws FormRequestException
+	 */
+	public function route($uri, $class) : Route
+	{
+		$this->register($class);
+		return \Illuminate\Support\Facades\Route::match(['get', 'post'],  $uri, '\Foundry\System\Http\Controllers\FormRequestController@handle')->name($class::name());
 	}
 
 }

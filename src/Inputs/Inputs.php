@@ -2,8 +2,12 @@
 
 namespace Foundry\Core\Inputs;
 
+use Foundry\Core\Inputs\Types\Contracts\Castable;
+use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Foundry\Core\Requests\Response;
 use Foundry\Core\Support\InputTypeCollection;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -13,7 +17,13 @@ use Illuminate\Support\Facades\Validator;
  *
  * @package Foundry\Core\Inputs
  */
-abstract class Inputs {
+abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
+
+
+	/**
+	 * @var array Array of rules. These will be merged into the rules from the types
+	 */
+	public $rules = [];
 
 	/**
 	 * @var array The inputs
@@ -26,23 +36,41 @@ abstract class Inputs {
 	protected $types;
 
 	/**
+	 * @var array The array of fillable input names
+	 */
+	protected $fillable = [];
+
+	/**
 	 * Inputs constructor.
 	 *
 	 * @param $inputs
 	 */
-	public function __construct($inputs) {
-		$this->fill($inputs);
-		$this->types = $this->types();
+	public function __construct($inputs = null, $types = null) {
+		if ($types == null) {
+			$this->types = $this->types();
+		} else {
+			$this->types = $types;
+		}
+		if ($this->types) {
+			$this->fillable = array_unique(array_merge($this->fillable, $this->types->names()));
+		}
+		if ($inputs) {
+			$this->fill($inputs);
+		}
 	}
 
 	/**
 	 * Validates the Inputs
 	 *
+	 * @param array|null $rules
 	 * @return Response
 	 */
-	public function validate() : Response
+	public function validate($rules = null) : Response
 	{
-		$validator = Validator::make($this->inputs(), $this->rules());
+		if (!$rules) {
+			$rules = $this->rules();
+		}
+		$validator = Validator::make($this->inputs(), $rules);
 		if ($validator->fails()) {
 			return Response::error(__('Error validating request'), 422, $validator->errors());
 		}
@@ -60,12 +88,60 @@ abstract class Inputs {
 	}
 
 	/**
+	 * Only extract the desired inputs
+	 *
+	 * @param array $inputs
+	 *
+	 * @return array
+	 */
+	public function only($inputs = [])
+	{
+		return Arr::only($this->inputs, $inputs);
+	}
+
+	/**
+	 * @param $key
+	 * @param null $default
+	 *
+	 * @return mixed
+	 */
+	public function input($key, $default = null)
+	{
+		return Arr::get($this->inputs, $key, $default);
+	}
+
+	/**
 	 * Gets the rules for the inputs
+	 *
+	 * This will also merge the input rules into the final produce list of rules
 	 *
 	 * @return array
 	 */
 	public function rules() {
-		return $this->types()->rules();
+		$rules = $this->types()->rules();
+		if ($this->rules) {
+			foreach ($this->rules as $key => $rule) {
+				if ($rules[$key]) {
+					if (!is_array($rules[$key])) {
+						$rules[$key] = array(
+							$rules[$key]
+						);
+					}
+					array_push($rules[$key], $rule);
+				} else {
+					$rules[$key] = $rule;
+				}
+			}
+		}
+		return $rules;
+	}
+
+	/**
+	 * @param $key
+	 * @param $rule
+	 */
+	public function addRule($key, $rule){
+		$this->rules[$key] = $rule;
 	}
 
 	/**
@@ -76,7 +152,33 @@ abstract class Inputs {
 	protected function cast() {
 		foreach (array_keys($this->inputs) as $key) {
 			if ($type = $this->getType($key)) {
-				settype($this->inputs[$type->getName()], $type->getCast());
+				$name = $type->getName();
+
+				if ($type instanceof Castable) {
+					$this->inputs[$name] = $type->getCastValue($this->inputs[$name]);
+				}
+				$cast = $type->getCast();
+				if ($cast === 'boolean' || $cast === 'bool') {
+					if ($this->inputs[$name] === 'true' || $this->inputs[$name] === true) {
+						$this->inputs[$name] = true;
+					} else {
+						$this->inputs[$name] = false;
+					}
+				}
+
+				if ($type instanceof Choosable && $type->isMultiple()) {
+					if ($this->inputs[$name]) {
+						$values = [];
+						foreach ($this->inputs[$name] as $value) {
+							settype($value, $cast);
+							$values[] = $value;
+						}
+						$this->inputs[$name] = $values;
+					}
+				} else {
+					settype($this->inputs[$name], $cast);
+				}
+
 			}
 		}
 	}
@@ -84,16 +186,33 @@ abstract class Inputs {
 	/**
 	 * Fill the inputs of this class
 	 *
-	 * @param $params
+	 * @param $inputs
 	 */
-	public function fill($params)
+	public function fill($inputs)
 	{
-		foreach ($params as $key => $value) {
-			if (!isset($this->fillable) || in_array($key, $this->fillable)) {
-				$this->inputs[$key] = $value;
+		if (!empty($this->fillable)) {
+			foreach ($this->fillable as $name) {
+				Arr::set($this->inputs, $name, Arr::get($inputs, $name));
 			}
+		} else {
+			$this->inputs = $inputs;
 		}
 		$this->cast();
+	}
+
+	/**
+	 * Get all the inputs
+	 *
+	 * @return array
+	 */
+	public function all()
+	{
+		return $this->inputs();
+	}
+
+	public function keys()
+	{
+		return $this->types()->keys();
 	}
 
 	/**
@@ -124,7 +243,10 @@ abstract class Inputs {
 	 */
 	public function __set( $name, $value ) {
 		if ($type = $this->getType($name)) {
-			settype($value, $type->getCast());
+			if ($type instanceof Castable) {
+				$this->inputs[$type->getName()] = $type->getCastValue($this->inputs[$type->getName()]);
+			}
+			settype($this->inputs[$type->getName()], $type->getCast());
 		}
 		$this->inputs[$name] = $value;
 	}
@@ -165,5 +287,35 @@ abstract class Inputs {
 		} else {
 			return false;
 		}
+	}
+
+	public function toArray() {
+		return $this->inputs();
+	}
+
+	public function offsetExists($offset) {
+		return isset($this->inputs[$offset]);
+	}
+
+	public function offsetGet($offset){
+		return $this->inputs[$offset];
+	}
+
+	public function offsetSet($offset, $value){
+		$this->$offset = $value;
+	}
+
+	public function offsetUnset($offset) {
+		unset($this->inputs[$offset]);
+	}
+
+	/**
+	 * Get an iterator for the items.
+	 *
+	 * @return \ArrayIterator
+	 */
+	public function getIterator()
+	{
+		return new \ArrayIterator($this->inputs);
 	}
 }

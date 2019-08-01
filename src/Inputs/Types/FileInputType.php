@@ -28,4 +28,9 @@ class FileInputType extends InputType {
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
 		$this->setAction($action);
 	}
+
+	public function setDeleteUrl($url){
+		$this->setAttribute('deleteUrl', $url);
+	}
+
 }

@@ -2,8 +2,15 @@
 
 namespace Foundry\Core\Inputs\Types\Contracts;
 
-use Illuminate\Database\Eloquent\Model;
-
+/**
+ * Interface Referencable
+ *
+ * This represents an object type which references an Entity
+ *
+ * It is typically used when attaching or linking entities to an input in a form, like an Address entity to a Contact
+ *
+ * @package Foundry\Core\Inputs\Types\Contracts
+ */
 interface Referencable {
 
 	public function hasReference(): bool;
@@ -12,9 +19,9 @@ interface Referencable {
 
 	public function getReference();
 
-	public function getModel(): Model;
+	public function getEntity();
 
-	public function hasModel(): bool;
+	public function hasEntity(): bool;
 
 	public function getRoute() : ?string;
 

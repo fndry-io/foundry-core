@@ -2,36 +2,32 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-use Foundry\Core\Inputs\Types\InputType;
-
 trait HasRequired {
-
-	/**
-	 * Required
-	 *
-	 * @var string $required
-	 */
-	protected $required;
 
 	/**
 	 * @return bool
 	 */
 	public function isRequired(): bool {
-		return $this->required;
+		return (bool) $this->getAttribute('required');
 	}
 
 	/**
 	 * @param bool $required
+	 * @param bool $rule
 	 *
-	 * @return InputType
+	 * @return $this
 	 */
-	public function setRequired( bool $required = true ) {
-		$this->required = $required;
+	public function setRequired( bool $required = true, bool $rule = true ) {
+		$this->setAttribute('required', $required);
 		$this->removeRules( 'required', 'nullable' );
-		if ( $this->required ) {
-			$this->addRule( 'required' );
-		} else {
-			$this->addRule( 'nullable' );
+		if ($rule === true) {
+			if ( $this->isRequired() ) {
+				$this->addRule( 'required' );
+			} else {
+				$this->addRule( 'nullable' );
+			}
+		} elseif ($rule) {
+			$this->addRule( $rule );
 		}
 
 		return $this;
