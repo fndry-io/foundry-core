@@ -4,6 +4,7 @@ namespace Foundry\Core\Inputs;
 
 use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\Choosable;
+use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Requests\Response;
 use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Contracts\Support\Arrayable;
@@ -166,7 +167,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 					}
 				}
 
-				if ($type instanceof Choosable && $type->isMultiple()) {
+				if ($type instanceof IsMultiple && $type->isMultiple()) {
 					if ($this->inputs[$name]) {
 						$values = [];
 						foreach ($this->inputs[$name] as $value) {
@@ -317,5 +318,17 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	public function getIterator()
 	{
 		return new \ArrayIterator($this->inputs);
+	}
+
+	/**
+	 * Create an input class from the given inputs
+	 *
+	 * @param $inputs
+	 *
+	 * @return Inputs
+	 */
+	static function fromInputs($inputs)
+	{
+		return new static($inputs);
 	}
 }

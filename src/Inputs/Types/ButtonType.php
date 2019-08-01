@@ -28,7 +28,7 @@ class ButtonType extends BaseType {
 		string $label,
 		string $action = null,
 		string $title = null,
-		array $query = [],
+		array $params = [],
 		string $method = 'GET',
 		string $id = null,
 		string $type = 'action'
@@ -37,7 +37,7 @@ class ButtonType extends BaseType {
 		$this->setLabel( $label );
 		$this->setAction( $action );
 		$this->setTitle( $title );
-		$this->setQuery( $query );
+		$this->setParams( $params );
 		$this->setMethod( $method );
 		$this->setType( $type );
 		$this->setId( $id );

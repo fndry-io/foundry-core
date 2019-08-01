@@ -233,7 +233,17 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository implement
 	}
 
 	/**
-	 * Send to the database
+	 * Persist to memory
+	 *
+	 * @param null $entity
+	 */
+	public function persist( $entity = null )
+	{
+		$this->_em->persist( $entity );
+	}
+
+	/**
+	 * Save to the database
 	 *
 	 * @param null $entity
 	 */

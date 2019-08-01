@@ -107,7 +107,7 @@ abstract class InputType extends BaseType implements Inputable {
 					if ( is_object( $rule ) ) {
 						$_rules[] = (string) $rule;
 					} elseif ( is_string( $rule ) ) {
-						if (strpos($rule, 'exists:')) {
+						if (strpos($rule, 'exists:') || $rule === 'file') {
 							continue;
 						}
 						$_rules[] = $rule;

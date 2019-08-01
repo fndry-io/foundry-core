@@ -37,4 +37,9 @@ interface IsReferenceable {
 	 * @return mixed
 	 */
 	public function detachReference();
+
+	/**
+	 * @param HasIdentity $reference
+	 */
+	public function attachReference( HasIdentity $reference);
 }

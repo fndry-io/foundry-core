@@ -3,6 +3,7 @@
 namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Contracts\Choosable;
+use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\Traits\HasMinMax;
 use Foundry\Core\Inputs\Types\Traits\HasOptions;
 
@@ -11,7 +12,7 @@ use Foundry\Core\Inputs\Types\Traits\HasOptions;
  *
  * @package Foundry\Requests\Types
  */
-class ChoiceInputType extends InputType implements Choosable {
+class ChoiceInputType extends InputType implements Choosable, IsMultiple {
 
 	use HasOptions;
 	use HasMinMax;

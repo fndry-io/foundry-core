@@ -2,6 +2,7 @@
 
 namespace Foundry\Core\Entities\Traits;
 
+use Foundry\Core\Entities\Contracts\HasIdentity;
 use Foundry\Core\Entities\Entity;
 use LaravelDoctrine\ORM\Facades\EntityManager;
 
@@ -55,6 +56,17 @@ trait Referencable {
 	 */
 	public function setReferenceType( string $reference_type ): void {
 		$this->reference_type = $reference_type;
+	}
+
+	/**
+	 * Attach a reference to the entity
+	 *
+	 * @param HasIdentity $reference
+	 */
+	public function attachReference( HasIdentity $reference)
+	{
+		$this->setReferenceType(get_class($reference));
+		$this->setReferenceId($reference->getId());
 	}
 
 	/**

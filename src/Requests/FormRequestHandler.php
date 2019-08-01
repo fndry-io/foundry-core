@@ -147,14 +147,14 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 		$form = $request::createFrom($request, new $class);
 
 
-		if ( $form instanceof InputInterface) {
-			$form->setInput( $form->makeInput( $form->all() ) );
-		}
-
 		if ( $form instanceof EntityRequestInterface && ($id = $form->input( '_id' )) ) {
 			if ($entity = $form->findEntity( $id )) {
 				$form->setEntity($entity);
 			}
+		}
+
+		if ( $form instanceof InputInterface) {
+			$form->setInput( $form->makeInput( $form->all() ) );
 		}
 
 		return $form;

@@ -1,7 +1,12 @@
 <?php
 
 namespace Foundry\Core\Inputs\Types;
+use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\Traits\HasAction;
+use Foundry\Core\Inputs\Types\Traits\HasMinMax;
+use Foundry\Core\Inputs\Types\Traits\HasMultiple;
+use Foundry\Core\Inputs\Types\Traits\HasParams;
+use Foundry\System\Entities\Folder;
 
 
 /**
@@ -9,9 +14,17 @@ use Foundry\Core\Inputs\Types\Traits\HasAction;
  *
  * @package Foundry\Requests\Types
  */
-class FileInputType extends InputType {
+class FileInputType extends InputType implements IsMultiple {
 
 	use HasAction;
+	use HasParams;
+	use HasMinMax;
+	use HasMultiple;
+
+	/**
+	 * @var Folder|null
+	 */
+	protected $folder;
 
 	public function __construct(
 		string $name,
@@ -31,6 +44,13 @@ class FileInputType extends InputType {
 
 	public function setDeleteUrl($url){
 		$this->setAttribute('deleteUrl', $url);
+		return $this;
+	}
+
+	public function setFolder(Folder $folder){
+		$this->folder = $folder;
+		$this->setParams(['folder' => $folder->getId()]);
+		return $this;
 	}
 
 }

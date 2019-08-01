@@ -9,9 +9,9 @@ trait HasMinMax {
 	 *
 	 * @return $this
 	 */
-	public function setMin( $value = null ) {
+	public function setMin( $value = null, $add_rule = true ) {
 		$this->setAttribute('min', $value);
-		if ( method_exists( $this, 'addRule' ) && $value !== null ) {
+		if ( $add_rule && method_exists( $this, 'addRule' ) && $value !== null ) {
 			$this->addRule( 'min:' . $value );
 		}
 
@@ -30,9 +30,9 @@ trait HasMinMax {
 	 *
 	 * @return $this
 	 */
-	public function setMax( $value = null ) {
+	public function setMax( $value = null, $add_rule = true ) {
 		$this->setAttribute('max', $value);
-		if ( method_exists( $this, 'addRule' ) && $value !== null ) {
+		if ( $add_rule && method_exists( $this, 'addRule' ) && $value !== null ) {
 			$this->addRule( 'max:' . $value );
 		}
 
