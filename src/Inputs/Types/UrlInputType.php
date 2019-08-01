@@ -13,11 +13,10 @@ class UrlInputType extends InputType {
 
 	use HasMinMax;
 
-	public function __construct( string $name, string $label = null, bool $required = true, $value = null, string $position = 'full', string $rules = null, string $id = null, string $placeholder = null, string $type = 'text' ) {
+	public function __construct( string $name, string $label = null, bool $required = true, $value = null, string $position = 'full', string $rules = null, string $id = null, string $placeholder = null) {
+		$type = 'url';
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
-		$this->setType('url');
 		$this->addRule('url');
 	}
-
 
 }

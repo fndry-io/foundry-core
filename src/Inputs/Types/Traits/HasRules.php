@@ -78,6 +78,7 @@ trait HasRules {
 	 */
 	public function addRule( $rule, $key = null ) {
 		if (!$this->ruleExists($rule)) {
+
 			if ( !isset($this->attributes['rules']) || empty( $this->attributes['rules'] ) ) {
 				$this->attributes['rules'] = [];
 			}

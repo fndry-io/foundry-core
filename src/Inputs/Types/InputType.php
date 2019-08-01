@@ -101,15 +101,16 @@ abstract class InputType extends BaseType implements Inputable {
 			$rules  = $this->getRules();
 			if ( $rules ) {
 				foreach ( $rules as $rule ) {
-					if ( is_callable( $rule ) ) {
+					if ( $rule instanceof \Closure ) {
 						continue;
 					}
 					if ( is_object( $rule ) ) {
 						$_rules[] = (string) $rule;
 					} elseif ( is_string( $rule ) ) {
-						if (strpos($rule, 'exists:') === false) {
-							$_rules[] = $rule;
+						if (strpos($rule, 'exists:')) {
+							continue;
 						}
+						$_rules[] = $rule;
 					}
 				}
 				$_rules = implode( '|', $_rules );
