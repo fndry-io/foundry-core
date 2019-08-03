@@ -2,10 +2,13 @@
 
 namespace Foundry\Core\Requests;
 
+use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Arr;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Foundry Simple Response Object
@@ -156,6 +159,41 @@ class Response {
 	public function toJsonResponse()
 	{
 		return response()->json($this->jsonSerialize());
+	}
+
+	/**
+	 * @param \Throwable $exception
+	 *
+	 * @return Response
+	 */
+	static function fromException(\Throwable $exception) : Response
+	{
+		$error = $exception->getMessage();
+		$code = $exception->getCode();
+		$data = null;
+
+		if ($exception instanceof ValidationException) {
+			$error = $exception->getMessage();
+			$code = $exception->getCode();
+			$data = $exception->errors();
+		} else if ($exception instanceof HttpException) {
+			$error = $exception->getMessage();
+			$code = $exception->getStatusCode();
+		} else if ($exception instanceof AuthenticationException){
+			$code = 401;
+		} else if ($exception instanceof AuthorizationException){
+			$code = 403;
+		}
+
+		if (config('app.debug') && $code !== 422) {
+			$data = [
+				'line' => $exception->getLine(),
+				'file' => $exception->getFile(),
+				'trace' => $exception->getTrace()
+			];
+		}
+
+		return static::error($error, $code, $data);
 	}
 
 }

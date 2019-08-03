@@ -17,25 +17,14 @@ interface FormRequestHandler {
 	public function register( $class );
 
 	/**
-	 * Handle the requested form with the request
-	 *
-	 * @param $name
-	 * @param $request
-	 * @param $id
-	 *
-	 * @return Response
-	 */
-	public function handle( $name, $request, $id = null ): Response;
-
-	/**
-	 * Generate the form view object for a requested form and the request
+	 * Generate the form and return it
 	 *
 	 * @param $name
 	 * @param $request
 	 *
-	 * @return Response
+	 * @return FormRequest
 	 */
-	public function view( $name, $request ): Response;
+	public function form( $name, $request ): FormRequest;
 
 	/**
 	 * The list of registered forms

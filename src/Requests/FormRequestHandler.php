@@ -3,11 +3,9 @@
 namespace Foundry\Core\Requests;
 
 use Foundry\Core\Exceptions\FormRequestException;
-use Foundry\Core\Requests\Contracts\EntityRequestInterface;
-use Foundry\Core\Requests\Contracts\InputInterface;
-use Foundry\Core\Requests\Contracts\ViewableFormRequestInterface;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
+use Foundry\Core\Contracts\FormRequestHandler as FormRequestHandlerInterface;
 
 /**
  * FormRequestHandler
@@ -19,7 +17,7 @@ use Illuminate\Routing\Route;
  *
  * @package Foundry\Requests
  */
-class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
+class FormRequestHandler implements FormRequestHandlerInterface {
 
 	protected $forms;
 
@@ -55,76 +53,6 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 		$this->forms[ $key ] = $class;
 	}
 
-
-	/**
-	 * Handle the requested form with the request
-	 *
-	 * @param $key
-	 * @param $request
-	 * @param $id
-	 *
-	 * @return Response
-	 * @throws FormRequestException
-	 */
-	public function handle( $key, $request, $id = null ): Response {
-		$form = $this->getFormRequest( $key, $request );
-
-		if ($form instanceof EntityRequestInterface) {
-			$entity = $form->findEntity($id);
-			if (!$entity) {
-				return Response::error(__('Item not found'), 404);
-			} else {
-				$form->setEntity($entity);
-			}
-		}
-
-		if (!$form->authorize()) {
-			return Response::error(__('Unauthorized'), 403);
-		}
-
-		if ($form instanceof InputInterface) {
-			$response = $form->getInput()->validate($form->rules());
-			if (!$response->isSuccess()) {
-				return $response;
-			}
-		}
-
-		return $form->handle( );
-	}
-
-	/**
-	 * Generate the form view object for a requested form and the request
-	 *
-	 * @param $key
-	 * @param $request
-	 * @param $id
-	 *
-	 * @return Response
-	 * @throws FormRequestException
-	 */
-	public function view( $key, $request, $id = null ): Response {
-		$form = $this->getFormRequest( $key, $request );
-
-		if ($form instanceof EntityRequestInterface) {
-			$entity = $form->findEntity($id);
-			if (!$entity) {
-				return Response::error(__('Item not found'), 404);
-			} else {
-				$form->setEntity($entity);
-			}
-		}
-
-		if (!$form->authorize()) {
-			return Response::error(__('Unauthorized'), 403);
-		}
-
-		if ( $form instanceof ViewableFormRequestInterface ) {
-			return Response::success( $form->view() );
-		} else {
-			throw new FormRequestException( sprintf( 'Requested form %s must be an instance of ViewableFormRequestInterface to be viewable', get_class($form) ) );
-		}
-	}
-
 	/**
 	 * Get the form request class
 	 *
@@ -134,7 +62,7 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 	 * @return FormRequest
 	 * @throws FormRequestException
 	 */
-	protected function getFormRequest( $key, $request ): FormRequest {
+	public function form( $key, $request ): FormRequest {
 
 		/**
 		 * @var FormRequest $class
@@ -144,18 +72,7 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 		/**
 		 * @var FormRequest $form
 		 */
-		$form = $request::createFrom($request, new $class);
-
-
-		if ( $form instanceof EntityRequestInterface && ($id = $form->input( '_id' )) ) {
-			if ($entity = $form->findEntity( $id )) {
-				$form->setEntity($entity);
-			}
-		}
-
-		if ( $form instanceof InputInterface) {
-			$form->setInput( $form->makeInput( $form->all() ) );
-		}
+		$form = $class::createFrom($request, new $class);
 
 		return $form;
 	}
@@ -195,7 +112,7 @@ class FormRequestHandler implements \Foundry\Core\Contracts\FormRequestHandler {
 	public function route($uri, $class) : Route
 	{
 		$this->register($class);
-		return \Illuminate\Support\Facades\Route::match(['get', 'post'],  $uri, '\Foundry\System\Http\Controllers\FormRequestController@handle')->name($class::name());
+		return \Illuminate\Support\Facades\Route::match(['get', 'post'],  $uri, '\Foundry\System\Http\Controllers\FormRequestController@resolve')->name($class::name());
 	}
 
 }

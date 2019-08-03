@@ -6,38 +6,20 @@ use Foundry\Core\Inputs\Types\FormType;
 use Foundry\Core\Requests\Contracts\EntityRequestInterface;
 use Foundry\Core\Requests\Contracts\FormRequestInterface;
 use Foundry\Core\Requests\Contracts\InputInterface;
-use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
-use phpDocumentor\Reflection\Types\Boolean;
 
 /**
  * Class FormRequest
  *
  * @package Foundry\Requests
  */
-abstract class FormRequest extends LaravelFormRequest implements FormRequestInterface {
-
-
-	/**
-	 * The name of the Request for registering it in the FormRequest Container
-	 *
-	 * @return String
-	 */
-	abstract static function name(): String;
-
-	/**
-	 * @return bool
-	 */
-	abstract public function authorize();
-
-	/**
-	 * Handle the request
-	 *
-	 * @return Response
-	 */
-	abstract public function handle(): Response;
+abstract class FormRequest extends BaseFormRequest implements FormRequestInterface {
 
 	/**
 	 * Build a form object for this form request
+	 *
+	 * If an entity is supplied through the route {_entity} it will be set into the form here
+	 *
+	 * All inputs from the request are also passed into the form using the the keys (names) of the inputs in the Input Class
 	 *
 	 * @return FormType
 	 */
@@ -46,12 +28,10 @@ abstract class FormRequest extends LaravelFormRequest implements FormRequestInte
 		$form   = new FormType( static::name() );
 		$params = [];
 
-		if ($this instanceof EntityRequestInterface) {
-			if ($entity = $this->getEntity()) {
-				$params['_entity'] = $entity->getId();
-			}
+		if ($this instanceof EntityRequestInterface && ($entity = $this->getEntity())) {
 
-			$form->setEntity( $this->getEntity() );
+			$params['_entity'] = $entity->getId();
+			$form->setEntity( $entity );
 		}
 
 		if ( $this instanceof InputInterface) {
