@@ -2,6 +2,7 @@
 
 namespace Foundry\Core\Requests;
 
+use Closure;
 use Foundry\Core\Requests\Contracts\EntityRequestInterface;
 use Foundry\Core\Requests\Contracts\InputInterface;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;
@@ -9,6 +10,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class FormRequest
+ *
+ * The class is responsible for ensuring we inject the entity specified through the route and control the input parameters.
+ *
+ * We create a Inputs classes to ensure that we get exactly what we want and that the values are correctly cast to the
+ * right types
  *
  * @package Foundry\Requests
  */
@@ -28,37 +34,29 @@ abstract class BaseFormRequest extends LaravelFormRequest {
 		return [];
 	}
 
-	/**
-	 * This is overridden here to support a standard approach to attaching an entity to the request through {_entity}
-	 *
-	 * @param  \Illuminate\Http\Request  $from
-	 * @param  \Illuminate\Http\Request|null  $to
-	 *
-	 * @return LaravelFormRequest
-	 */
-	public static function createFrom( \Illuminate\Http\Request $from, $to = null ) {
-		$request = parent::createFrom( $from, $to );
+	public function setRouteResolver( Closure $callback ) {
+		parent::setRouteResolver( $callback );
 
 		/**
 		 * Get the entity associated with the request
 		 */
-		if (($id = $request->route('_entity')) && ($request instanceof EntityRequestInterface)) {
-			$entity = $request->findEntity($id);
+		if (($id = $this->route('_entity')) && ($this instanceof EntityRequestInterface)) {
+			$entity = $this->findEntity($id);
 			if (!$entity) {
 				throw new NotFoundHttpException(__('Item not found'));
 			} else {
-				$request->setEntity($entity);
+				$this->setEntity($entity);
 			}
 		}
 
 		/**
 		 * Set the Input
 		 */
-		if ( $request instanceof InputInterface) {
-			$request->setInput( $request->makeInput( $request->all() ) );
+		if ( $this instanceof InputInterface) {
+			$this->setInput( $this->makeInput( $this->all() ) );
 		}
 
-		return $request;
+		return $this;
 	}
 
 	/**
