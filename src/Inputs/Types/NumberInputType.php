@@ -14,6 +14,8 @@ class NumberInputType extends TextInputType {
 
 	use HasMinMax;
 
+	protected $cast = 'int';
+
 	public function __construct(
 		string $name,
 		string $label = null,
@@ -39,5 +41,15 @@ class NumberInputType extends TextInputType {
 		return $this->getAttribute('decimals');
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getCast(): string {
+		if ($this->getDecimals()) {
+			return 'float';
+		} else {
+			return 'int';
+		}
+	}
 
 }

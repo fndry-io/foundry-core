@@ -82,7 +82,7 @@ abstract class InputType extends BaseType implements Inputable {
 		$field = parent::jsonSerialize();
 
 		//set the value
-		if ( ! $field['value'] ) {
+		if ( $field['value'] === null ) {
 
 			if ($this instanceof Referencable && $this->hasReference()) {
 				$field['value'] = $this->getReference( )->toArray();
@@ -90,7 +90,7 @@ abstract class InputType extends BaseType implements Inputable {
 				$field['value'] = $this->getEntityValue( $this->getName() );
 			}
 
-			if (empty($field['value']) && $default = $this->getDefault()) {
+			if ($field['value'] === null && $default = $this->getDefault()) {
 				$field['value'] = $default;
 			}
 		}
