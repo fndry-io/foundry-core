@@ -169,12 +169,26 @@ class Response {
 	static function fromException(\Throwable $exception) : Response
 	{
 		$error = $exception->getMessage();
-		$code = $exception->getCode();
+
+		if (isset($exception->status)) {
+			$code = $exception->status;
+		} else {
+			$code = $exception->getCode();
+		}
+
 		$data = null;
+
+		if (config('app.debug')) {
+			$data = [
+				'line' => $exception->getLine(),
+				'file' => $exception->getFile(),
+				'trace' => $exception->getTrace()
+			];
+		}
 
 		if ($exception instanceof ValidationException) {
 			$error = $exception->getMessage();
-			$code = $exception->getCode();
+			$code = 422;
 			$data = $exception->errors();
 		} else if ($exception instanceof HttpException) {
 			$error = $exception->getMessage();
@@ -183,14 +197,6 @@ class Response {
 			$code = 401;
 		} else if ($exception instanceof AuthorizationException){
 			$code = 403;
-		}
-
-		if (config('app.debug') && $code !== 422) {
-			$data = [
-				'line' => $exception->getLine(),
-				'file' => $exception->getFile(),
-				'trace' => $exception->getTrace()
-			];
 		}
 
 		return static::error($error, $code, $data);
