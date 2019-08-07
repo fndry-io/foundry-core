@@ -35,7 +35,7 @@ abstract class FormRequest extends BaseFormRequest implements FormRequestInterfa
 		}
 
 		if ( $this instanceof InputInterface) {
-			$form->attachInputCollection( $this->getInput()->types() );
+			$form->attachInputCollection( $this->getInput()->getTypes() );
 			$form->setValues( $this->only( $this->getInput()->keys() ) );
 		}
 		$form->setAction( route( $this::name(), $params , false) );
