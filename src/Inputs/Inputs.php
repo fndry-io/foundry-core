@@ -48,7 +48,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 */
 	public function __construct($inputs = null, $types = null) {
 		if ($types == null) {
-			$this->types = $this->types($inputs);
+			$this->types = $this->types();
 		} else {
 			$this->types = $types;
 		}
