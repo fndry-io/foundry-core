@@ -127,21 +127,18 @@ class FormType extends ParentType implements Entityable {
 	 */
 	public function attachInputs( Inputable ...$inputs ) {
 
-		if ( $this->entity ) {
-			foreach ( $inputs as &$input ) {
-				if ( ! $input->hasEntity() ) {
-					/**
-					 * @var InputType $input
-					 */
-					$input->setEntity( $this->entity );
-				}
-			}
-		}
 		foreach ( $inputs as &$input ) {
 			/**
 			 * @var InputType $input
 			 */
 			$this->inputs[ $input->getName() ] = $input;
+
+			if ( $this->entity && ! $input->hasEntity() ) {
+				/**
+				 * @var InputType $input
+				 */
+				$input->setEntity( $this->entity );
+			}
 		}
 
 		return $this;

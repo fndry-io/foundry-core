@@ -192,8 +192,10 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	public function fill($inputs)
 	{
 		if (!empty($this->fillable)) {
-			foreach ($this->fillable as $name) {
-				Arr::set($this->inputs, $name, Arr::get($inputs, $name));
+			foreach ($inputs as $name => $value) {
+				if ($this->isFillable($name)) {
+					Arr::set($this->inputs, $name, Arr::get($inputs, $name));
+				}
 			}
 		} else {
 			$this->inputs = $inputs;

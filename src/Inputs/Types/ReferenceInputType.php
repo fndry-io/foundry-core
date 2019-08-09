@@ -28,6 +28,7 @@ class ReferenceInputType extends TextInputType implements Referencable, Castable
 	use HasRoute;
 	use HasParams;
 
+	protected $cast = 'int';
 
 	/**
 	 * Reference constructor
@@ -61,6 +62,14 @@ class ReferenceInputType extends TextInputType implements Referencable, Castable
 		$this->setUrl( $url );
 		$this->setQueryParam( $query_param );
 		$this->setReference($reference);
+	}
+
+	public function jsonSerialize(): array {
+		//If we have been given a reference, then also add it to the output to ensure it is selected on load
+		if (empty($this->getOptions()) && $ref = $this->getReferenceObject()) {
+			$this->setOptions([$ref->toArray()]);
+		}
+		return parent::jsonSerialize();
 	}
 
 	public function display( $value = null ) {
