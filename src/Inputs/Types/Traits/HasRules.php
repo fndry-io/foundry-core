@@ -2,6 +2,7 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
+use Foundry\Core\Inputs\Types\ReferenceInputType;
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\Rules\In;
@@ -25,7 +26,7 @@ trait HasRules {
 		if ( isset( $this->max ) && $this->max !== null ) {
 			$this->addRule( 'max:' . $this->max );
 		}
-		if ( method_exists( $this, 'getOptions' ) ) {
+		if ( method_exists( $this, 'getOptions' ) && !$this instanceof ReferenceInputType) {
 			$options = $this->getOptions();
 			if ( is_array( $options ) && !empty($options) ) {
 
