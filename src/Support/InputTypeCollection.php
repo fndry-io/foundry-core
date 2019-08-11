@@ -7,6 +7,7 @@ use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\FormType;
 use Foundry\Core\Inputs\Types\InputType;
 use Foundry\Core\Entities\Entity;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
 /**
@@ -171,6 +172,16 @@ class InputTypeCollection extends Collection {
 			$items[] = $item;
 		}
 		return $items;
+	}
+
+	public function values() {
+		$values = [];
+
+		foreach ($this->items as $item) {
+			Arr::set($values, $item->getName(), $item->getValue());
+		}
+
+		return $values;
 	}
 
 	/**

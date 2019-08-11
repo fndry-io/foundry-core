@@ -44,9 +44,9 @@ trait HasValue {
 			if ($this instanceof IsMultiple && $this->isMultiple()) {
 				if ($value) {
 					$values = [];
-					foreach ($values as $value) {
-						static::castValue($value, $this->getCast());
-						$values[] = $value;
+					foreach ($value as $_value) {
+						static::castValue($_value, $this->getCast());
+						$values[] = $_value;
 					}
 					$value = $values;
 				}

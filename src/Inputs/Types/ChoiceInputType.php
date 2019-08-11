@@ -2,8 +2,10 @@
 
 namespace Foundry\Core\Inputs\Types;
 
+use Foundry\Core\Entities\Entity;
 use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
+use Foundry\Core\Inputs\Types\Traits\HasButtons;
 use Foundry\Core\Inputs\Types\Traits\HasMinMax;
 use Foundry\Core\Inputs\Types\Traits\HasOptions;
 
@@ -14,6 +16,7 @@ use Foundry\Core\Inputs\Types\Traits\HasOptions;
  */
 class ChoiceInputType extends InputType implements Choosable, IsMultiple {
 
+	use HasButtons;
 	use HasOptions;
 	use HasMinMax;
 
@@ -40,6 +43,13 @@ class ChoiceInputType extends InputType implements Choosable, IsMultiple {
 
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
 
+	}
+
+	public function setValue( $value = null ) {
+		if ($value instanceof Entity) {
+			$value = $value->getId();
+		}
+		return parent::setValue($value);
 	}
 
 	public function setInline(bool $value = true)
