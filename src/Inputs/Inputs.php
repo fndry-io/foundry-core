@@ -5,6 +5,7 @@ namespace Foundry\Core\Inputs;
 use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
+use Foundry\Core\Inputs\Types\Traits\HasValue;
 use Foundry\Core\Requests\Response;
 use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Contracts\Support\Arrayable;
@@ -157,29 +158,21 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 
 				if ($type instanceof Castable) {
 					$this->inputs[$name] = $type->getCastValue($this->inputs[$name]);
-				}
-				$cast = $type->getCast();
-				if ($cast === 'boolean' || $cast === 'bool') {
-					if ($this->inputs[$name] === 'true' || $this->inputs[$name] === true) {
-						$this->inputs[$name] = true;
-					} else {
-						$this->inputs[$name] = false;
-					}
-				}
-
-				if ($type instanceof IsMultiple && $type->isMultiple()) {
-					if ($this->inputs[$name]) {
-						$values = [];
-						foreach ($this->inputs[$name] as $value) {
-							settype($value, $cast);
-							$values[] = $value;
-						}
-						$this->inputs[$name] = $values;
-					}
 				} else {
-					settype($this->inputs[$name], $cast);
+					$cast = $type->getCast();
+					if ($type instanceof IsMultiple && $type->isMultiple()) {
+						if ($this->inputs[$name]) {
+							$values = [];
+							foreach ($this->inputs[$name] as $value) {
+								HasValue::castValue($value, $cast);
+								$values[] = $value;
+							}
+							$this->inputs[$name] = $values;
+						}
+					} else {
+						HasValue::castValue($this->inputs[$name], $cast);
+					}
 				}
-
 			}
 		}
 	}
@@ -192,10 +185,8 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	public function fill($inputs)
 	{
 		if (!empty($this->fillable)) {
-			foreach ($inputs as $name => $value) {
-				if ($this->isFillable($name)) {
-					Arr::set($this->inputs, $name, Arr::get($inputs, $name));
-				}
+			foreach ($this->fillable as $name) {
+				Arr::set($this->inputs, $name, Arr::get($inputs, $name));
 			}
 		} else {
 			$this->inputs = $inputs;

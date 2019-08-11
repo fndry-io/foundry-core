@@ -28,11 +28,7 @@ trait HasEntity {
 	public function setEntity( Entity &$entity = null ) {
 		$this->entity = $entity;
 		$value = $this->entity->get($this->getName());
-		if ($value instanceof Entity) {
-			$this->setValue($value->toArray());
-		} else {
-			$this->setValue($value);
-		}
+		$this->setValue($value);
 		return $this;
 	}
 

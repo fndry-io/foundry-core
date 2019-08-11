@@ -2,6 +2,7 @@
 
 namespace Foundry\Core\Inputs\Types;
 
+use Foundry\Core\Entities\Entity;
 use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
@@ -64,10 +65,21 @@ class ReferenceInputType extends TextInputType implements Referencable, Castable
 		$this->setReference($reference);
 	}
 
+
+	public function setValue( $value = null ) {
+		if ($value instanceof Entity) {
+			$this->setReference($value);
+			$value = $value->getId();
+		}
+		return parent::setValue($value);
+	}
+
 	public function jsonSerialize(): array {
 		//If we have been given a reference, then also add it to the output to ensure it is selected on load
-		if (empty($this->getOptions()) && $ref = $this->getReferenceObject()) {
-			$this->setOptions([$ref->toArray()]);
+		if ($ref = $this->getReferenceObject()) {
+			if (empty($this->getOptions())) {
+				$this->setOptions([$ref->toArray()]);
+			}
 		}
 		return parent::jsonSerialize();
 	}

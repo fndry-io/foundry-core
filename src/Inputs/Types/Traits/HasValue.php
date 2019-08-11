@@ -2,6 +2,8 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
+use Foundry\Core\Inputs\Types\Contracts\Castable;
+use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\InputType;
 use Foundry\Core\Entities\Entity;
 use Illuminate\Database\Eloquent\Collection;
@@ -36,11 +38,25 @@ trait HasValue {
 	 * @return $this
 	 */
 	public function setValue( $value = null ) {
+		if ($this instanceof Castable) {
+			$value = $this->getCastValue($value);
+		} else {
+			if ($this instanceof IsMultiple && $this->isMultiple()) {
+				if ($value) {
+					$values = [];
+					foreach ($values as $value) {
+						static::castValue($value, $this->getCast());
+						$values[] = $value;
+					}
+					$value = $values;
+				}
+			} else {
+				static::castValue($values, $this->getCast());
+			}
+		}
 		$this->setAttribute('value', $value);
-
 		return $this;
 	}
-
 
 	public function setDefault($value)
 	{
@@ -105,6 +121,40 @@ trait HasValue {
 		return $value;
 	}
 
+	/**
+	 * Cast the value to the given type
+	 *
+	 * This will also clean up the value to avoid incorrect castings, like "" or null to 0.
+	 *
+	 * @param $value
+	 * @param $cast
+	 */
+	static public function castValue(&$value, $cast)
+	{
+		if ($value === "") {
+			switch ($cast) {
+				case 'bool':
+				case 'boolean':
+				case 'int':
+				case 'integer':
+				case 'float':
+				case 'double':
+					$value = null;
+					break;
+			}
 
+		}
+		if ($value === null) {
+			return;
+		}
+		if ($cast === 'boolean' || $cast === 'bool') {
+			if ($value === 'true' || $value === true) {
+				$value = true;
+			} else {
+				$value = false;
+			}
+		}
+		settype($value, $cast);
+	}
 
 }
