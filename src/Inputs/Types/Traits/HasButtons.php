@@ -41,4 +41,19 @@ trait HasButtons {
 		return ! empty( $this->buttons );
 	}
 
+	/**
+	 * Allows you to set the params attached to the buttons
+	 *
+	 * @param $params
+	 *
+	 * @return $this
+	 */
+	public function setButtonParams($params)
+	{
+		for ($i = 0; $i < count($this->buttons); $i++) {
+			$this->buttons[$i]->setParams($params);
+		}
+		return $this;
+	}
+
 }
