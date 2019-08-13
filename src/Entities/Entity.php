@@ -38,13 +38,14 @@ abstract class Entity implements Arrayable {
 		$hidden = $this->getHidden();
 		$visible = $this->getVisible();
 
-		foreach ($this as $key => $value) {
-			if (!in_array($key, $hidden) && in_array($key, $visible)) {
-				if ($value instanceof Arrayable) {
-					$data[$key] = $value->toArray();
-				} else {
-					$data[$key] = $value;
-				}
+		$keys = array_diff($visible, $hidden);
+
+		foreach ($keys as $key) {
+			$value = $this->__get($key);
+			if ($value instanceof Arrayable) {
+				$data[$key] = $value->toArray();
+			} else {
+				$data[$key] = $value;
 			}
 		}
 

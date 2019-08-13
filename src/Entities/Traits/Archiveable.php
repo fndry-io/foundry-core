@@ -24,9 +24,9 @@ trait Archiveable
 	}
 
 	/**
-	 * @return Carbon
+	 * @return Carbon|null
 	 */
-	public function getArchivedAt(): Carbon {
+	public function getArchivedAt() {
 		return $this->archived_at;
 	}
 
