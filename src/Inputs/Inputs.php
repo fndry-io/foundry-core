@@ -149,28 +149,28 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	/**
 	 * Casts the input values to their correct php variable types
 	 *
-	 * @return mixed
+	 * @param $inputs
 	 */
-	protected function cast() {
-		foreach (array_keys($this->inputs) as $key) {
+	public function cast(&$inputs) {
+		foreach (array_keys($inputs) as $key) {
 			if ($type = $this->getType($key)) {
 				$name = $type->getName();
 
 				if ($type instanceof Castable) {
-					$this->inputs[$name] = $type->getCastValue($this->inputs[$name]);
+					$inputs[$name] = $type->getCastValue($inputs[$name]);
 				} else {
 					$cast = $type->getCast();
 					if ($type instanceof IsMultiple && $type->isMultiple()) {
-						if ($this->inputs[$name]) {
+						if ($inputs[$name]) {
 							$values = [];
-							foreach ($this->inputs[$name] as $value) {
+							foreach ($inputs[$name] as $value) {
 								HasValue::castValue($value, $cast);
 								$values[] = $value;
 							}
-							$this->inputs[$name] = $values;
+							$inputs[$name] = $values;
 						}
 					} else {
-						HasValue::castValue($this->inputs[$name], $cast);
+						HasValue::castValue($inputs[$name], $cast);
 					}
 				}
 			}
@@ -191,7 +191,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 		} else {
 			$this->inputs = $inputs;
 		}
-		$this->cast();
+		$this->cast($this->inputs);
 	}
 
 	/**
