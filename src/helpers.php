@@ -232,3 +232,23 @@ if ( ! function_exists( 'convert_to_moment_js' ) ) {
 		return $momentFormat;
 	}
 }
+
+
+if ( ! function_exists( 'get_entity_class' ) ) {
+	/**
+	 * Get the class name of a given entity
+	 *
+	 * In Doctrine, relationships are instances of proxy classes
+	 *
+	 * @param  $entity
+	 *
+	 * @return string
+	 */
+	function get_entity_class( $entity ) {
+		if ($entity instanceof \Doctrine\ORM\Proxy\Proxy) {
+			return get_parent_class($entity);
+		} else {
+			return get_class($entity);
+		}
+	}
+}

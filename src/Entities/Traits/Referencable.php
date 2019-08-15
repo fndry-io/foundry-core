@@ -65,7 +65,7 @@ trait Referencable {
 	 */
 	public function attachReference( HasIdentity $reference)
 	{
-		$this->setReferenceType(get_class($reference));
+		$this->setReferenceType(get_entity_class($reference));
 		$this->setReferenceId($reference->getId());
 	}
 
