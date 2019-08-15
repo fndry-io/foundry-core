@@ -22,8 +22,11 @@ trait Visible {
 		if (!isset($this->visible)) {
 			$this->visible = [];
 		}
-		if (!in_array($name, $this->visible)) {
-			$this->visible[] = $name;
+		$name = (array) $name;
+		foreach($name as $_name) {
+			if (!in_array($_name, $this->visible)) {
+				$this->visible[] = $_name;
+			}
 		}
 	}
 
