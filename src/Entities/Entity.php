@@ -5,6 +5,7 @@ namespace Foundry\Core\Entities;
 use Foundry\Core\Entities\Traits\Fillable;
 use Foundry\Core\Entities\Traits\Visible;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 /**
@@ -63,9 +64,7 @@ abstract class Entity implements Arrayable {
 	{
 		$data = [];
 		foreach ($fields as $key) {
-			if (isset($this->$key)) {
-				$data[$key] = $this->$key;
-			}
+			Arr::set($data, $key, $this->__get($key));
 		}
 		return $data;
 	}
@@ -83,7 +82,7 @@ abstract class Entity implements Arrayable {
 		if (method_exists($this, 'get' . Str::ucfirst(Str::camel($name)))) {
 			return call_user_func([$this, 'get' . Str::ucfirst(Str::camel($name))]);
 		} else {
-			return $this->$name;
+			return $this->get($name);
 		}
 	}
 
@@ -103,34 +102,45 @@ abstract class Entity implements Arrayable {
 		}
 	}
 
+	/**
+	 * @param $key
+	 * @param null $default
+	 *
+	 * @return $this|mixed|null
+	 */
 	public function get($key, $default = null) {
 		if (is_null($key) || trim($key) == '') {
 			return $this;
 		}
 
-		$parts = explode('.', $key);
-		$count = count($parts);
-		for ($i=0;$i<$count;$i++) {
-			$end = $count === ($i + 1);
-			if (isset($this->{$parts[$i]})) {
-				$item = $this->{$parts[$i]};
+		if (strpos($key, '.') !== false) {
+			$parts = explode('.', $key);
+			$count = count($parts);
+			for ($i=0;$i<$count;$i++) {
+				$end = $count === ($i + 1);
+				if (isset($this->{$parts[$i]})) {
+					$item = $this->{$parts[$i]};
 
-				if ($end) {
-					return $item;
-				}
+					if ($end) {
+						return $item;
+					}
 
-				if (empty($item)){
-					return $item;
-				}
+					if (empty($item)){
+						return $item;
+					}
 
-				if ($item instanceof Entity) {
-					array_shift($parts);
-					return $item->get(implode('.', $parts), $default);
-				} else {
-					return $item;
+					if ($item instanceof Entity) {
+						array_shift($parts);
+						return $item->get(implode('.', $parts), $default);
+					} else {
+						return $item;
+					}
 				}
 			}
+		} elseif (isset($this->{$key})) {
+			return $this->{$key};
 		}
+
 
 		return $default;
 	}

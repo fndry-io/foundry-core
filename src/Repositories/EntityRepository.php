@@ -8,7 +8,9 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Foundry\Core\Entities\Contracts\IsArchiveable;
 use Foundry\Core\Entities\Contracts\IsSoftDeletable;
+use Foundry\Core\Entities\Entity;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Facades\Request;
 
 /**
@@ -48,9 +50,9 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository implement
 	 * @param int $page
 	 * @param int $perPage
 	 *
-	 * @return LengthAwarePaginator
+	 * @return Paginator
 	 */
-	public function filter(\Closure $builder = null, int $page = 1, int $perPage = 20) : LengthAwarePaginator
+	public function filter(\Closure $builder = null, int $page = 1, int $perPage = 20) : Paginator
 	{
 		$query = $this->_em->createQueryBuilder()->from($this->getEntityName(), $this->getAlias());
 		if ($builder) {
@@ -76,9 +78,9 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository implement
 	 * @param $page
 	 * @param $perPage
 	 *
-	 * @return LengthAwarePaginator
+	 * @return Paginator
 	 */
-	protected function paginate( $query, $page, $perPage ): LengthAwarePaginator
+	protected function paginate( $query, $page, $perPage ): Paginator
 	{
 		$offset = ( $page - 1 ) * $perPage;
 		$query->setFirstResult( $offset )->setMaxResults( $perPage );
@@ -86,15 +88,7 @@ abstract class EntityRepository extends \Doctrine\ORM\EntityRepository implement
 		$results = new Paginator( $query, $fetchJoinCollection = true );
 		$results->setUseOutputWalkers( false );
 
-		$items = [];
-		foreach ( $results->getIterator() as $item ) {
-			$items[] = $item;
-		}
-
-		$paginator = new \Illuminate\Pagination\LengthAwarePaginator( $items, count( $results ), $perPage, $page );
-		$paginator->setPath(Request::fullUrl());
-
-		return $paginator;
+		return $results;
 	}
 
 	/**

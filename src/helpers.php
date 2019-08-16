@@ -252,3 +252,21 @@ if ( ! function_exists( 'get_entity_class' ) ) {
 		}
 	}
 }
+
+if (! function_exists('object_extract')) {
+	/**
+	 * Extract keys from an object using "dot" notation.
+	 *
+	 * @param  object  $object
+	 * @param  array $keys
+	 * @return mixed
+	 */
+	function object_extract($object, $keys)
+	{
+		$return = [];
+		foreach ($keys as $key) {
+			\Illuminate\Support\Arr::set($return, $key, object_get($object, $key));
+		}
+		return $return;
+	}
+}

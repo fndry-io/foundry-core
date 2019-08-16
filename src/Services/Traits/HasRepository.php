@@ -2,6 +2,7 @@
 
 namespace Foundry\Core\Services\Traits;
 
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Foundry\Core\Entities\Entity;
 use Foundry\Core\Repositories\EntityRepository;
 use Foundry\Core\Repositories\RepositoryInterface;
@@ -34,9 +35,9 @@ trait HasRepository {
 	 * @param int $page
 	 * @param int $perPage
 	 *
-	 * @return LengthAwarePaginator
+	 * @return Paginator
 	 */
-	public function browse(\Closure $builder = null, $page = 1, $perPage = 20) : LengthAwarePaginator
+	public function browse(\Closure $builder = null, $page = 1, $perPage = 20) : Paginator
 	{
 		return $this->getRepository()->filter($builder, $page, $perPage);
 	}

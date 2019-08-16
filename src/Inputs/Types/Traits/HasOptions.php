@@ -2,6 +2,7 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
+use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Illuminate\Support\Arr;
 
 trait HasOptions {
@@ -39,15 +40,17 @@ trait HasOptions {
 			$call = $options;
 			$this->setOptions($call(null, $value));
 		}
+
 		return $this->getAttribute('options');
 	}
 
 	/**
 	 * @param array|\Closure $options
+	 * @param boolean $add_rule To automatically add an in rule for the available options
 	 *
 	 * @return $this
 	 */
-	public function setOptions( $options = null ) {
+	public function setOptions( $options = null, $add_rule = false ) {
 		if ($options && $first = Arr::first($options)) {
 			if (!is_array($first)) {
 				$_options = [];
@@ -61,6 +64,24 @@ trait HasOptions {
 			}
 		}
 		$this->setAttribute('options', $options);
+
+		if ( $add_rule ) {
+			if ( is_array( $options ) && !empty($options) ) {
+				$options = Arr::pluck($options, $this->getValueKey());
+				if (isset($this->multiple) && $this->multiple) {
+					$this->addRule( function ($attribute, $values, $fail) use ($options) {
+						$values = (array) $values;
+						foreach ($values as $value) {
+							if (!in_array($value, $options)) {
+								$fail($attribute.' is invalid.');
+							}
+						}
+					} );
+				} else {
+					$this->addRule( \Illuminate\Validation\Rule::in( $options ) );
+				}
+			}
+		}
 
 		return $this;
 	}
