@@ -154,30 +154,40 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	public function cast(&$inputs) {
 		foreach (array_keys($inputs) as $key) {
 			if ($type = $this->getType($key)) {
-				$name = $type->getName();
-
-				if ($type instanceof Castable) {
-					$inputs[$name] = $type->getCastValue($inputs[$name]);
-				} else {
-					$cast = $type->getCast();
-					if ($type instanceof IsMultiple && $type->isMultiple()) {
-						if ($inputs[$name]) {
-							$values = [];
-							foreach ($inputs[$name] as $value) {
-								HasValue::castValue($value, $cast);
-								$values[] = $value;
-							}
-							$inputs[$name] = $values;
-						}
-					} else {
-						HasValue::castValue($inputs[$name], $cast);
-					}
-				}
+                $this->castInput($inputs, $type);
 			}
 		}
 	}
 
-	/**
+
+    /**
+     * @param $inputs
+     * @param $type
+     */
+    protected function castInput(&$inputs, $type)
+    {
+        $name = $type->getName();
+
+        if ($type instanceof Castable) {
+            $inputs[$name] = $type->getCastValue($inputs[$name]);
+        } else {
+            $cast = $type->getCast();
+            if ($type instanceof IsMultiple && $type->isMultiple()) {
+                if ($inputs[$name]) {
+                    $values = [];
+                    foreach ($inputs[$name] as $value) {
+                        HasValue::castValue($value, $cast);
+                        $values[] = $value;
+                    }
+                    $inputs[$name] = $values;
+                }
+            } else {
+                HasValue::castValue($inputs[$name], $cast);
+            }
+        }
+    }
+
+    /**
 	 * Fill the inputs of this class
 	 *
 	 * @param $inputs
@@ -236,13 +246,10 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 * @param $value
 	 */
 	public function __set( $name, $value ) {
+        $this->inputs[$name] = $value;
 		if ($type = $this->getType($name)) {
-			if ($type instanceof Castable) {
-				$this->inputs[$type->getName()] = $type->getCastValue($this->inputs[$type->getName()]);
-			}
-			settype($this->inputs[$type->getName()], $type->getCast());
-		}
-		$this->inputs[$name] = $value;
+            $this->castInput($this->inputs, $type);
+        }
 	}
 
 	/**
@@ -332,4 +339,5 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	{
 		return new static($inputs);
 	}
+
 }
