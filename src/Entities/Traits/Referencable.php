@@ -47,14 +47,14 @@ trait Referencable {
 	/**
 	 * @param int $reference_id
 	 */
-	public function setReferenceId( int $reference_id ): void {
+	protected function setReferenceId( int $reference_id ): void {
 		$this->reference_id = $reference_id;
 	}
 
 	/**
 	 * @param string $reference_type
 	 */
-	public function setReferenceType( string $reference_type ): void {
+	protected function setReferenceType( string $reference_type ): void {
 		$this->reference_type = $reference_type;
 	}
 

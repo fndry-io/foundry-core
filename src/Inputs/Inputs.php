@@ -3,13 +3,13 @@
 namespace Foundry\Core\Inputs;
 
 use Foundry\Core\Inputs\Types\Contracts\Castable;
-use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\Traits\HasValue;
 use Foundry\Core\Requests\Response;
 use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 /**
@@ -28,9 +28,9 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	public $rules = [];
 
 	/**
-	 * @var array The inputs
+	 * @var array The input value array
 	 */
-	protected $inputs = [];
+	protected $values = [];
 
 	/**
 	 * @var InputTypeCollection The collection of input types
@@ -45,9 +45,9 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	/**
 	 * Inputs constructor.
 	 *
-	 * @param $inputs
+	 * @param $values
 	 */
-	public function __construct($inputs = null, $types = null) {
+	public function __construct($values = null, $types = null) {
 		if ($types == null) {
 			$this->types = $this->types();
 		} else {
@@ -56,8 +56,8 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 		if ($this->types) {
 			$this->fillable = array_unique(array_merge($this->fillable, $this->types->names()));
 		}
-		if ($inputs) {
-			$this->fill($inputs);
+		if ($values) {
+			$this->fill($values);
 		}
 	}
 
@@ -72,7 +72,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 		if (!$rules) {
 			$rules = $this->rules();
 		}
-		$validator = Validator::make($this->inputs(), $rules);
+		$validator = Validator::make($this->values(), $rules);
 		if ($validator->fails()) {
 			return Response::error(__('Error validating request'), 422, $validator->errors());
 		}
@@ -83,37 +83,65 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 * Gets the inputs
 	 *
 	 * @return array The inputs type cast to their correct values types
+	 * @deprecated Use values() method instead
 	 */
 	public function inputs()
 	{
-		return $this->inputs;
+		Log::warning('Inputs::inputs() is deprecated. Please change to calling the values() method.');
+		return $this->values();
 	}
 
 	/**
-	 * Only extract the desired inputs
-	 *
-	 * @param array $inputs
+	 * Gets the values for this class
 	 *
 	 * @return array
 	 */
-	public function only($inputs = [])
+	public function values()
 	{
-		return Arr::only($this->inputs, $inputs);
+		return $this->values;
 	}
 
 	/**
+	 * Only extract the desired value
+	 *
+	 * @param array $keys
+	 *
+	 * @return array
+	 */
+	public function only($keys = [])
+	{
+		return Arr::only($this->values, $keys);
+	}
+
+	/**
+     * Get a value
+     *
 	 * @param $key
 	 * @param null $default
 	 *
 	 * @return mixed
+     * @deprecated Use value() instead
 	 */
 	public function input($key, $default = null)
 	{
-		return Arr::get($this->inputs, $key, $default);
+		return Arr::get($this->values, $key, $default);
 	}
 
-	/**
-	 * Gets the rules for the inputs
+    /**
+     * Get the specific value from the input
+     *
+     * @param $key
+     * @param null $default
+     *
+     * @return mixed
+     */
+    public function value($key, $default = null)
+    {
+        return Arr::get($this->values, $key, $default);
+    }
+
+    /**
+	 * Gets the rules from the input types
 	 *
 	 * This will also merge the input rules into the final produce list of rules
 	 *
@@ -149,69 +177,72 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	/**
 	 * Casts the input values to their correct php variable types
 	 *
-	 * @param $inputs
+	 * @param $values
 	 */
-	public function cast(&$inputs) {
-		foreach (array_keys($inputs) as $key) {
-			if ($type = $this->getType($key)) {
-                $this->castInput($inputs, $type);
-			}
+	public function cast(&$values) {
+		foreach ($this->getTypes() as $type) {
+            $this->castInput($values, $type);
 		}
 	}
 
 
     /**
-     * @param $inputs
+     * @param $values
      * @param $type
      */
-    protected function castInput(&$inputs, $type)
+    protected function castInput(&$values, $type)
     {
         $name = $type->getName();
+        $value = Arr::get($values, $name);
+
+        if ($value === null) {
+        	return;
+        }
 
         if ($type instanceof Castable) {
-            $inputs[$name] = $type->getCastValue($inputs[$name]);
+        	$value = $type->getCastValue($value);
+
         } else {
             $cast = $type->getCast();
             if ($type instanceof IsMultiple && $type->isMultiple()) {
-                if ($inputs[$name]) {
-                    $values = [];
-                    foreach ($inputs[$name] as $value) {
-                        HasValue::castValue($value, $cast);
-                        $values[] = $value;
+                    $_values = [];
+                    foreach ($value as $_value) {
+                        HasValue::castValue($_value, $cast);
+                        $_values[] = $_value;
                     }
-                    $inputs[$name] = $values;
-                }
+	                $value = $_values;
             } else {
-                HasValue::castValue($inputs[$name], $cast);
+                HasValue::castValue($value, $cast);
             }
         }
+	    Arr::set($values, $name, $value);
     }
 
     /**
-	 * Fill the inputs of this class
+	 * Fill the values of this class
 	 *
-	 * @param $inputs
+	 * @param $values
 	 */
-	public function fill($inputs)
+	public function fill($values)
 	{
 		if (!empty($this->fillable)) {
 			foreach ($this->fillable as $name) {
-				Arr::set($this->inputs, $name, Arr::get($inputs, $name));
+				Arr::set($this->values, $name, Arr::get($values, $name));
 			}
 		} else {
-			$this->inputs = $inputs;
+			$this->values = $values;
 		}
-		$this->cast($this->inputs);
+		$this->cast($this->values);
 	}
 
 	/**
-	 * Get all the inputs
+	 * Get all the values
 	 *
 	 * @return array
 	 */
 	public function all()
 	{
-		return $this->inputs();
+		return $this->values();
 	}
 
 	public function keys()
@@ -246,9 +277,9 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 * @param $value
 	 */
 	public function __set( $name, $value ) {
-        $this->inputs[$name] = $value;
+        $this->values[$name] = $value;
 		if ($type = $this->getType($name)) {
-            $this->castInput($this->inputs, $type);
+            $this->castInput($this->values, $type);
         }
 	}
 
@@ -260,8 +291,8 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 * @return mixed|null The type cast value of the input
 	 */
 	public function __get( $name ) {
-		if (isset($this->inputs[$name])) {
-			return $this->inputs[$name];
+		if (isset($this->values[$name])) {
+			return $this->values[$name];
 		} else {
 			return null;
 		}
@@ -299,15 +330,15 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	}
 
 	public function toArray() {
-		return $this->inputs();
+		return $this->values();
 	}
 
 	public function offsetExists($offset) {
-		return isset($this->inputs[$offset]);
+		return isset($this->values[$offset]);
 	}
 
 	public function offsetGet($offset){
-		return $this->inputs[$offset];
+		return $this->values[$offset];
 	}
 
 	public function offsetSet($offset, $value){
@@ -315,7 +346,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	}
 
 	public function offsetUnset($offset) {
-		unset($this->inputs[$offset]);
+		unset($this->values[$offset]);
 	}
 
 	/**
@@ -325,19 +356,19 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 */
 	public function getIterator()
 	{
-		return new \ArrayIterator($this->inputs);
+		return new \ArrayIterator($this->values);
 	}
 
 	/**
-	 * Create an input class from the given inputs
+	 * Create an input class from the given values
 	 *
-	 * @param $inputs
+	 * @param $values
 	 *
 	 * @return Inputs
 	 */
-	static function fromInputs($inputs)
+	static function fromValues($values)
 	{
-		return new static($inputs);
+		return new static($values);
 	}
 
 }

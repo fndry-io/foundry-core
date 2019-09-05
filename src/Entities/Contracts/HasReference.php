@@ -22,12 +22,14 @@ interface HasReference {
 	public function getReference();
 
 	/**
-	 * @param int $reference_id
+	 * Remove the referenced object
+	 *
+	 * @return mixed
 	 */
-	public function setReferenceId( int $reference_id ): void;
+	public function detachReference();
 
 	/**
-	 * @param string $reference_type
+	 * @param HasIdentity $reference
 	 */
-	public function setReferenceType( string $reference_type ): void;
+	public function attachReference( HasIdentity $reference);
 }

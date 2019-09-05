@@ -5,23 +5,11 @@ namespace Foundry\Core\Inputs\Types\Traits;
 trait HasDateFormat {
 
 	/**
-	 *
-	 */
-	public function __HasDateFormat()
-	{
-		if (!isset($this->format)) {
-			$this->setAttribute('format', $this->format);
-		} else {
-			$this->setAttribute('format', "Y-m-d H:i:s");
-		}
-	}
-
-	/**
 	 * @return mixed
 	 */
-	public function getFormat()
+	public function getDateFormat()
 	{
-		return $this->getAttribute('format');
+		return $this->getAttribute('dateFormat');
 	}
 
 	/**
@@ -29,9 +17,9 @@ trait HasDateFormat {
 	 *
 	 * @return $this
 	 */
-	public function setFormat($format)
+	public function setDateFormat($format)
 	{
-		$this->setAttribute('format', $format);
+		$this->setAttribute('dateFormat', $format);
 		return $this;
 	}
 

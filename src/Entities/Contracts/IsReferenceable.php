@@ -22,16 +22,6 @@ interface IsReferenceable {
 	public function getReference();
 
 	/**
-	 * @param int $reference_id
-	 */
-	public function setReferenceId( int $reference_id ): void;
-
-	/**
-	 * @param string $reference_type
-	 */
-	public function setReferenceType( string $reference_type ): void;
-
-	/**
 	 * Remove the referenced object
 	 *
 	 * @return mixed

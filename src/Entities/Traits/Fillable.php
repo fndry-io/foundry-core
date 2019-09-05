@@ -18,7 +18,7 @@ trait Fillable {
 				if ($this->$key instanceof Entity) {
 					$this->$key->fill($value);
 				} else {
-					$this->$key = $value;
+					$this->__set($key, $value);
 				}
 			}
 		}

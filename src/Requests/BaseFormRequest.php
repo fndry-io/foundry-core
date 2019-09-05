@@ -85,7 +85,6 @@ abstract class BaseFormRequest extends LaravelFormRequest {
 	public function validateInputs()
 	{
 		$instance = $this->getValidatorInstance();
-
 		if ($instance->fails()) {
 			$this->failedValidation($instance);
 		}

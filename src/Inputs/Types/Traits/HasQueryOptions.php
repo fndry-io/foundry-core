@@ -40,4 +40,16 @@ trait HasQueryOptions {
 		return $this->getAttribute('url');
 	}
 
+	/**
+	 * @param string $url
+	 * @param string $query_param
+	 *
+	 * @return $this
+	 */
+	public function setQuery(string $url, string $query_param = 'q') {
+		$this->setUrl($url);
+		$this->setQueryParam($query_param);
+		return $this;
+	}
+
 }
