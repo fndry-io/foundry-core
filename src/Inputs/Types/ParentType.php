@@ -4,10 +4,12 @@ namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Contracts\Children;
 use Foundry\Core\Inputs\Types\Traits\HasChildren;
+use Foundry\Core\Inputs\Types\Traits\HasConditions;
 
 abstract class ParentType extends BaseType implements Children {
 
 	use HasChildren;
+	use HasConditions;
 
 	public function jsonSerialize(): array {
 		$json = parent::jsonSerialize();

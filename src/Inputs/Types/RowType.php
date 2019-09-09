@@ -2,8 +2,6 @@
 
 namespace Foundry\Core\Inputs\Types;
 
-use Foundry\Core\Inputs\Types\Contracts\Inputable;
-
 /**
  * Class FormRow
  *

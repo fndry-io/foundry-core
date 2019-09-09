@@ -8,6 +8,8 @@ use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
 use Foundry\Core\Inputs\Types\Traits\HasMinMax;
 use Foundry\Core\Inputs\Types\Traits\HasOptions;
+use Foundry\Core\Inputs\Types\Traits\HasParams;
+use Foundry\Core\Inputs\Types\Traits\HasQueryOptions;
 
 /**
  * Class ChoiceType
@@ -19,6 +21,8 @@ class ChoiceInputType extends InputType implements Choosable, IsMultiple {
 	use HasButtons;
 	use HasOptions;
 	use HasMinMax;
+	use HasQueryOptions;
+	use HasParams;
 
 	public function __construct(
 		string $name,
@@ -63,6 +67,16 @@ class ChoiceInputType extends InputType implements Choosable, IsMultiple {
 		$this->getAttribute('inline', false);
 	}
 
+	public function setSearchable($value = null)
+	{
+		$this->setAttribute('searchable', $value);
+		return $this;
+	}
+
+	public function getSearchable()
+	{
+		return $this->getAttribute('searchable');
+	}
 
 	public function display($value = null) {
 

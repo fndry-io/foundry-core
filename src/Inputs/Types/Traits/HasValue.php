@@ -45,6 +45,9 @@ trait HasValue {
 				if ($value) {
 					$values = [];
 					foreach ($value as $_value) {
+						if ($_value instanceof Entity) {
+							$_value = $_value->{$this->getValueKey()};
+						}
 						static::castValue($_value, $this->getCast());
 						$values[] = $_value;
 					}
