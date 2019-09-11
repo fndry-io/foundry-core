@@ -67,17 +67,6 @@ class ChoiceInputType extends InputType implements Choosable, IsMultiple {
 		$this->getAttribute('inline', false);
 	}
 
-	public function setTaggable($value = null)
-    {
-        $this->setAttribute('taggable', $value);
-        return $this;
-    }
-
-    public function getTaggable()
-    {
-        return $this->getAttribute('taggable');
-    }
-
 	public function setSearchable($value = null)
 	{
 		$this->setAttribute('searchable', $value);
