@@ -10,6 +10,7 @@ use Foundry\Core\Inputs\Types\Traits\HasMinMax;
 use Foundry\Core\Inputs\Types\Traits\HasOptions;
 use Foundry\Core\Inputs\Types\Traits\HasParams;
 use Foundry\Core\Inputs\Types\Traits\HasQueryOptions;
+use Foundry\Core\Inputs\Types\Traits\HasTaggable;
 
 /**
  * Class ChoiceType
@@ -23,6 +24,7 @@ class ChoiceInputType extends InputType implements Choosable, IsMultiple {
 	use HasMinMax;
 	use HasQueryOptions;
 	use HasParams;
+	use HasTaggable;
 
 	public function __construct(
 		string $name,
