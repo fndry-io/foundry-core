@@ -9,7 +9,7 @@ namespace Foundry\Core\Inputs\Types;
  */
 class RepeatInputType extends TextInputType {
 
-	protected $cast = 'array';
+	protected $cast = 'string';
 
 	public function __construct(
 		string $name,
