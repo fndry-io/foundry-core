@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Inputs\Types;
 
-use Foundry\Core\Entities\Entity;
+use Foundry\Core\Entities\Contracts\HasIdentity;
 use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
@@ -65,11 +65,10 @@ class ReferenceInputType extends TextInputType implements Referencable, Castable
 		$this->setReference($reference);
 	}
 
-
 	public function setValue( $value = null ) {
-		if ($value instanceof Entity) {
+		if ($value instanceof HasIdentity) {
 			$this->setReference($value);
-			$value = $value->getId();
+			$value = $value->getKey();
 		}
 		return parent::setValue($value);
 	}

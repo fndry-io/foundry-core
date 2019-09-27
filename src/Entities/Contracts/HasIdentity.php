@@ -7,6 +7,6 @@ interface HasIdentity {
 	/**
 	 * @return mixed
 	 */
-	public function getId();
+	public function getKey();
 
 }

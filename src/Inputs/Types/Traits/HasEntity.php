@@ -4,28 +4,29 @@ namespace Foundry\Core\Inputs\Types\Traits;
 
 
 use Foundry\Core\Entities\Entity;
+use Foundry\Core\Models\Model;
 use Illuminate\Support\Arr;
 
 trait HasEntity {
 
 	/**
-	 * @var Entity
+	 * @var Entity|Model
 	 */
 	protected $entity;
 
 	/**
-	 * @return null|Entity
+	 * @return null|Entity|Model
 	 */
 	public function getEntity() {
 		return $this->entity;
 	}
 
 	/**
-	 * @param Entity|null $entity
+	 * @param Entity|Model|null $entity
 	 *
 	 * @return $this
 	 */
-	public function setEntity( Entity &$entity = null ) {
+	public function setEntity( &$entity = null ) {
 		$this->entity = $entity;
 		$value = $this->entity->get($this->getName());
 		$this->setValue($value);
@@ -39,6 +40,9 @@ trait HasEntity {
 		return ! ! ( $this->entity );
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isFillable() {
 		if ( $this->hasEntity() ) {
 			return $this->getEntity()->isFillable( $this->getName() );
@@ -47,6 +51,9 @@ trait HasEntity {
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isVisible() {
 		if ( $this->hasEntity() ) {
 			$hidden  = $this->getEntity()->getHidden();
@@ -61,6 +68,9 @@ trait HasEntity {
 		return true;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isHidden() {
 		if ( $this->hasEntity() ) {
 			$hidden = $this->getEntity()->getHidden();
@@ -71,6 +81,9 @@ trait HasEntity {
 		return false;
 	}
 
+	/**
+	 * @return string
+	 */
 	abstract public function getName() : string;
 
 }

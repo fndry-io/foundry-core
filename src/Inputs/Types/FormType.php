@@ -2,7 +2,6 @@
 
 namespace Foundry\Core\Inputs\Types;
 
-use Foundry\Core\Entities\Entity;
 use Foundry\Core\Inputs\Types\Contracts\Entityable;
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
@@ -12,11 +11,11 @@ use Foundry\Core\Inputs\Types\Traits\HasId;
 use Foundry\Core\Inputs\Types\Traits\HasName;
 use Foundry\Core\Inputs\Types\Traits\HasRules;
 use Foundry\Core\Inputs\Types\Traits\HasTitle;
+use Foundry\Core\Entities\Contracts\HasVisibility;
 use Foundry\Core\Support\InputTypeCollection;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
-
 
 /**
  * Class FormRow
@@ -37,7 +36,7 @@ class FormType extends ParentType implements Entityable {
 	protected $request;
 
 	/**
-	 * @var Entity
+	 * @var Arrayable|HasVisibility
 	 */
 	protected $entity;
 
@@ -45,6 +44,11 @@ class FormType extends ParentType implements Entityable {
 	 * @var InputType[]
 	 */
 	protected $inputs;
+
+	/**
+	 * @var array
+	 */
+	protected $values = [];
 
 	/**
 	 * FormType constructor.
@@ -91,22 +95,32 @@ class FormType extends ParentType implements Entityable {
 	}
 
 	/**
-	 * Attach an input collection to this Form
+	 * Set the entity for this form
 	 *
-	 * @param Entity $entity
+	 * The object must be an instance of Arrayable
+	 *
+	 * @param Arrayable $entity
 	 *
 	 * @return $this
 	 */
-	public function setEntity( Entity $entity = null ) {
+	public function setEntity( Arrayable $entity = null ) {
 		$this->entity = $entity;
 		return $this;
 	}
 
 	/**
-	 * @return Entity|null
+	 * @return Arrayable|object|null
 	 */
-	public function getEntity(): Entity {
+	public function getEntity() {
 		return $this->entity;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function hasEntity()
+	{
+		return !!($this->entity);
 	}
 
 	public function attachInputCollection( $collection ) {
@@ -128,17 +142,13 @@ class FormType extends ParentType implements Entityable {
 	public function attachInputs( Inputable ...$inputs ) {
 
 		foreach ( $inputs as &$input ) {
+
+			$input->setForm($this);
+
 			/**
 			 * @var InputType $input
 			 */
 			$this->inputs[ $input->getName() ] = $input;
-
-			if ( $this->entity && ! $input->hasEntity() ) {
-				/**
-				 * @var InputType $input
-				 */
-				$input->setEntity( $this->entity );
-			}
 		}
 
 		return $this;
@@ -178,11 +188,26 @@ class FormType extends ParentType implements Entityable {
 	 * @return mixed|null
 	 */
 	public function getValue( $key ) {
+		$value = null;
 		if ( $this->entity ) {
-			return $this->entity->get( $key );
+			$value = object_get($this->entity, $key);
 		}
+		$_value = Arr::get($this->values, $key);
+		if ($this->values && $_value !== null) {
+			$value = $_value;
+		}
+		return $value;
+	}
 
-		return null;
+	/**
+	 * Set the value of the key
+	 *
+	 * @param $key
+	 * @param $value
+	 */
+	public function setValue($key, $value)
+	{
+		Arr::set($this->values, $key, $value);
 	}
 
 	/**
@@ -193,13 +218,7 @@ class FormType extends ParentType implements Entityable {
 	 * @return $this
 	 */
 	public function setValues( $values = [] ) {
-		foreach ( $values as $name => $value ) {
-			if ( $input = $this->getInput( $name ) ) {
-				/**@var InputType $input */
-				$input->setValue( $value );
-			}
-		}
-
+		$this->values = array_replace_recursive($this->values, $values);
 		return $this;
 	}
 
@@ -210,10 +229,46 @@ class FormType extends ParentType implements Entityable {
 	 */
 	public function getValues() {
 		$values = [];
-		foreach ($this->getInputs() as $input) {
-			Arr::set($values, $input->getName(), $input->getValue());
+		foreach($this->getInputs() as $input) {
+			if ($input->isVisible() && !$input->isHidden()) {
+				$value = $input->getValue();
+				if ($value === null) {
+					$value = $input->getDefault();
+				}
+				Arr::set($values, $input->getName(), $value );
+			}
 		}
 		return $values;
+	}
+
+	/**
+	 * Get the fields visible state off the entity
+	 *
+	 * @param $key
+	 *
+	 * @return bool
+	 */
+	public function isVisible($key)
+	{
+		if ($this->entity && $this->entity instanceof HasVisibility) {
+			return $this->entity->isVisible($key);
+		}
+		return true;
+	}
+
+	/**
+	 * Get the fields hidden state off the entity
+	 *
+	 * @param $key
+	 *
+	 * @return bool
+	 */
+	public function isHidden($key)
+	{
+		if ($this->entity && $this->entity instanceof HasVisibility) {
+			return $this->entity->isHidden($key);
+		}
+		return false;
 	}
 
 	/**
@@ -270,7 +325,6 @@ class FormType extends ParentType implements Entityable {
 		return count( $this->inputs );
 	}
 
-
 	/**
 	 * Sets the rules for the form and its inputs
 	 *
@@ -280,13 +334,12 @@ class FormType extends ParentType implements Entityable {
 	 */
 	public function setRules( $rules = [] ) {
 		$this->rules = $rules;
-		foreach ( $this->rules as $key => $rules ) {
+		foreach ( $this->getRules() as $key => $rules ) {
 			if ( $input = $this->getInput( $key ) ) {
 				/**@var InputType $input */
 				$input->setRules( $rules );
 			}
 		}
-
 		return $this;
 	}
 

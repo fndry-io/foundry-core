@@ -4,15 +4,15 @@ namespace Foundry\Core;
 
 use Foundry\Core\Config\SettingRepository;
 use Foundry\Core\Contracts\Repository;
-use Foundry\Core\Models\Listeners\SettingSaved;
+//use Foundry\Core\Models\Listeners\SettingSaved;
 use Foundry\Core\Providers\ConsoleServiceProvider;
 use Foundry\Core\Providers\EventServiceProvider;
 use Foundry\Core\Requests\FormRequestHandler;
-use Foundry\Core\View\Components\ViewComponentHandler;
+//use Foundry\Core\View\Components\ViewComponentHandler;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
 
-class FoundryServiceProvider extends ServiceProvider {
+class CoreServiceProvider extends ServiceProvider {
 	/**
 	 * Indicates if loading of the provider is deferred.
 	 *
@@ -46,35 +46,27 @@ class FoundryServiceProvider extends ServiceProvider {
 	 */
 	protected function registerServices() {
 
-		$this->app->singleton( Repository::class, function () {
-
-			if ( Cache::has( 'settings' ) ) {
-				$settings = Cache::get( 'settings' );
-			} else {
-				$settings = SettingSaved::getSettingsItems();
-				Cache::put( 'settings', $settings, now()->addDays( 30 ) );
-			}
-
-			return new SettingRepository( $settings );
-		} );
-
-		$this->app->alias( Repository::class, 'settings' );
+//		$this->app->singleton( Repository::class, function () {
+//
+//			if ( Cache::has( 'settings' ) ) {
+//				$settings = Cache::get( 'settings' );
+//			} else {
+//				$settings = SettingSaved::getSettingsItems();
+//				Cache::put( 'settings', $settings, now()->addDays( 30 ) );
+//			}
+//
+//			return new SettingRepository( $settings );
+//		} );
+//
+//		$this->app->alias( Repository::class, 'settings' );
 
 		/**
 		 * Register the FormRequestHandler Facade and link it to the FormRequestHandler Class
 		 */
-		$this->app->singleton( 'Foundry\Facades\FormRequestHandler', function () {
+		$this->app->singleton( 'Foundry\Core\Facades\FormRequestHandler', function () {
 			return new FormRequestHandler();
 		} );
-		$this->app->alias( 'Foundry\Facades\FormRequestHandler', 'form-request-handler' );
-
-		/**
-		 * Register the ViewComponentHandler Facade and link it to the FormRequestHandler Class
-		 */
-		$this->app->singleton( 'Foundry\Facades\ViewComponentHandler', function () {
-			return new ViewComponentHandler($this->app->get('request'));
-		} );
-		$this->app->alias( 'Foundry\Facades\ViewComponentHandler', 'view-component-handler' );
+		$this->app->alias( 'Foundry\Core\Facades\FormRequestHandler', 'form-request-handler' );
 
 	}
 

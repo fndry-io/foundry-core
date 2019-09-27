@@ -4,7 +4,7 @@ namespace Foundry\Core\Requests\Traits;
 
 use Foundry\Core\Inputs\Types\FormType;
 use Foundry\Core\Requests\Contracts\InputInterface;
-use LaravelDoctrine\ORM\Facades\EntityManager;
+use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
@@ -14,7 +14,8 @@ trait HasReference
 	public function getReference()
 	{
 		if (($type = $this->input('reference_type')) && ($id = $this->input('reference_id'))) {
-			if ($reference = EntityManager::getRepository($type)->find($id)) {
+			/**@var \Illuminate\Database\Eloquent\Model|string $type*/
+			if (class_exists($type) && is_a($type, Model::class, true) && $reference = $type::query()->find($id)) {
 				return $reference;
 			} else {
 				throw new NotFoundHttpException(__('Associated object not found'));

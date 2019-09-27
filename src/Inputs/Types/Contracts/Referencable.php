@@ -19,10 +19,6 @@ interface Referencable {
 
 	public function getReference();
 
-	public function getEntity();
-
-	public function hasEntity(): bool;
-
 	public function getRoute() : ?string;
 
 	public function getRouteParams() : array;

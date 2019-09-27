@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Models\Traits;
 
-trait FullTextSearch
+trait FullTextSearchable
 {
 	/**
 	 * Replaces spaces with full text search wildcards

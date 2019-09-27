@@ -1,8 +1,8 @@
 <?php
 
-namespace Foundry\Core\Models\Contracts;
+namespace Foundry\Core\Entities\Contracts;
 
-interface Stateable {
+interface IsStateable {
 
 	static function getStateLabels() : array;
 

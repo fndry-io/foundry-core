@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Models\Traits;
 
-trait HasState {
+trait Stateable {
 
 	static function getStateLabel($key) : string
 	{

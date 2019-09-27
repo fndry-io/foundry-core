@@ -1,18 +1,19 @@
 <?php
 
-namespace Foundry\Core\Traits;
+namespace Foundry\Core\Models\Traits;
 
-use Webpatser\Uuid\Uuid;
 
-trait Uuids {
+use Ramsey\Uuid\Uuid;
+
+trait Uuidable {
 
 	/**
 	 * Boot function from laravel.
 	 */
-	public static function bootUuids() {
+	public static function bootUuidable() {
 		static::creating( function ( $model ) {
 			if (empty($model->{$model->getUuidName()})) {
-				$model->{$model->getUuidName()} = Uuid::generate()->string;
+				$model->{$model->getUuidName()} = Uuid::uuid4();
 			}
 		} );
 	}

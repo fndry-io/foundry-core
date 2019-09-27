@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Requests\Traits;
 
-use Doctrine\ORM\Tools\Pagination\Paginator;
+use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Support\Collection;
 
 trait IsBrowseRequest {

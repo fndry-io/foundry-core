@@ -3,12 +3,11 @@
 namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
-use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Inputs\Types\Traits\HasAutocomplete;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
 use Foundry\Core\Inputs\Types\Traits\HasClass;
-use Foundry\Core\Inputs\Types\Traits\HasEntity;
 use Foundry\Core\Inputs\Types\Traits\HasErrors;
+use Foundry\Core\Inputs\Types\Traits\HasForm;
 use Foundry\Core\Inputs\Types\Traits\HasHelp;
 use Foundry\Core\Inputs\Types\Traits\HasId;
 use Foundry\Core\Inputs\Types\Traits\HasLabel;
@@ -41,16 +40,21 @@ abstract class InputType extends BaseType implements Inputable {
 		HasReadonly,
 		HasErrors,
 		HasSortable,
-		HasEntity,
 		HasMask,
-		HasAutocomplete
+		HasAutocomplete,
+		HasForm
 	;
+
+	/**
+	 * @var FormType|null
+	 */
+	protected $form;
 
 	public function __construct(
 		string $name,
 		string $label = null,
 		bool $required = true,
-		$value = null,
+		$value = null, //todo remove this
 		string $position = 'full',
 		string $rules = null,
 		string $id = null,
@@ -64,7 +68,6 @@ abstract class InputType extends BaseType implements Inputable {
 		$this->setRequired( $required );
 
 		$this->setLabel( $label ? $label : $name );
-		$this->setValue( $value );
 		$this->setRules( $rules );
 
 		$this->setId( $id );
@@ -78,22 +81,7 @@ abstract class InputType extends BaseType implements Inputable {
 	 */
 	public function jsonSerialize(): array
 	{
-
 		$field = parent::jsonSerialize();
-
-		//set the value
-		if ( $field['value'] === null ) {
-
-			if ($this instanceof Referencable && $this->hasReference()) {
-				$field['value'] = $this->getReference( )->toArray();
-			} else {
-				$field['value'] = $this->getEntityValue( $this->getName() );
-			}
-
-			if ($field['value'] === null && $default = $this->getDefault()) {
-				$field['value'] = $default;
-			}
-		}
 
 		//set the rules
 		if ( $field['rules'] ) {
@@ -128,7 +116,7 @@ abstract class InputType extends BaseType implements Inputable {
 		//set the fillable etc values
 		foreach (
 			[
-				'fillable' => 'isFillable',
+				//'fillable' => 'isFillable',
 				'visible'  => 'isVisible',
 				'hidden'   => 'isHidden'
 			] as $key => $method
@@ -139,7 +127,32 @@ abstract class InputType extends BaseType implements Inputable {
 		return $field;
 	}
 
+	public function getValue()
+	{
+		return $this->getForm()->getValue($this->getName());
+	}
 
+	public function setValue($value)
+	{
+		$this->getForm()->setValue($this->getName(), $value);
+		return $this;
+	}
+
+	public function isVisible()
+	{
+		if ($this->getForm()) {
+			return $this->getForm()->isVisible($this->getName());
+		}
+		return true;
+	}
+
+	public function isHidden()
+	{
+		if ($this->getForm()) {
+			return $this->getForm()->isHidden($this->getName());
+		}
+		return false;
+	}
 
 	public function display($value = null) {
 		$value = $this->getValue();

@@ -2,8 +2,6 @@
 
 namespace Foundry\Core\Models\Traits;
 
-use Illuminate\Support\Facades\Auth;
-
 /**
  * Trait Blameable
  *

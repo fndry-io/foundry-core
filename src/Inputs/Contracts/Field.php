@@ -18,10 +18,8 @@ interface Field {
 	/**
 	 * The input type for displaying on a page
 	 *
-	 * @param Entity $entity
-	 *
 	 * @return Inputable
 	 */
-	static function input( Entity &$entity = null ): Inputable;
+	static function input(): Inputable;
 
 }

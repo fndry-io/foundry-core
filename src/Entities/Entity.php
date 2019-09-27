@@ -20,6 +20,11 @@ abstract class Entity implements Arrayable {
 	use Fillable;
 	use Visible;
 
+	public function getKey()
+	{
+		return $this->getId();
+	}
+
 	/**
 	 * Entity constructor.
 	 *

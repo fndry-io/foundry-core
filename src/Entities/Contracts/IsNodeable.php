@@ -1,8 +1,6 @@
 <?php
 
-namespace Foundry\System\Entities\Contracts;
-
-use Foundry\Core\Entities\Node;
+namespace Foundry\Core\Entities\Contracts;
 
 interface IsNodeable
 {
@@ -12,17 +10,17 @@ interface IsNodeable
 	public function getParentNode();
 
 	/**
-	 * @param Node $node
+	 * @param IsNode $node
 	 */
 	public function setNode($node): void;
 
 	/**
-	 * @return Node|null
+	 * @return IsNode|null
 	 */
 	public function getNode();
 
 	/**
-	 * @return Node
+	 * @return IsNode
 	 */
 	public function makeNode();
 

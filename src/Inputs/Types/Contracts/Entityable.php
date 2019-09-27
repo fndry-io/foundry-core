@@ -2,13 +2,13 @@
 
 namespace Foundry\Core\Inputs\Types\Contracts;
 
-use Foundry\Core\Entities\Entity;
+use Illuminate\Contracts\Support\Arrayable;
 
 interface Entityable {
 
-	public function setEntity( Entity $entity = null );
+	public function setEntity( Arrayable $entity = null );
 
-	public function getEntity(): Entity;
+	public function getEntity();
 
 	public function attachInputs( Inputable ...$input_types );
 }

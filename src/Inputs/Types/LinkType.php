@@ -4,7 +4,7 @@ namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\Traits\HasClass;
-use Foundry\Core\Inputs\Types\Traits\HasEntity;
+use Foundry\Core\Inputs\Types\Traits\HasForm;
 use Foundry\Core\Inputs\Types\Traits\HasHelp;
 use Foundry\Core\Inputs\Types\Traits\HasId;
 use Foundry\Core\Inputs\Types\Traits\HasLabel;
@@ -24,9 +24,9 @@ class LinkType extends BaseType implements Inputable {
 		HasClass,
 		HasTitle,
         HasName,
-        HasEntity,
         HasValue,
-        HasHelp
+        HasHelp,
+		HasForm
 		;
 
 	public function __construct(

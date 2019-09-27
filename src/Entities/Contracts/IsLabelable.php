@@ -1,10 +1,10 @@
 <?php
 
-namespace Foundry\Core\Models\Contracts;
+namespace Foundry\Core\Entities\Contracts;
 
 use Illuminate\Database\Eloquent\Builder;
 
-interface Labelable {
+interface IsLabelable {
 
 	public function getLabelAttribute();
 

@@ -2,7 +2,6 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-
 use Foundry\Core\Entities\Contracts\HasIdentity;
 use Foundry\Core\Inputs\Types\ButtonType;
 use Illuminate\Support\Str;

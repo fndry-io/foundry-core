@@ -1,11 +1,11 @@
 <?php
 
-namespace Foundry\Core\Traits;
+namespace Foundry\Core\Models\Traits;
 
 use Illuminate\Support\Collection;
 
 /**
- * Trait Sluggify
+ * Trait Sluggable
  *
  * Create a unique slug for a given model
  *
@@ -14,7 +14,7 @@ use Illuminate\Support\Collection;
  * @author Medard Ilunga
  *
  */
-trait Sluggify {
+trait Sluggable {
 
 
 	/**
@@ -42,9 +42,9 @@ trait Sluggify {
 	/**
 	 * Laravel Model Boot function
 	 */
-	protected static function bootSluggify() {
+	protected static function bootSluggable() {
 		static::creating( function ( $model ) {
-			/**@var $model Sluggify */
+			/**@var $model Sluggable */
 			$model[ $model->getSlugField() ] = $model->createSlug( $model[ $model->getSluggableField() ] );
 		} );
 	}
@@ -88,10 +88,15 @@ trait Sluggify {
 	 * @return mixed
 	 */
 	private function getRelatedSlugs( $slug, $field ) {
-		$query = static::withTrashed()->select( $field )->where( $field, 'like', $slug . '%' );
+		if (method_exists($this, 'trashed')) {
+			$query = static::withTrashed();
+		} else {
+			$query = static::query();
+		}
+		$query->select( $field )->where( $field, 'like', $slug . '%' );
 
-		if ( isset( $this->id ) ) {
-			$query->where( 'id', '!=', $this->id );
+		if ( $this->getKey() ) {
+			$query->where( 'id', '!=', $this->getKey() );
 		}
 
 		return $query->get();

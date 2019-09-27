@@ -3,6 +3,7 @@
 namespace Foundry\Core\Inputs\Types\Contracts;
 
 use Foundry\Core\Entities\Entity;
+use Foundry\Core\Inputs\Types\FormType;
 
 /**
  * Interface Inputable
@@ -14,7 +15,8 @@ use Foundry\Core\Entities\Entity;
  *
  * @package Foundry\Core\Inputs\Types\Contracts
  */
-interface Inputable {
+interface Inputable
+{
 
 	/**
 	 * @return string
@@ -33,21 +35,16 @@ interface Inputable {
 	public function setName(string $name);
 
 	/**
-	 * @param Entity|null $entity
+	 * @param FormType $form
 	 *
 	 * @return mixed
 	 */
-	public function setEntity( Entity &$entity = null );
+	public function setForm(FormType &$form);
 
 	/**
-	 * @return null|Entity
+	 * @return FormType|null
 	 */
-	public function getEntity();
-
-	/**
-	 * @return bool
-	 */
-	public function hasEntity(): bool;
+	public function getForm(): ?FormType;
 
 	/**
 	 * The display value of the inputable

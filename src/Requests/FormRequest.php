@@ -29,7 +29,7 @@ abstract class FormRequest extends BaseFormRequest implements FormRequestInterfa
 		$params = [];
 
 		if ($this instanceof EntityRequestInterface && ($entity = $this->getEntity())) {
-			$params['_entity'] = $entity->getId();
+			$params['_entity'] = $entity->getKey();
 			$form->setEntity( $entity );
 		}
 

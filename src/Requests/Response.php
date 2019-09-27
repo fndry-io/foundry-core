@@ -5,7 +5,10 @@ namespace Foundry\Core\Requests;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Resources\Json\ResourceResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -64,6 +67,16 @@ class Response {
 	 */
 	static function success( $data = [], $message = null ) {
 		return new Response( $data, true, 200, null, $message );
+	}
+
+	/**
+	 * @param $resource
+	 * @param null $message
+	 *
+	 * @return Response
+	 */
+	static function resource( JsonResource $resource, $message = null ){
+		return self::success( $resource, $message );
 	}
 
 	/**
@@ -156,9 +169,24 @@ class Response {
 		return $redirect;
 	}
 
-	public function toJsonResponse()
+	public function toJsonResponse($request)
 	{
-		return response()->json($this->jsonSerialize());
+		if ($this->data instanceof JsonResource) {
+			$array = [
+				'status' => $this->status,
+				'code'   => $this->code
+			];
+			if ( $this->error ) {
+				$array['error'] = $this->error;
+			}
+			if ( $this->message ) {
+				$array['message'] = $this->message;
+			}
+			$this->data->additional($array);
+			return $this->data->toResponse($request);
+		} else {
+			return new JsonResponse($this->jsonSerialize());
+		}
 	}
 
 	/**
