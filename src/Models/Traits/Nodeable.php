@@ -4,6 +4,7 @@ namespace Foundry\Core\Models\Traits;
 
 use Foundry\Core\Models\Model;
 use Foundry\Core\Models\Node;
+use Foundry\System\Entities\Contracts\IsNode;
 
 /**
  * Trait Nodeable
@@ -28,7 +29,7 @@ trait Nodeable
 	}
 
 	/**
-	 * @param Node $node
+	 * @param IsNode $node
 	 */
     public function setNode($node): void
     {
@@ -36,22 +37,22 @@ trait Nodeable
     }
 
 	/**
-	 * @return Node|null
+	 * @return IsNode|null
 	 */
-    public function getNode(): ?Node
+    public function getNode(): ?IsNode
     {
         return $this->node;
     }
 
 	/**
-	 * @return Node|null
+	 * @return IsNode|null
 	 */
     abstract function getParentNode();
 
 	/**
-	 * @return Node
+	 * @return IsNode
 	 */
-    public function makeNode(): Node
+    public function makeNode(): IsNode
     {
     	if (!$this->getNode()) {
 		    $node = new Node([]);

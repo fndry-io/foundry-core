@@ -87,7 +87,11 @@ abstract class ModelRepository implements RepositoryInterface {
 	{
 		$query = $this->query();
 		foreach ($criteria as $key => $value) {
-			$query->where($key, $value);
+			if (is_array($value)) {
+				$query->whereIn($key, $value);
+			} else {
+				$query->where($key, $value);
+			}
 		}
 
 		if ($orderBy) {
@@ -116,7 +120,11 @@ abstract class ModelRepository implements RepositoryInterface {
 	{
 		$query = $this->query();
 		foreach ($criteria as $key => $value) {
-			$query->where($key, $value);
+			if (is_array($value)) {
+				$query->whereIn($key, $value);
+			} else {
+				$query->where($key, $value);
+			}
 		}
 		return $query->first();
 	}
@@ -132,7 +140,11 @@ abstract class ModelRepository implements RepositoryInterface {
 	{
 		$query = $this->query();
 		foreach ($criteria as $key => $value) {
-			$query->where($key, $value);
+			if (is_array($value)) {
+				$query->whereIn($key, $value);
+			} else {
+				$query->where($key, $value);
+			}
 		}
 		return $query->count();
 	}
@@ -189,24 +201,19 @@ abstract class ModelRepository implements RepositoryInterface {
 	protected function paginate( Builder $query, $page, $perPage, $pageName = 'page' ): Paginator
 	{
 		return $query->paginate($perPage, null, $pageName, $page);
-//
-//
-//		$page = $page ?: \Illuminate\Pagination\Paginator::resolveCurrentPage($pageName);
-//
-//		$total = $query->getCountForPagination();
-//
-//		$results = $total ? $query->forPage($page, $perPage)->get() : collect();
-//
-//		return Container::getInstance()->makeWith(\Illuminate\Pagination\LengthAwarePaginator::class, [
-//			'items' => $results,
-//			'total' => $total,
-//			'perPage' => $perPage,
-//			'currentPage' => $page,
-//			'options' => [
-//				'path' => \Illuminate\Pagination\Paginator::resolveCurrentPath($pageName),
-//				'pageName' => $pageName,
-//			]
-//		]);
+	}
+
+	/**
+	 * Make a new Entity/Model with the given values
+	 *
+	 * @param $values
+	 *
+	 * @return Model|mixed
+	 */
+	static function make($values)
+	{
+		$class = self::repository()->getClassName();
+		return new $class($values);
 	}
 
 	/**
@@ -214,7 +221,7 @@ abstract class ModelRepository implements RepositoryInterface {
 	 *
 	 * @param Model $model
 	 *
-	 * @return mixed
+	 * @return bool
 	 */
 	public function create( $model ) {
 		return $this->save( $model );
@@ -225,7 +232,7 @@ abstract class ModelRepository implements RepositoryInterface {
 	 *
 	 * @param Model $model
 	 *
-	 * @return mixed
+	 * @return bool
 	 */
 	public function update( $model ) {
 		return $this->save( $model );
@@ -238,7 +245,7 @@ abstract class ModelRepository implements RepositoryInterface {
 	 *
 	 * @param Model $model
 	 *
-	 * @return mixed
+	 * @return bool
 	 */
 	public function save( $model ) {
 		return $model->save();
