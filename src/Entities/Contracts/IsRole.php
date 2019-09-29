@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Entities\Contracts;
 
-interface IsNode
+interface IsRole extends IsEntity
 {
 
 }

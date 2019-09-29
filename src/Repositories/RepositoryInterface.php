@@ -2,6 +2,8 @@
 
 namespace Foundry\Core\Repositories;
 
+use Foundry\Core\Entities\Contracts\IsEntity;
+
 interface RepositoryInterface {
 
 	/**
@@ -55,11 +57,27 @@ interface RepositoryInterface {
 
 	public function count(array $criteria);
 
-	public function create($entity);
+	/**
+	 * @param $data
+	 *
+	 * @return IsEntity|boolean
+	 */
+	public function insert($data);
 
-	public function update($entity);
+	/**
+	 * @param $id
+	 * @param $data
+	 *
+	 * @return IsEntity|boolean
+	 */
+	public function update($id, $data);
 
-	public function delete($entity);
+	/**
+	 * @param $id
+	 *
+	 * @return IsEntity|boolean
+	 */
+	public function delete($id);
 
 	public function save($entity);
 

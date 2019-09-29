@@ -3,7 +3,7 @@
 namespace Foundry\Core\Entities;
 
 use Foundry\Core\Entities\Contracts\HasNode;
-use Foundry\System\Entities\Contracts\IsNodeable;
+use Foundry\Core\Entities\Contracts\IsNodeable;
 use Foundry\Core\Entities\Traits\Nodeable;
 
 /**

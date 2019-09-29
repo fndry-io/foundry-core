@@ -3,19 +3,21 @@
 namespace Foundry\Core\Repositories;
 
 use Foundry\Core\Models\Model;
+use Foundry\Core\Entities\Contracts\IsEntity;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class ModelRepository
  *
  * @package Foundry\Core\Repositories
  */
-abstract class ModelRepository implements RepositoryInterface {
+abstract class ModelRepository implements RepositoryInterface
+{
 
 	protected static $instance;
 
@@ -30,9 +32,10 @@ abstract class ModelRepository implements RepositoryInterface {
 	public static function repository()
 	{
 		$class = get_called_class();
-		if (!isset(self::$instance[$class])) {
+		if ( ! isset(self::$instance[$class])) {
 			self::$instance[$class] = new $class();
 		}
+
 		return self::$instance[$class];
 	}
 
@@ -51,11 +54,30 @@ abstract class ModelRepository implements RepositoryInterface {
 	 *
 	 * @param mixed $id The identifier.
 	 *
-	 * @return Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|object
+	 * @return Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|object|IsEntity|Model
 	 */
 	public function find($id)
 	{
 		return $this->query()->find($id);
+	}
+
+	/**
+	 * Finds the record or aborts
+	 *
+	 * @param $id
+	 *
+	 * @return Model|IsEntity|Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|object
+	 */
+	public function findOrAbort($id)
+	{
+		if ($id instanceof Model) {
+			$model = $id;
+		} else {
+			if (!$model = $this->find($id)) {
+				throw new NotFoundHttpException();
+			}
+		}
+		return $model;
 	}
 
 	/**
@@ -75,10 +97,10 @@ abstract class ModelRepository implements RepositoryInterface {
 	 * an UnexpectedValueException if certain values of the sorting or limiting details are
 	 * not supported.
 	 *
-	 * @param mixed[]       $criteria
+	 * @param mixed[] $criteria
 	 * @param string[]|null $orderBy
-	 * @param int|null      $limit
-	 * @param int|null      $offset
+	 * @param int|null $limit
+	 * @param int|null $offset
 	 *
 	 * @return Collection|Model[] The objects.
 	 *
@@ -126,6 +148,7 @@ abstract class ModelRepository implements RepositoryInterface {
 				$query->where($key, $value);
 			}
 		}
+
 		return $query->first();
 	}
 
@@ -146,6 +169,7 @@ abstract class ModelRepository implements RepositoryInterface {
 				$query->where($key, $value);
 			}
 		}
+
 		return $query->count();
 	}
 
@@ -156,7 +180,7 @@ abstract class ModelRepository implements RepositoryInterface {
 	 *
 	 * @return LengthAwarePaginator
 	 */
-	public function all(\Closure $builder = null, int $limit = 20) : LengthAwarePaginator
+	public function all(\Closure $builder = null, int $limit = 20): LengthAwarePaginator
 	{
 		$query = $this->query();
 		if ($builder) {
@@ -172,13 +196,13 @@ abstract class ModelRepository implements RepositoryInterface {
 	/**
 	 * Returns a list of results
 	 *
-	 * @param \Closure $builder(QueryBuilder $query) The closure to send the Query Builder to
+	 * @param \Closure $builder (QueryBuilder $query) The closure to send the Query Builder to
 	 * @param int $page
 	 * @param int $perPage
 	 *
 	 * @return Paginator
 	 */
-	public function filter(\Closure $builder = null, int $page = 1, int $perPage = 20) : Paginator
+	public function filter(\Closure $builder = null, int $page = 1, int $perPage = 20): Paginator
 	{
 		$query = $this->query();
 		if ($builder) {
@@ -186,6 +210,7 @@ abstract class ModelRepository implements RepositoryInterface {
 		} else {
 			$query->select(['*']);
 		}
+
 		return $this->paginate($query, $page, $perPage);
 	}
 
@@ -198,7 +223,7 @@ abstract class ModelRepository implements RepositoryInterface {
 	 *
 	 * @return Paginator
 	 */
-	protected function paginate( Builder $query, $page, $perPage, $pageName = 'page' ): Paginator
+	protected function paginate(Builder $query, $page, $perPage, $pageName = 'page'): Paginator
 	{
 		return $query->paginate($perPage, null, $pageName, $page);
 	}
@@ -206,36 +231,51 @@ abstract class ModelRepository implements RepositoryInterface {
 	/**
 	 * Make a new Entity/Model with the given values
 	 *
-	 * @param $values
+	 * @param array $values
 	 *
 	 * @return Model|mixed
 	 */
 	static function make($values)
 	{
 		$class = self::repository()->getClassName();
+
 		return new $class($values);
 	}
 
 	/**
-	 * Create the entity and persist it to the database
+	 * Create the entity and save it to the database
 	 *
-	 * @param Model $model
+	 * @param array $data
 	 *
-	 * @return bool
+	 * @return Model|bool
 	 */
-	public function create( $model ) {
-		return $this->save( $model );
+	public function insert($data)
+	{
+		$model = self::make($data);
+		if ($model->save()) {
+			return $model;
+		} else {
+			return false;
+		}
 	}
 
 	/**
 	 * Update an entity and persist it to the database
 	 *
-	 * @param Model $model
+	 * @param Model|int $id
+	 * @param array $data
 	 *
-	 * @return bool
+	 * @return Model|boolean
 	 */
-	public function update( $model ) {
-		return $this->save( $model );
+	public function update($id, $data)
+	{
+		$model = $this->findOrAbort($id);
+		$model->fill($data);
+		if ($model->save()) {
+			return $model;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -247,34 +287,24 @@ abstract class ModelRepository implements RepositoryInterface {
 	 *
 	 * @return bool
 	 */
-	public function save( $model ) {
+	public function save($model)
+	{
 		return $model->save();
 	}
 
 	/**
 	 * Delete an record in the database
 	 *
-	 * @param Model|int $model
+	 * @param Model|int $id
 	 *
-	 * @return bool|mixed|null
+	 * @return bool|null
 	 * @throws \Exception
 	 */
-	public function delete( $model ) {
-		if (is_int($model)) {
-			$model = $this->find($model);
-		}
-		return $model->delete();
-	}
+	public function delete($id)
+	{
+		$model = $this->findOrAbort($id);
 
-	/**
-	 * Restore an entity in the database
-	 *
-	 * @param SoftDeletes $model
-	 *
-	 * @return mixed
-	 */
-	public function restore( $model ) {
-		return $model->restore();
+		return $model->delete();
 	}
 
 	/**
@@ -290,9 +320,10 @@ abstract class ModelRepository implements RepositoryInterface {
 		foreach ($results as $result) {
 			$list[] = [
 				'value' => Arr::get($result, $valueKey),
-				'text' => Arr::get($result, $textKey),
+				'text'  => Arr::get($result, $textKey),
 			];
 		}
+
 		return $list;
 	}
 

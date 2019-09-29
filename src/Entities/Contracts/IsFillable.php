@@ -1,8 +1,8 @@
 <?php
 
-namespace Foundry\System\Entities\Contracts;
+namespace Foundry\Core\Entities\Contracts;
 
 interface IsFillable
 {
-	public function fill($values);
+	public function fill(array $values);
 }

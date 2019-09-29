@@ -4,7 +4,7 @@ namespace Foundry\Core\Models\Traits;
 
 use Foundry\Core\Models\Model;
 use Foundry\Core\Models\Node;
-use Foundry\System\Entities\Contracts\IsNode;
+use Foundry\Core\Entities\Contracts\IsNode;
 
 /**
  * Trait Nodeable

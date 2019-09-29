@@ -4,7 +4,7 @@ namespace Foundry\Core\Models;
 
 use Foundry\Core\Entities\Contracts\IsNestedTreeable;
 use Foundry\Core\Models\Traits\Uuidable;
-use Foundry\System\Entities\Contracts\IsNode;
+use Foundry\Core\Entities\Contracts\IsNode;
 use Kalnoy\Nestedset\NodeTrait;
 
 /**

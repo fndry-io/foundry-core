@@ -23,4 +23,9 @@ interface IsArchiveable {
 	 * @return bool
 	 */
 	public function isArchived();
+
+	/**
+	 * @return bool
+	 */
+	public function archive();
 }
