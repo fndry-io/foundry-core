@@ -7,6 +7,7 @@ use Foundry\Core\Entities\Contracts\IsEntity;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -62,22 +63,21 @@ abstract class ModelRepository implements RepositoryInterface
 	}
 
 	/**
-	 * Finds the record or aborts
+	 * Find the record or throws an exception
 	 *
-	 * @param $id
+	 * @param int|Model $id
 	 *
 	 * @return Model|IsEntity|Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|object
 	 */
-	public function findOrAbort($id)
+	protected function getModel($id)
 	{
-		if ($id instanceof Model) {
-			$model = $id;
+		if ($id instanceof \Illuminate\Database\Eloquent\Model) {
+			return $id;
+		} else if (is_int($id)) {
+			return $this->query()->findOrFail($id);
 		} else {
-			if (!$model = $this->find($id)) {
-				throw new NotFoundHttpException();
-			}
+			throw new \Exception('Invalid id value passed to findOrAbort');
 		}
-		return $model;
 	}
 
 	/**
@@ -269,7 +269,7 @@ abstract class ModelRepository implements RepositoryInterface
 	 */
 	public function update($id, $data)
 	{
-		$model = $this->findOrAbort($id);
+		$model = $this->getModel($id);
 		$model->fill($data);
 		if ($model->save()) {
 			return $model;
@@ -302,7 +302,7 @@ abstract class ModelRepository implements RepositoryInterface
 	 */
 	public function delete($id)
 	{
-		$model = $this->findOrAbort($id);
+		$model = $this->getModel($id);
 
 		return $model->delete();
 	}
