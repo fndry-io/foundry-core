@@ -23,9 +23,14 @@ trait Nodeable
 		static::created( function ( $model ) {
 			/**@var Model|Nodeable $model */
 			if (!$model->getNode()) {
-				$model->makeNode();
+				//$model->makeNode();
 			}
 		} );
+	}
+
+	public function node()
+	{
+		return $this->belongsTo(Node::class);
 	}
 
 	/**
@@ -33,7 +38,7 @@ trait Nodeable
 	 */
     public function setNode($node): void
     {
-        $this->node = $node;
+        $this->attributes['node_id'] = $node->getKey();
     }
 
 	/**
@@ -58,7 +63,9 @@ trait Nodeable
 		    $node = new Node([]);
 		    $node->entity()->associate($this);
 		    if ($parent = $this->getParentNode()) {
-			    $node->setParent($parent->getKey());
+			    $node->setParent($parent);
+		    } else {
+		    	$node->makeRoot();
 		    }
 		    $node->save();
 	    }

@@ -45,7 +45,9 @@ trait Sluggable {
 	protected static function bootSluggable() {
 		static::creating( function ( $model ) {
 			/**@var $model Sluggable */
-			$model[ $model->getSlugField() ] = $model->createSlug( $model[ $model->getSluggableField() ] );
+			if (empty($model[ $model->getSlugField() ])) {
+				$model[ $model->getSlugField() ] = $model->createSlug( $model[ $model->getSluggableField() ] );
+			}
 		} );
 	}
 

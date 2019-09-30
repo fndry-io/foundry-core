@@ -129,12 +129,17 @@ abstract class InputType extends BaseType implements Inputable {
 
 	public function getValue()
 	{
-		return $this->getForm()->getValue($this->getName());
+		if ($this->form) {
+			return $this->getForm()->getValue($this->getName());
+		}
+		return null;
 	}
 
 	public function setValue($value)
 	{
-		$this->getForm()->setValue($this->getName(), $value);
+		if ($this->form) {
+			$this->getForm()->setValue($this->getName(), $value);
+		}
 		return $this;
 	}
 

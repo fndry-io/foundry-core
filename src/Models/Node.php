@@ -81,7 +81,7 @@ class Node extends Model implements IsNode, IsNestedTreeable {
 	 */
 	public function setParent(IsNestedTreeable $parent = null)
 	{
-		$this->setParent($parent->getKey());
+		$this->setParent($parent);
 	}
 
 	/**

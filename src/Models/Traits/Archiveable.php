@@ -15,7 +15,7 @@ trait Archiveable
 {
 
 	/**
-	 * Boot the soft deleting trait for a model.
+	 * Boot the archivable trait for a model.
 	 *
 	 * @return void
 	 */
@@ -25,11 +25,11 @@ trait Archiveable
 	}
 
 	/**
-	 * Initialize the soft deleting trait for an instance.
+	 * Initialize the archivable trait for an instance.
 	 *
 	 * @return void
 	 */
-	public function initializeSoftDeletes()
+	public function initializeArchiveable()
 	{
 		$this->dates[] = $this->getArchivedAtColumn();
 	}

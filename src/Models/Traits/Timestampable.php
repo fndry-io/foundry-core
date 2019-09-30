@@ -24,7 +24,7 @@ trait Timestampable
 	/**
 	 * @param Carbon|null $date
 	 */
-	public function setCreatedAt(Carbon $date = null)
+	public function setCreatedAt($date = null)
 	{
 		$this->created_at = $date;
 	}
@@ -40,7 +40,7 @@ trait Timestampable
 	/**
 	 * @param Carbon|null $date
 	 */
-	public function setUpdatedAt(Carbon $date = null)
+	public function setUpdatedAt($date = null)
 	{
 		$this->updated_at = $date;
 	}

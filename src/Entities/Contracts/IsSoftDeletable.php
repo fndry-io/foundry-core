@@ -23,4 +23,9 @@ interface IsSoftDeletable {
 	 * @return bool
 	 */
 	public function isDeleted();
+
+	/**
+	 * @return boolean
+	 */
+	public function isForceDeleting();
 }

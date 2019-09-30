@@ -12,7 +12,7 @@ class ArchivedScope implements Scope
      *
      * @var array
      */
-    protected $extensions = ['Unarchive', 'WithArchived', 'WithoutArchived', 'OnlyArchived'];
+    protected $extensions = ['WithArchived', 'WithoutArchived', 'OnlyArchived'];
 
     /**
      * Apply the scope to a given Eloquent query builder.
