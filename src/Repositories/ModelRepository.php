@@ -2,6 +2,7 @@
 
 namespace Foundry\Core\Repositories;
 
+use Foundry\Core\Entities\Contracts\IsSoftDeletable;
 use Foundry\Core\Models\Model;
 use Foundry\Core\Entities\Contracts\IsEntity;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -304,7 +305,11 @@ abstract class ModelRepository implements RepositoryInterface
 	{
 		$model = $this->getModel($id);
 
-		return $model->delete();
+		if ($model instanceof IsSoftDeletable && $model->isDeleted()) {
+			return $model->forceDelete();
+		} else {
+			return $model->delete();
+		}
 	}
 
 	/**

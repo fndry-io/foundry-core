@@ -15,4 +15,8 @@ interface IsFolder extends IsEntity, IsSoftDeletable
 
 	public function parent();
 
+	public function setFile(IsFile $file);
+
+	public function setReference(IsEntity $entity);
+
 }

@@ -3,6 +3,7 @@
 namespace Foundry\Core\Models\Traits;
 
 use Foundry\Core\Entities\Contracts\HasNode;
+use Foundry\Core\Entities\Contracts\IsEntity;
 use Foundry\Core\Models\Model;
 
 trait Referencable {
@@ -15,7 +16,7 @@ trait Referencable {
 		return $this->morphTo();
 	}
 
-	public function setReference($model)
+	public function setReference(IsEntity $model)
 	{
 		$this->reference()->associate($model);
 		if ($model instanceof HasNode && $this instanceof HasNode) {

@@ -2,9 +2,17 @@
 
 namespace Foundry\Core\Models\Traits;
 
+use Carbon\Carbon;
 use DateTime;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * Trait SoftDeleteable
+ *
+ * @property Carbon $deleted_at
+ *
+ * @package Foundry\Core\Models\Traits
+ */
 trait SoftDeleteable
 {
 	use SoftDeletes;
