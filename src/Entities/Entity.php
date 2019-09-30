@@ -65,7 +65,7 @@ abstract class Entity implements Arrayable {
 	 *
 	 * @return array
 	 */
-	public function only(array $fields)
+	public function only($fields)
 	{
 		$data = [];
 		foreach ($fields as $key) {

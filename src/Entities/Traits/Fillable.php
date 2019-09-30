@@ -11,7 +11,7 @@ use Foundry\Core\Entities\Entity;
  */
 trait Fillable {
 
-	public function fill($params)
+	public function fill(array $params)
 	{
 		foreach ($params as $key => $value) {
 			if ($this->isFillable($key)) {

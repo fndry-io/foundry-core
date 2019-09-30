@@ -45,4 +45,10 @@ trait Archiveable
 		return $this->archived_at && new \DateTime('now') >= $this->archived_at;
 	}
 
+	public function archive()
+	{
+		$this->setArchivedAt(new \DateTime());
+		return true;
+	}
+
 }

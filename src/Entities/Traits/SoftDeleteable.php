@@ -42,4 +42,9 @@ trait SoftDeleteable
 	{
 		return $this->deleted_at && new DateTime('now') >= $this->deleted_at;
 	}
+
+	public function isForceDeleting()
+	{
+		return $this->isDeleted();
+	}
 }

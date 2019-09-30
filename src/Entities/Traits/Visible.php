@@ -9,7 +9,7 @@ namespace Foundry\Core\Entities\Traits;
  */
 trait Visible {
 
-	public function isVisible($name)
+	public function isVisible($name) : bool
 	{
 		if (isset($this->visible) && !in_array($name, $this->visible)) {
 			return false;
@@ -39,7 +39,7 @@ trait Visible {
 		}
 	}
 
-	public function isHidden($name)
+	public function isHidden($name) : bool
 	{
 		if (isset($this->hidden) && in_array($name, $this->hidden)) {
 			return true;
