@@ -7,16 +7,6 @@ use Foundry\Core\Entities\Entity;
 interface IsReferenceable {
 
 	/**
-	 * @return int
-	 */
-	public function getReferenceId(): int;
-
-	/**
-	 * @return string
-	 */
-	public function getReferenceType(): string;
-
-	/**
 	 * @return Entity|object|null
 	 */
 	public function getReference();
