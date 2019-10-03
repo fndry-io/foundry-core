@@ -230,4 +230,22 @@ class Response {
 		return static::error($error, $code, $data);
 	}
 
+    /**
+     * @param JsonResource|string $class
+     * @param bool $collection
+     *
+     * @return $this
+     */
+	public function asResource($class, $collection = false)
+    {
+        if ($this->status) {
+            if ($collection) {
+                $this->data = $class::collection($this->data);
+            } else {
+                $this->data = new $class($this->data);
+            }
+        }
+        return $this;
+    }
+
 }

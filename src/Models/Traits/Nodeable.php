@@ -2,8 +2,8 @@
 
 namespace Foundry\Core\Models\Traits;
 
-use Foundry\Core\Models\Model;
 use Foundry\Core\Models\Node;
+use Foundry\Core\Entities\Contracts\HasNode;
 use Foundry\Core\Entities\Contracts\IsNode;
 
 /**
@@ -20,11 +20,8 @@ trait Nodeable
 	 * Boot the Nodeable
 	 */
 	protected static function bootNodeable() {
-		static::created( function ( $model ) {
-			/**@var Model|Nodeable $model */
-			if (!$model->getNode()) {
-				//$model->makeNode();
-			}
+		static::created( function ( HasNode $model ) {
+            $model->makeNode();
 		} );
 	}
 
@@ -38,7 +35,7 @@ trait Nodeable
 	 */
     public function setNode($node): void
     {
-        $this->attributes['node_id'] = $node->getKey();
+        $this->node()->associate($node);
     }
 
 	/**
@@ -59,17 +56,19 @@ trait Nodeable
 	 */
     public function makeNode(): IsNode
     {
-    	if (!$this->getNode()) {
+    	if (!$this->node) {
 		    $node = new Node([]);
-		    $node->entity()->associate($this);
+		    $node->setEntity($this);
 		    if ($parent = $this->getParentNode()) {
-			    $node->setParent($parent);
+			    $node->parent()->associate($parent);
 		    } else {
 		    	$node->makeRoot();
 		    }
 		    $node->save();
+		    $this->node()->associate($node);
+		    $this->save();
 	    }
-	    return $this->getNode();
+    	return $this->node;
     }
 
 }

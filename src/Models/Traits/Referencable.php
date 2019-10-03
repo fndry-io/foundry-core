@@ -33,12 +33,18 @@ trait Referencable {
         return $this->reference;
     }
 
+    public function setReference(IsEntity $model)
+    {
+        $this->attachReference($model);
+    }
+
     /**
      * @param HasIdentity|Model $model
      */
 	public function attachReference(HasIdentity $model)
     {
         $this->reference()->associate($model);
+        $this->setRelation('reference', $model);
         if ($model instanceof HasNode && $this instanceof HasNode) {
             $this->setNode($model->getNode());
         }
