@@ -2,6 +2,7 @@
 
 namespace Foundry\Core\Requests\Traits;
 
+use Foundry\Core\Entities\Contracts\IsEntity;
 use Foundry\Core\Inputs\Types\FormType;
 use Foundry\Core\Requests\Contracts\InputInterface;
 use Illuminate\Database\Eloquent\Model;
@@ -11,6 +12,9 @@ use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 trait HasReference
 {
 
+    /**
+     * @return IsEntity|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Model|null
+     */
 	public function getReference()
 	{
 		if (($type = $this->input('reference_type')) && ($id = $this->input('reference_id'))) {
