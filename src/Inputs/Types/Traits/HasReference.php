@@ -29,7 +29,7 @@ trait HasReference {
 	{
 		$this->reference = $reference;
 		if (is_object($reference) && $reference instanceof HasIdentity) {
-			$this->setValue($reference->getId());
+			$this->setValue($reference->getKey());
 		}
 		return $this;
 	}

@@ -20,8 +20,7 @@ trait HasReference
 	public function getReference()
 	{
 		if (($type = $this->input('reference_type')) && ($id = $this->input('reference_id'))) {
-			/**@var \Illuminate\Database\Eloquent\Model|string $type*/
-			if (class_exists($type) && is_a($type, Model::class, true) && $reference = $type::query()->find($id)) {
+			if ($reference = $this->findReference($type, $id)) {
 				return $reference;
 			} else {
 				throw new NotFoundHttpException(__('Associated object not found'));
@@ -31,6 +30,23 @@ trait HasReference
 		}
 	}
 
+    /**
+     * @param string $type The Reference type
+     * @param int $id The Reference id
+     *
+     * @return null
+     */
+	public function findReference($type, $id)
+    {
+        if (class_exists($type) && is_a($type, Model::class, true) && $reference = $type::query()->find($id)) {
+            return $reference;
+        }
+        return null;
+    }
+
+    /**
+     * @return FormType
+     */
 	public function form(): FormType {
 
 		$form   = new FormType( static::name() );
