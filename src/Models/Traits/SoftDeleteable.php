@@ -38,6 +38,6 @@ trait SoftDeleteable
 	 */
 	public function isDeleted()
 	{
-		return $this->deleted_at && new DateTime('now') >= $this->deleted_at;
+		return !!($this->deleted_at);
 	}
 }
