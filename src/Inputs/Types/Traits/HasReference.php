@@ -3,15 +3,11 @@
 namespace Foundry\Core\Inputs\Types\Traits;
 
 use Foundry\Core\Entities\Contracts\HasIdentity;
+use Foundry\Core\Entities\Contracts\IsEntity;
 use Foundry\Core\Inputs\Types\ButtonType;
 use Illuminate\Support\Str;
 
 trait HasReference {
-
-	/**
-	 * @var string|object $reference
-	 */
-	protected $reference;
 
 	public function __HasReference(){
 		$this->setValueKey('value');
@@ -27,8 +23,8 @@ trait HasReference {
 	 */
 	public function setReference($reference)
 	{
-		$this->reference = $reference;
-		if (is_object($reference) && $reference instanceof HasIdentity) {
+	    $this->setAttribute('reference', $reference);
+		if (is_object($reference) && $reference instanceof IsEntity) {
 			$this->setValue($reference->getKey());
 		}
 		return $this;
@@ -41,7 +37,7 @@ trait HasReference {
 	 */
 	public function getReference()
 	{
-		return $this->reference;
+		return $this->getAttribute('reference');
 	}
 
 	public function addButton($label, $request, $title, $type)

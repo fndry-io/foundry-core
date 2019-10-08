@@ -45,11 +45,6 @@ abstract class InputType extends BaseType implements Inputable {
 		HasForm
 	;
 
-	/**
-	 * @var FormType|null
-	 */
-	protected $form;
-
 	public function __construct(
 		string $name,
 		string $label = null,

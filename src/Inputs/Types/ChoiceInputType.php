@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Inputs\Types;
 
-use Foundry\Core\Entities\Entity;
+use Foundry\Core\Entities\Contracts\IsEntity;
 use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
@@ -51,9 +51,18 @@ class ChoiceInputType extends InputType implements Choosable, IsMultiple {
 
 	}
 
-	public function setValue( $value = null ) {
-		if ($value instanceof Entity) {
-			$value = $value->getId();
+	public function getValue()
+    {
+        $value = parent::getValue();
+        if ($value instanceof IsEntity) {
+            $value = object_get($value, $this->getValueKey());
+        }
+        return $value;
+    }
+
+    public function setValue( $value = null ) {
+		if ($value instanceof IsEntity) {
+			$value = $value->getKey();
 		}
 		return parent::setValue($value);
 	}

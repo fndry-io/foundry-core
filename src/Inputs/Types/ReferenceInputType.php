@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Inputs\Types;
 
-use Foundry\Core\Entities\Contracts\HasIdentity;
+use Foundry\Core\Entities\Contracts\IsEntity;
 use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
@@ -37,7 +37,7 @@ class ReferenceInputType extends TextInputType implements Referencable, Castable
 	 * @param string $name The field name
 	 * @param string $label
 	 * @param bool $required
-	 * @param mixed $reference
+	 * @param object $reference
 	 * @param string $url The url to fetch the list of existing options
 	 * @param null $value
 	 * @param string $position
@@ -50,7 +50,7 @@ class ReferenceInputType extends TextInputType implements Referencable, Castable
 		string $name,
 		string $label,
 		bool $required = true,
-		$reference,
+		$reference = null,
 		$url = null,
 		$value = null,
 		string $position = 'full',
@@ -66,22 +66,21 @@ class ReferenceInputType extends TextInputType implements Referencable, Castable
 	}
 
 	public function setValue( $value = null ) {
-		if ($value instanceof HasIdentity) {
-			$this->setReference($value);
-			$value = $value->getKey();
-		}
-		return parent::setValue($value);
+		if ($value instanceof IsEntity) {
+			return $this->setReference($value);
+		} else {
+            return parent::setValue($value);
+        }
 	}
 
-	public function jsonSerialize(): array {
-		//If we have been given a reference, then also add it to the output to ensure it is selected on load
-		if ($ref = $this->getReferenceObject()) {
-			if (empty($this->getOptions())) {
-				$this->setOptions([$ref->toArray()]);
-			}
-		}
-		return parent::jsonSerialize();
-	}
+    public function getValue()
+    {
+        $value = parent::getValue();
+        if ($value instanceof IsEntity) {
+            $value = $value->getKey();
+        }
+        return $value;
+    }
 
 	public function display( $value = null ) {
 		$reference = $this->getReference();
@@ -102,5 +101,16 @@ class ReferenceInputType extends TextInputType implements Referencable, Castable
 			return $value;
 		}
 	}
+
+    /**
+     * @param FormType $form
+     */
+    public function setForm(FormType &$form)
+    {
+        if ($form->hasEntity() && $entityValue = object_get($form->getEntity(), $this->getName())) {
+            $this->setValue($entityValue);
+        }
+        $this->form = $form;
+    }
 
 }

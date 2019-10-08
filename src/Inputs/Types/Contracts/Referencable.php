@@ -17,9 +17,11 @@ interface Referencable {
 
 	public function display($value = null);
 
+    public function setReference($reference);
+
 	public function getReference();
 
-	public function getRoute() : ?string;
+    public function getRoute() : ?string;
 
 	public function getRouteParams() : array;
 

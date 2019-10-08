@@ -4,6 +4,7 @@ namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Contracts\Entityable;
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
+use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
 use Foundry\Core\Inputs\Types\Traits\HasClass;
 use Foundry\Core\Inputs\Types\Traits\HasErrors;
@@ -14,6 +15,7 @@ use Foundry\Core\Inputs\Types\Traits\HasTitle;
 use Foundry\Core\Entities\Contracts\HasVisibility;
 use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\MessageBag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 
@@ -145,11 +147,20 @@ class FormType extends ParentType implements Entityable {
 
 			$input->setForm($this);
 
-			/**
+            /**
 			 * @var InputType $input
 			 */
 			$this->inputs[ $input->getName() ] = $input;
-		}
+
+            /**
+             * If a reference type and have an entity, we we need to get the reference value and set it to the input
+             */
+            if ($this->hasEntity() && $input instanceof Referencable) {
+                $reference = object_get($this->entity, $input->getName());
+                $input->setReference($reference);
+            }
+
+        }
 
 		return $this;
 	}
@@ -193,7 +204,7 @@ class FormType extends ParentType implements Entityable {
 			$value = object_get($this->entity, $key);
 		}
 		$_value = Arr::get($this->values, $key);
-		if ($this->values && $_value !== null) {
+		if ($_value !== null) {
 			$value = $_value;
 		}
 		return $value;
@@ -218,7 +229,10 @@ class FormType extends ParentType implements Entityable {
 	 * @return $this
 	 */
 	public function setValues( $values = [] ) {
-		$this->values = array_replace_recursive($this->values, $values);
+        foreach($this->getInputs() as $input) {
+            $value = Arr::get($values, $input->getName(), null );
+            $input->setValue($value);
+        }
 		return $this;
 	}
 
@@ -238,7 +252,8 @@ class FormType extends ParentType implements Entityable {
 				Arr::set($values, $input->getName(), $value );
 			}
 		}
-		return $values;
+
+        return array_merge($this->values, $values);
 	}
 
 	/**
@@ -251,7 +266,19 @@ class FormType extends ParentType implements Entityable {
 	public function isVisible($key)
 	{
 		if ($this->entity && $this->entity instanceof HasVisibility) {
-			return $this->entity->isVisible($key);
+            $entity = $this->getEntity();
+		    if (strpos($key, '.') !== false) {
+                $parts = explode('.', $key);
+                $key = array_pop($parts);
+                foreach($parts as $part){
+                    if ($entity->{$part} && $entity->{$part} instanceof HasVisibility) {
+                        $entity = $entity->{$part};
+                    } else {
+                        return true;
+                    }
+                }
+            }
+            return $entity->isVisible($key);
 		}
 		return true;
 	}
@@ -266,7 +293,19 @@ class FormType extends ParentType implements Entityable {
 	public function isHidden($key)
 	{
 		if ($this->entity && $this->entity instanceof HasVisibility) {
-			return $this->entity->isHidden($key);
+            $entity = $this->getEntity();
+            if (strpos($key, '.') !== false) {
+                $parts = explode('.', $key);
+                $key = array_pop($parts);
+                foreach($parts as $part){
+                    if ($entity->{$part} && $entity->{$part} instanceof HasVisibility) {
+                        $entity = $entity->{$part};
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            return $entity->isHidden($key);
 		}
 		return false;
 	}
@@ -289,7 +328,7 @@ class FormType extends ParentType implements Entityable {
 	 *
 	 * @param $key
 	 *
-	 * @return \Illuminate\Contracts\Support\MessageBag|null
+	 * @return MessageBag|null
 	 */
 	public function getInputError( $key ) {
 		if ( $input = $this->getInput( $key ) ) {

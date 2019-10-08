@@ -56,7 +56,7 @@ abstract class BaseType implements Arrayable, \JsonSerializable {
 	/**
 	 * @param mixed $type
 	 *
-	 * @return BaseType|InputType
+	 * @return $this
 	 */
 	public function setType( $type = null ) {
 		$this->type = $type;
@@ -75,7 +75,7 @@ abstract class BaseType implements Arrayable, \JsonSerializable {
 	/**
 	 * @param string $cast
 	 *
-	 * @return BaseType|InputType
+	 * @return $this
 	 */
 	public function setCast( string $cast ) {
 		$this->cast = $cast;

@@ -2,8 +2,10 @@
 
 namespace Foundry\Core\Models;
 
+use Foundry\Core\Models\Traits\Timestampable;
 use Foundry\Core\Models\Traits\Uuidable;
 use Foundry\Core\Entities\Contracts\IsNode;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Kalnoy\Nestedset\NodeTrait;
 
 /**
@@ -15,6 +17,7 @@ class Node extends Model implements IsNode
 {
     use Uuidable;
     use NodeTrait;
+    use Timestampable;
 
     protected $fillable = [];
 
@@ -68,7 +71,7 @@ class Node extends Model implements IsNode
     /**
      * The entity for this Node
      *
-     * @return \Illuminate\Database\Eloquent\Relations\MorphTo
+     * @return MorphTo
      */
     public function entity()
     {
