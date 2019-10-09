@@ -51,18 +51,6 @@ trait HasOptions {
 	 * @return $this
 	 */
 	public function setOptions( $options = null, $add_rule = false ) {
-		if ($options && $first = Arr::first($options)) {
-			if (!is_array($first)) {
-				$_options = [];
-				foreach ($options as $value => $text) {
-					$_options[] = [
-						$this->getValueKey() => $value,
-						$this->getTextKey() => $text
-					];
-				}
-				$options = $_options;
-			}
-		}
 		$this->setAttribute('options', $options);
 
 		if ( $add_rule ) {

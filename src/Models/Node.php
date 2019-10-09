@@ -75,7 +75,7 @@ class Node extends Model implements IsNode
      */
     public function entity()
     {
-        return $this->morphTo();
+        return $this->morphTo()->withoutGlobalScopes();
     }
 
     /**

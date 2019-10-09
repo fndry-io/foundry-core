@@ -22,7 +22,7 @@ trait Referencable {
 	 */
 	public function reference()
 	{
-		return $this->morphTo();
+		return $this->morphTo()->withoutGlobalScopes();
 	}
 
     /**

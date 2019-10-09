@@ -19,4 +19,6 @@ interface IsNodeable
 	 */
 	public function getNode();
 
+    public function makeNode(): IsNode;
+
 }
