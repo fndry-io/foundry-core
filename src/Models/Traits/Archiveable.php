@@ -73,11 +73,6 @@ trait Archiveable
 
 		$this->{$this->getArchivedAtColumn()} = new Carbon();
 
-		// Once we have saved the model, we will fire the "restored" event so this
-		// developer will do anything they need to after a restore operation is
-		// totally finished. Then we will return the result of the save call.
-		$this->exists = true;
-
 		$result = $this->save();
 
 		$this->fireModelEvent('archived', false);
@@ -102,11 +97,6 @@ trait Archiveable
 
 		$this->{$this->getArchivedAtColumn()} = null;
 
-		// Once we have saved the model, we will fire the "restored" event so this
-		// developer will do anything they need to after a restore operation is
-		// totally finished. Then we will return the result of the save call.
-		$this->exists = true;
-
 		$result = $this->save();
 
 		$this->fireModelEvent('unArchived', false);
@@ -120,9 +110,9 @@ trait Archiveable
 	 * @param  \Closure|string  $callback
 	 * @return void
 	 */
-	public static function unarchiving($callback)
+	public static function unArchiving($callback)
 	{
-		static::registerModelEvent('unarchiving', $callback);
+		static::registerModelEvent('unArchiving', $callback);
 	}
 
 	/**
@@ -131,9 +121,9 @@ trait Archiveable
 	 * @param  \Closure|string  $callback
 	 * @return void
 	 */
-	public static function unarchived($callback)
+	public static function unArchived($callback)
 	{
-		static::registerModelEvent('unarchived', $callback);
+		static::registerModelEvent('unArchived', $callback);
 	}
 
 	/**
