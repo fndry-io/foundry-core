@@ -10,7 +10,7 @@ interface ViewableFormRequestInterface {
 	/**
 	 * @return FormType
 	 */
-	public function form() : FormType;
+	function form($params = []) : FormType;
 
 	/**
 	 * @return FormType

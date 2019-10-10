@@ -1,13 +1,13 @@
 <?php
 
 namespace Foundry\Core\Inputs\Types;
+
+use Foundry\Core\Entities\Contracts\IsFolder;
 use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\Traits\HasAction;
 use Foundry\Core\Inputs\Types\Traits\HasMinMax;
 use Foundry\Core\Inputs\Types\Traits\HasMultiple;
 use Foundry\Core\Inputs\Types\Traits\HasParams;
-use Foundry\System\Entities\Folder;
-
 
 /**
  * Class FileType
@@ -22,7 +22,7 @@ class FileInputType extends InputType implements IsMultiple {
 	use HasMultiple;
 
 	/**
-	 * @var Folder|null
+	 * @var IsFolder|null
 	 */
 	protected $folder;
 
@@ -47,10 +47,18 @@ class FileInputType extends InputType implements IsMultiple {
 		return $this;
 	}
 
-	public function setFolder(Folder $folder){
+	public function setFolder(IsFolder $folder){
 		$this->folder = $folder;
-		$this->setParams(['folder' => $folder->getId()]);
+		$this->setParams(['folder' => $folder->getKey()]);
 		return $this;
 	}
+
+    /**
+     * @return IsFolder|null
+     */
+    public function getFolder(): ?IsFolder
+    {
+        return $this->folder;
+    }
 
 }

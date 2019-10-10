@@ -23,10 +23,9 @@ abstract class FormRequest extends BaseFormRequest implements FormRequestInterfa
 	 *
 	 * @return FormType
 	 */
-	public function form(): FormType {
+	public function form($params = []): FormType {
 
 		$form   = new FormType( static::name() );
-		$params = [];
 
 		if ($this instanceof EntityRequestInterface && ($entity = $this->getEntity())) {
 			$params['_entity'] = $entity->getKey();

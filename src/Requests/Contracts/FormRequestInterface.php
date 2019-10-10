@@ -19,7 +19,7 @@ interface FormRequestInterface {
 	 *
 	 * @return FormType
 	 */
-	public function form(): FormType;
+	public function form($params = []): FormType;
 
 	/**
 	 * Handle the request

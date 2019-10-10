@@ -2,17 +2,16 @@
 
 namespace Foundry\Core\Entities\Contracts;
 
-use Foundry\Core\Entities\Node;
 
 interface HasNode extends HasIdentity
 {
     /**
-     * @param Node $node
+     * @param IsNode $node
      */
     public function setNode($node): void;
 
     /**
-     * @return Node|null
+     * @return IsNode|null
      */
     public function getNode();
 

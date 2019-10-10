@@ -22,11 +22,6 @@ interface HasFolder
 	public function getFolderableEntity(): ?HasFolder;
 
 	/**
-	 * @param IsFolder $folder
-	 */
-	public function setFolder(IsFolder $folder): void;
-
-	/**
 	 * @return IsFolder|null
 	 */
 	public function getFolder(): ?IsFolder;
