@@ -16,4 +16,14 @@ trait HasParams {
 		return $this->getAttribute('params');
 	}
 
+	public function addParam($key, $value)
+    {
+        $params = $this->getParams();
+        if (!$params) {
+            $params = [];
+        }
+        $params[$key] = $value;
+        return $this;
+    }
+
 }

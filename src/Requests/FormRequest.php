@@ -41,7 +41,8 @@ abstract class FormRequest extends BaseFormRequest implements FormRequestInterfa
 			$form->setValues( $inputs );
 		}
 
-		$form->setAction( route( $this::name(), $params , false) );
+		$form->setAction( resourceUri( $this::name()) );
+		$form->setParams($params);
 		$form->setRequest( $this );
 
 		return $form;

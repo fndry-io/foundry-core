@@ -10,6 +10,7 @@ use Foundry\Core\Inputs\Types\Traits\HasClass;
 use Foundry\Core\Inputs\Types\Traits\HasErrors;
 use Foundry\Core\Inputs\Types\Traits\HasId;
 use Foundry\Core\Inputs\Types\Traits\HasName;
+use Foundry\Core\Inputs\Types\Traits\HasParams;
 use Foundry\Core\Inputs\Types\Traits\HasRules;
 use Foundry\Core\Inputs\Types\Traits\HasTitle;
 use Foundry\Core\Entities\Contracts\HasVisibility;
@@ -32,7 +33,8 @@ class FormType extends ParentType implements Entityable {
 		HasButtons,
 		HasErrors,
 		HasRules,
-		HasTitle
+		HasTitle,
+        HasParams
 	;
 
 	protected $request;

@@ -38,7 +38,7 @@ trait HasReference
      */
 	public function findReference($type, $id)
     {
-        if (class_exists($type) && is_a($type, Model::class, true) && $reference = $type::query()->find($id)) {
+        if (class_exists($type) && is_a($type, Model::class, true) && $reference = $type::query()->withoutGlobalScopes()->find($id)) {
             return $reference;
         }
         return null;
