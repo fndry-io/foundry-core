@@ -15,9 +15,4 @@ abstract class Model extends \Illuminate\Database\Eloquent\Model implements HasV
 	use Visible;
 	use SetRelatable;
 
-    public function getEntityTitle() : string
-    {
-        return strtolower((new \ReflectionClass($this))->getShortName()) . ' #' . $this->getKey();
-    }
-
 }

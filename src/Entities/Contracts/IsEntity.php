@@ -14,6 +14,4 @@ interface IsEntity extends HasIdentity, HasVisibility, Arrayable
 
 	public function only($keys);
 
-	public function getEntityTitle() : string;
-
 }

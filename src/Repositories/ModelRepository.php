@@ -317,7 +317,7 @@ abstract class ModelRepository implements RepositoryInterface
 		if ($result) {
             $this->dispatch('deleted', $model);
         }
-		return false;
+        return $result;
 	}
 
 	/**
