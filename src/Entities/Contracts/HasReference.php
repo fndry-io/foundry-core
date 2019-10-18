@@ -6,6 +6,8 @@ use Foundry\Core\Entities\Entity;
 
 interface HasReference {
 
+    public function reference();
+
 	/**
 	 * @return int
 	 */
