@@ -3,13 +3,21 @@
 namespace Foundry\Core\Models;
 
 use Foundry\Core\Entities\Contracts\HasIdentity;
+use Foundry\Core\Entities\Contracts\HasRepository;
 use Foundry\Core\Entities\Contracts\HasVisibility;
 use Foundry\Core\Models\Traits\SetRelatable;
 use Foundry\Core\Models\Traits\Visible;
+use Foundry\Core\Repositories\ModelRepository;
 use Illuminate\Contracts\Support\Arrayable;
 
-class Model extends \Illuminate\Database\Eloquent\Model implements HasVisibility, Arrayable, HasIdentity
+abstract class Model extends \Illuminate\Database\Eloquent\Model implements HasVisibility, Arrayable, HasIdentity
 {
 	use Visible;
 	use SetRelatable;
+
+    public function getEntityTitle() : string
+    {
+        return strtolower((new \ReflectionClass($this))->getShortName()) . ' #' . $this->getKey();
+    }
+
 }

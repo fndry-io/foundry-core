@@ -7,6 +7,7 @@ use Foundry\Core\Entities\Contracts\HasNode;
 use Foundry\Core\Entities\Contracts\IsEntity;
 use Foundry\Core\Models\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use ReflectionClass;
 
 /**
  * Trait Referencable

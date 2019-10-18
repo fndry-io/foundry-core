@@ -22,6 +22,11 @@ trait SoftDeleteable
 			$model = $this->find($id);
 		}
 
-		return $model->restore();
-	}
+        $result = $model->restore();
+        if ($result) {
+            $this->dispatch('restored', $model);
+        }
+        return $result;
+
+    }
 }

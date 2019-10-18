@@ -19,9 +19,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 trait NodeReferenceable
 {
 
-	public function node() : BelongsTo
+    /**
+     * @return BelongsTo
+     */
+	public function node()
 	{
-		return $this->belongsTo(Node::class);
+		return $this->belongsTo(Node::class)->withoutGlobalScopes();
 	}
 
 	/**

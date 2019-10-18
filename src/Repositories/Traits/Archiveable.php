@@ -25,7 +25,11 @@ trait Archiveable
 				throw new NotFoundHttpException();
 			}
 		}
-		return $model->archive();
+		$result = $model->archive();
+		if ($result) {
+		    $this->dispatch('archived', $model);
+        }
+		return $result;
 	}
 
 	/**
@@ -42,6 +46,10 @@ trait Archiveable
 				throw new NotFoundHttpException();
 			}
 		}
-		return $model->unArchive();
-	}
+        $result = $model->unArchive();
+        if ($result) {
+            $this->dispatch('unArchived', $model);
+        }
+        return $result;
+    }
 }

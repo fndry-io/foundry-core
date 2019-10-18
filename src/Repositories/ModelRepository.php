@@ -21,6 +21,8 @@ abstract class ModelRepository implements RepositoryInterface
 
 	protected static $instance;
 
+    protected $dispatchesEvents = [];
+
 	/**
 	 * @return string|Model
 	 */
@@ -67,6 +69,7 @@ abstract class ModelRepository implements RepositoryInterface
 	 * @param int|Model $id
 	 *
 	 * @return Model|IsEntity|Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|object
+     * @throws \Exception
 	 */
 	protected function getModel($id)
 	{
@@ -252,6 +255,7 @@ abstract class ModelRepository implements RepositoryInterface
 	{
 		$model = self::make($data);
 		if ($model->save()) {
+		    $this->dispatch('inserted', $model);
 			return $model;
 		} else {
 			return false;
@@ -271,6 +275,7 @@ abstract class ModelRepository implements RepositoryInterface
 		$model = $this->getModel($id);
 		$model->fill($data);
 		if ($model->save()) {
+            $this->dispatch('updated', $model);
 			return $model;
 		} else {
 			return false;
@@ -304,10 +309,15 @@ abstract class ModelRepository implements RepositoryInterface
 		$model = $this->getModel($id);
 
 		if ($model instanceof IsSoftDeletable && $model->isDeleted()) {
-			return $model->forceDelete();
+            $result = $model->forceDelete();
 		} else {
-			return $model->delete();
+            $result = $model->delete();
 		}
+
+		if ($result) {
+            $this->dispatch('deleted', $model);
+        }
+		return false;
 	}
 
 	/**
@@ -330,4 +340,19 @@ abstract class ModelRepository implements RepositoryInterface
 		return $list;
 	}
 
+    /**
+     * Dispatch the event by name
+     *
+     * @param $event
+     * @param $model
+     */
+	public function dispatch($event, $model)
+    {
+        if (isset($this->dispatchesEvents[$event])) {
+            $event = $this->dispatchesEvents[$event];
+            if (class_exists($event)) {
+                event(new $event($model));
+            }
+        }
+    }
 }
