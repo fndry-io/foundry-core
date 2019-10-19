@@ -9,16 +9,6 @@ interface HasReference {
     public function reference();
 
 	/**
-	 * @return int
-	 */
-	public function getReferenceId(): int;
-
-	/**
-	 * @return string
-	 */
-	public function getReferenceType(): string;
-
-	/**
 	 * @return Entity|object|null
 	 */
 	public function getReference();
