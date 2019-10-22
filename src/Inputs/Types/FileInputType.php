@@ -53,6 +53,17 @@ class FileInputType extends InputType implements IsMultiple {
 		return $this;
 	}
 
+	public function setLayout($layout)
+    {
+        $this->setAttribute('layout', $layout);
+        return $this;
+    }
+
+    public function getLayout()
+    {
+        return $this->getAttribute('layout');
+    }
+
     /**
      * @return IsFolder|null
      */
