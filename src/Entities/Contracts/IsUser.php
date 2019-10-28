@@ -28,4 +28,9 @@ interface IsUser extends IsEntity, IsFillable, Authenticatable, CanResetPassword
 	 */
 	public function isSuperAdmin();
 
+    /**
+     * @return boolean
+     */
+    public function isAdmin();
+
 }
