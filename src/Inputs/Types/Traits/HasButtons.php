@@ -11,7 +11,7 @@ trait HasButtons {
 	 *
 	 * @var ButtonType[] The array of button types
 	 */
-	protected $buttons;
+	protected $buttons = [];
 
 	/**
 	 * Adds buttons to the input
