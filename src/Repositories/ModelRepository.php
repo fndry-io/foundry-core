@@ -304,11 +304,11 @@ abstract class ModelRepository implements RepositoryInterface
 	 * @return bool|null
 	 * @throws \Exception
 	 */
-	public function delete($id)
+	public function delete($id, bool $force = false)
 	{
 		$model = $this->getModel($id);
 
-		if ($model instanceof IsSoftDeletable && $model->isDeleted()) {
+		if ($model instanceof IsSoftDeletable && ($model->isDeleted() || $force)) {
             $result = $model->forceDelete();
 		} else {
             $result = $model->delete();
