@@ -56,4 +56,10 @@ trait HasButtons {
 		return $this;
 	}
 
+	public function withoutButtons()
+    {
+        $this->buttons = null;
+        return $this;
+    }
+
 }

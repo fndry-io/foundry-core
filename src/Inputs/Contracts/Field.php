@@ -18,7 +18,7 @@ interface Field {
 	/**
 	 * The input type for displaying on a page
 	 *
-	 * @return Inputable
+	 * @return self|Inputable
 	 */
 	static function input(): Inputable;
 

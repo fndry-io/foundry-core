@@ -2,6 +2,7 @@
 
 namespace Foundry\Core\Requests;
 
+use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Contracts\Support\Arrayable;
@@ -10,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceResponse;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
@@ -31,6 +33,8 @@ class Response {
 	protected $error;
 
 	protected $message;
+
+	protected $filters;
 
 	/**
 	 * Response Constructor
@@ -109,16 +113,7 @@ class Response {
 	 * @return array
 	 */
 	public function jsonSerialize() {
-		$array = [
-			'status' => $this->status,
-			'code'   => $this->code
-		];
-		if ( $this->error ) {
-			$array['error'] = $this->error;
-		}
-		if ( $this->message ) {
-			$array['message'] = $this->message;
-		}
+        $array = $this->toResponseArray();
 
 		$data = $this->data;
 		if ($data instanceof \JsonSerializable) {
@@ -155,6 +150,14 @@ class Response {
 		return $this->message;
 	}
 
+    /**
+     * @return array
+     */
+    public function getFilters(): array
+    {
+        return $this->filters;
+    }
+
 	public function __toString() {
 		return json_encode( $this->jsonSerialize() );
 	}
@@ -172,16 +175,7 @@ class Response {
 	public function toJsonResponse($request)
 	{
 		if ($this->data instanceof JsonResource) {
-			$array = [
-				'status' => $this->status,
-				'code'   => $this->code
-			];
-			if ( $this->error ) {
-				$array['error'] = $this->error;
-			}
-			if ( $this->message ) {
-				$array['message'] = $this->message;
-			}
+            $array = $this->toResponseArray();
 			$this->data->additional($array);
 			return $this->data->toResponse($request);
 		} else {
@@ -248,4 +242,32 @@ class Response {
         return $this;
     }
 
+    public function withFilters(InputTypeCollection $filters)
+    {
+        $this->filters = $filters;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    protected function toResponseArray(): array
+    {
+        $array = [
+            'status' => $this->status,
+            'code' => $this->code
+        ];
+        if ($this->error) {
+            $array['error'] = $this->error;
+        }
+        if ($this->message) {
+            $array['message'] = $this->message;
+        }
+        if ($this->filters) {
+            if ($this->filters instanceof Collection) {
+                $array['filters'] = $this->filters->jsonSerialize();
+            }
+        }
+        return $array;
+    }
 }
