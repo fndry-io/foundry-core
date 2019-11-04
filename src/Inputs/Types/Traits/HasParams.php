@@ -23,6 +23,7 @@ trait HasParams {
             $params = [];
         }
         $params[$key] = $value;
+        $this->setParams($params);
         return $this;
     }
 
