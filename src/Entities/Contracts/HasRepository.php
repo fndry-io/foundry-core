@@ -6,5 +6,5 @@ use Foundry\Core\Repositories\RepositoryInterface;
 
 interface HasRepository
 {
-    public function repository() : RepositoryInterface;
+    static function repository() : RepositoryInterface;
 }
