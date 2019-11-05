@@ -33,7 +33,7 @@ class DateTimeInputType extends InputType implements Castable {
 	) {
 		$type = 'datetime';
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
-		$this->addRule( 'date' );
+        $this->addRule( 'date_format:' . $this->format );
 		$this->setDateFormat("Y-m-d");
 		$this->setTimeFormat("H:i");
 		$this->setAttribute('stepping', 5);
@@ -41,7 +41,7 @@ class DateTimeInputType extends InputType implements Castable {
 
 	static function cast()
 	{
-		return 'datetime';
+		return 'string';
 	}
 
 	public function getValue()
