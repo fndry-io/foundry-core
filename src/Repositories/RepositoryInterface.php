@@ -77,7 +77,7 @@ interface RepositoryInterface {
 	 *
 	 * @return IsEntity|boolean
 	 */
-	public function delete($id);
+	public function delete($id, bool $force = false);
 
 	public function save($entity);
 
