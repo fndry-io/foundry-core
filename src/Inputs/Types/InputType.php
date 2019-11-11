@@ -157,6 +157,7 @@ abstract class InputType extends BaseType implements Inputable {
 	public function setDisabled(bool $disabled = true)
     {
         $this->setAttribute('disabled', $disabled);
+        return $this;
     }
 
     public function getDisabled()
