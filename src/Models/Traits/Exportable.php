@@ -4,7 +4,9 @@
 namespace Foundry\Core\Models\Traits;
 
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Log;
 
 trait Exportable
 {
@@ -34,9 +36,19 @@ trait Exportable
             foreach ($items as $item) {
                 $row = [];
                 foreach ($fields as $key) {
-                    $row[] = object_get($item, $key);
+                    $value = object_get($item, $key);
+                    if ($value instanceof Arrayable) {
+                        $value = implode(";", $value->toArray());
+                    } elseif (is_array($value)) {
+                        $value = implode(";", $value);
+                    }
+                    $row[] = $value;
                 }
-                fputcsv($fh, $row);
+                try {
+                    fputcsv($fh, $row);
+                } catch(\Throwable $e) {
+                    Log::error($e->getMessage(), $e->getTrace());
+                }
             }
             $page++;
             $result = $query->simplePaginate($perPage, null, 'export', $page);
