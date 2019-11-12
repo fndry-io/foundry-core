@@ -40,7 +40,8 @@ abstract class BaseFormRequest extends LaravelFormRequest {
 		/**
 		 * Get the entity associated with the request
 		 */
-		if (($id = $this->route('_entity')) && ($this instanceof EntityRequestInterface)) {
+        $id = $this->route('_entity', $this->input('_entity', null));
+		if ($id && ($this instanceof EntityRequestInterface)) {
 			$entity = $this->findEntity($id);
 			if (!$entity) {
 				throw new NotFoundHttpException(__('Entity not found'));
