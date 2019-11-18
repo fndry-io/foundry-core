@@ -107,4 +107,12 @@ class Node extends Model implements IsNode
     {
         $this->entity()->associate($entity);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getRootNode()
+    {
+        return $this->ancestors()->whereNull('parent_id')->first();
+    }
 }
