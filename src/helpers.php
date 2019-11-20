@@ -270,3 +270,24 @@ if (! function_exists('object_extract')) {
 		return $return;
 	}
 }
+
+
+if (! function_exists('parse_param_string')) {
+
+    /**
+     * @param string $string The string to parse
+     * @param string $delimiter The primary delimiter which separates the parameter sets
+     * @param string $separator The separator that separates the key value pair
+     * @return array
+     */
+    function parse_param_string(string $string, string $delimiter = ";", string $separator = "=")
+    {
+        $params = [];
+        $split = explode($delimiter, $string);
+        foreach ($split as $item) {
+            $keyval = explode($separator, $item);
+            $params[$keyval[0]] = trim($keyval[1]);
+        }
+        return $params;
+    }
+}
