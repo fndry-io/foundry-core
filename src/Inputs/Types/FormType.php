@@ -203,7 +203,7 @@ class FormType extends ParentType implements Entityable {
 	public function getValue( $key ) {
 		$value = null;
 		if ( $this->entity ) {
-			$value = object_get($this->entity, $key);
+			$value = obj_arr_get($this->entity, $key);
 		}
 		$_value = Arr::get($this->values, $key);
 		if ($_value !== null) {
