@@ -29,27 +29,48 @@ class InputTypeCollection extends Collection {
 	 */
 	static public function fromTypes($types)
 	{
-		$collection = new static();
-		foreach ($types as $type) {
-
-			if ($type instanceof FormType) {
-				$parent = $type->getName();
-				foreach (static::fromTypes($type->getInputs()) as $child) {
-					$key = "{$parent}.{$child->getName()}";
-					/**
-					 * @var Inputable $child
-					 */
-					$collection->put($key, $child->setName($key));
-				}
-			} else {
-				/**
-				 * @var Inputable $type
-				 */
-				$collection->put($type->getName(), $type);
-			}
-		}
-		return $collection;
+		return (new static())->addTypes($types);
 	}
+
+    /**
+     * Add a series of types to the collection
+     *
+     * @param array $types
+     * @return $this
+     */
+	public function addTypes(array $types)
+    {
+        foreach ($types as $type) {
+            $this->addType($type);
+        }
+        return $this;
+    }
+
+    /**
+     * Add an input type to the collection
+     *
+     * @param $type
+     * @return $this
+     */
+	public function addType($type)
+    {
+        if ($type instanceof FormType) {
+            $parent = $type->getName();
+            foreach (static::fromTypes($type->getInputs()) as $child) {
+                $key = "{$parent}.{$child->getName()}";
+                /**
+                 * @var Inputable $child
+                 */
+                $this->put($key, $child->setName($key));
+            }
+        } else {
+            /**
+             * @var Inputable $type
+             */
+            $this->put($type->getName(), $type);
+        }
+        return $this;
+    }
 
 	/**
 	 * Get all the rules of the inputs

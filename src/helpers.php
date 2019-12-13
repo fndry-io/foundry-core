@@ -291,3 +291,38 @@ if (! function_exists('parse_param_string')) {
         return $params;
     }
 }
+
+
+if (! function_exists('obj_arr_get')) {
+    /**
+     * Get an item from an object or array using "dot" notation.
+     *
+     * This does a better job than object_get as object_get can't go into cast array/json values as they are not objects
+     *
+     * @param  object  $object
+     * @param  string  $key
+     * @param  mixed   $default
+     * @return mixed
+     */
+    function obj_arr_get($object, $key, $default = null)
+    {
+        if (is_null($key) || trim($key) == '') {
+            return $object;
+        }
+
+        foreach (explode('.', $key) as $segment) {
+
+            if (is_object($object) && isset($object->{$segment})) {
+                $object = $object->{$segment};
+            } elseif (is_array($object) && isset($object[$segment])) {
+                $object = $object[$segment];
+            } else {
+                return value($default);
+            }
+
+
+        }
+
+        return $object;
+    }
+}

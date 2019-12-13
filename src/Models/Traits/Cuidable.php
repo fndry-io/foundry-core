@@ -11,18 +11,21 @@ trait Cuidable
      */
     public static function bootCuidable() {
         static::creating( function ( $model ) {
-            if (empty($model->{$model->getCuidName()})) {
-                $model->{$model->getCuidName()} = Cuid::make();
+            $column = $model->getCuidColumn();
+            if (empty($model->{$column})) {
+                $model->{$column} = Cuid::make();
             }
         } );
     }
 
-    public function getCuidName()
+    /**
+     * Get the name of the "deleted at" column.
+     *
+     * @return string
+     */
+    public function getCuidColumn()
     {
-        if ($this->cuidKey) {
-            return $this->cuidKey;
-        } else {
-            return 'cid';
-        }
+        return defined('static::CUID') ? static::CUID : 'cuid';
     }
+
 }

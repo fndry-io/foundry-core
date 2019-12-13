@@ -11,6 +11,7 @@ use Foundry\Core\Inputs\Types\Traits\HasOptions;
 use Foundry\Core\Inputs\Types\Traits\HasParams;
 use Foundry\Core\Inputs\Types\Traits\HasQueryOptions;
 use Foundry\Core\Inputs\Types\Traits\HasTaggable;
+use Illuminate\Support\Collection;
 
 /**
  * Class ChoiceType
@@ -56,6 +57,8 @@ class ChoiceInputType extends InputType implements Choosable, IsMultiple {
         $value = parent::getValue();
         if ($value instanceof IsEntity) {
             $value = object_get($value, $this->getValueKey());
+        } elseif ($value instanceof Collection) {
+            $value = $value->pluck($this->getValueKey())->toArray();
         }
         return $value;
     }
@@ -63,7 +66,9 @@ class ChoiceInputType extends InputType implements Choosable, IsMultiple {
     public function setValue( $value = null ) {
 		if ($value instanceof IsEntity) {
 			$value = $value->getKey();
-		}
+		} elseif ($value instanceof Collection) {
+            $value = $value->pluck($this->getValueKey())->toArray();
+        }
 		return parent::setValue($value);
 	}
 
