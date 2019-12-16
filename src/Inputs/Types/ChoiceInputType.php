@@ -94,6 +94,12 @@ class ChoiceInputType extends InputType implements Choosable, IsMultiple {
 		return $this->getAttribute('searchable');
 	}
 
+	public function setStacked($value)
+    {
+        $this->setAttribute('stacked', $value);
+        return $this;
+    }
+
 	public function display($value = null) {
 
 		if ($value === null) {
