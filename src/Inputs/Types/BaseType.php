@@ -248,9 +248,22 @@ abstract class BaseType implements Arrayable, \JsonSerializable {
 	 * This applies when the renderer needs to render the type using another approach or custom element or component
 	 *
 	 * @param bool $value
+     * @return $this
 	 */
 	public function setCustom(bool $value){
 		$this->setAttribute('custom', $value);
+        return $this;
 	}
+
+    /**
+     * Set the cols
+     *
+     * @param int|array $size The number of columns it should occupy. If you want to set different sizes, pass an array where the keys are "sm", "md", "lg" and the values the number of cols it should occupy.
+     * @return $this
+     */
+    public function setCols($size){
+        $this->setAttribute('cols', $size);
+        return $this;
+    }
 
 }
