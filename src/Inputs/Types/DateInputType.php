@@ -4,7 +4,6 @@ namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Traits\HasDateFormat;
 use Foundry\Core\Inputs\Types\Traits\HasMinMax;
-use Illuminate\Support\Carbon;
 
 /**
  * Class DateType
@@ -28,6 +27,7 @@ class DateInputType extends DateTimeInputType {
         $this->setDateFormat("YYYY-MM-DD");
         $this->setMode("calendar");
         $this->setHelp(__('Date as yyyy-mm-dd'));
+        $this->dateOnly();
     }
 
 }
