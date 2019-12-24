@@ -68,12 +68,6 @@ class DateTimeInputType extends InputType implements Castable {
 		return null;
 	}
 
-    public function setMask($mask)
-    {
-        $this->setAttribute('mask', $mask);
-        return $this;
-    }
-
     public function setMaskFormat($format)
     {
         $this->setAttribute('maskFormat', $format);
