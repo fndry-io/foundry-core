@@ -19,7 +19,7 @@ class DateTimeInputType extends InputType implements Castable {
 	use HasDateFormat;
 	use HasTimeFormat;
 
-	protected $format = "Y-m-d\TH:i:sO";
+	protected $format = DATE_ATOM;//"Y-m-d\TH:i:sP";
 
 	public function __construct(
 		string $name,
