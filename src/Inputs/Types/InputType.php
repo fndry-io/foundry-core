@@ -169,4 +169,26 @@ abstract class InputType extends BaseType implements Inputable {
 		$value = $this->getValue();
 		return $value;
 	}
+
+    /**
+     * Adds an instruction to append text to the input
+     *
+     * @param $text
+     * @return $this
+     */
+    public function setAppend($text){
+        $this->setAttribute('append', $text);
+        return $this;
+    }
+
+    /**
+     * Adds an instruction to append text to the input
+     *
+     * @param $text
+     * @return $this
+     */
+    public function setPrepend($text){
+        $this->setAttribute('prepend', $text);
+        return $this;
+    }
 }
