@@ -8,6 +8,7 @@ use Foundry\Core\Entities\Contracts\IsEntity;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -67,16 +68,21 @@ abstract class ModelRepository implements RepositoryInterface
 	 * Find the record or throws an exception
 	 *
 	 * @param int|Model $id
+     * @param bool $fail If true, calls findOrFail and throws a not found exception if not found
 	 *
 	 * @return Model|IsEntity|Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|object
-     * @throws \Exception
+     * @throws \Exception|ModelNotFoundException
 	 */
-	protected function getModel($id)
+	protected function getModel($id, $fail = true)
 	{
 		if ($id instanceof \Illuminate\Database\Eloquent\Model) {
 			return $id;
 		} else if (is_int($id)) {
-			return $this->query()->findOrFail($id);
+		    if ($fail) {
+                return $this->query()->findOrFail($id);
+            } else {
+                return $this->query()->find($id);
+            }
 		} else {
 			throw new \Exception('Invalid id value passed to findOrAbort');
 		}

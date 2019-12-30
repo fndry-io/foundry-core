@@ -11,13 +11,23 @@ use Illuminate\Support\Carbon;
  * Class DateTimeType
  *
  * @package Foundry\Requests\Types
+ * @method setMin($value = null, $add_rule = true) Set the minimum date. This should be a string in the DATE_ATOM format.
+ * @method setMax($value = null, $add_rule = true) Set the maximum date. This should be a string in the DATE_ATOM format.
  */
 class DateTimeInputType extends InputType implements Castable {
 
 	use HasMinMax;
 	use HasDateTimeFormat;
 
-	protected $format = DATE_ATOM;//"Y-m-d\TH:i:sP";
+    /**
+     * The date format to use
+     *
+     * Note: This uses DATE_ATOM as this is more consistent with the ISO 8601 standard
+     *
+     * @see https://www.php.net/manual/en/class.datetimeinterface.php#datetime.constants.types
+     * @var string The date format
+     */
+	protected $format = DATE_ATOM;
 
 	public function __construct(
 		string $name,
@@ -104,6 +114,11 @@ class DateTimeInputType extends InputType implements Castable {
         $this->setAttribute('pickerOptions.noTime', true);
         $this->setAttribute('pickerOptions.noDate', false);
         return $this;
+    }
+
+    public function setSelectableDays($days)
+    {
+        $this->setAttribute('pickerOptions.days', $days);
     }
 
 }
