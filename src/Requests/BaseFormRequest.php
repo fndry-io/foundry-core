@@ -34,6 +34,13 @@ abstract class BaseFormRequest extends LaravelFormRequest {
 		return [];
 	}
 
+    /**
+     * A convenience callback method for doing additional actions as needed
+     */
+	public function afterResolve(){
+
+    }
+
 	public function setRouteResolver( Closure $callback ) {
 		parent::setRouteResolver( $callback );
 
@@ -56,6 +63,8 @@ abstract class BaseFormRequest extends LaravelFormRequest {
 		if ( $this instanceof InputInterface) {
 			$this->setInput( $this->makeInput( $this->all() ) );
 		}
+
+		$this->afterResolve();
 
 		return $this;
 	}

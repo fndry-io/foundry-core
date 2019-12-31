@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Cache;
+
 if ( ! function_exists( 'setting' ) ) {
 	/**
 	 * Get / set the specified setting value.
@@ -325,4 +327,31 @@ if (! function_exists('obj_arr_get')) {
 
         return $object;
     }
+}
+
+if ( ! function_exists( 'field_options_label' ) ) {
+
+    /**
+     * Extracts a specific value from an existing options label field
+     *
+     * @param string $class
+     * @param string $value
+     * @param null $default
+     * @param string $valueKey
+     * @param string $textKey
+     * @return mixed
+     */
+    function field_options_label( $class, $value, $default = null, $valueKey = 'value', $textKey = 'text') {
+        /** @var \Foundry\Core\Inputs\Contracts\FieldOptions|string $class */
+        /** @var array $options */
+        $options = Cache::rememberForever('options::' . $class, function() use ($class, $textKey, $valueKey){
+            return \Illuminate\Support\Arr::pluck($class::options(), $textKey, $valueKey);
+        });
+        if (isset($options[$value])) {
+            return $options[$value];
+        } else {
+            return $default;
+        }
+    }
+
 }
