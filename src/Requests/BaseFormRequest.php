@@ -20,6 +20,16 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  */
 abstract class BaseFormRequest extends LaravelFormRequest {
 
+    /**
+     * @var bool Controls if a NotFoundHttpException should be thrown if the entity is not found
+     */
+    protected $throwNotFoundException = true;
+
+    /**
+     * @var null The entity id if there is one in the request
+     */
+    protected $entityId = null;
+
 	/**
 	 * @return bool
 	 */
@@ -47,11 +57,14 @@ abstract class BaseFormRequest extends LaravelFormRequest {
 		/**
 		 * Get the entity associated with the request
 		 */
-        $id = $this->route('_entity', $this->input('_entity', null));
-		if ($id && ($this instanceof EntityRequestInterface)) {
-			$entity = $this->findEntity($id);
-			if (!$entity) {
-				throw new NotFoundHttpException(__('Entity not found'));
+        $this->entityId = $this->route('_entity', $this->input('_entity', null));
+		if ($this instanceof EntityRequestInterface) {
+            $entity = null;
+		    if ($this->entityId) {
+                $entity = $this->findEntity($this->entityId);
+            }
+			if (!$entity && $this->throwNotFoundException) {
+                throw new NotFoundHttpException(__('Entity not found'));
 			} else {
 				$this->setEntity($entity);
 			}

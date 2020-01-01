@@ -69,8 +69,8 @@ class Response {
 	 *
 	 * @return Response
 	 */
-	static function success( $data = [], $message = null ) {
-		return new Response( $data, true, 200, null, $message );
+	static function success( $data = [], $message = null, $code = 200 ) {
+		return new Response( $data, true, $code, null, $message );
 	}
 
 	/**
