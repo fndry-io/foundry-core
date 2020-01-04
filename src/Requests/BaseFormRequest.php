@@ -44,45 +44,49 @@ abstract class BaseFormRequest extends LaravelFormRequest {
 		return [];
 	}
 
+//	public function setRouteResolver( Closure $callback ) {
+//		parent::setRouteResolver( $callback );
+//
+//
+//
+//		return $this;
+//	}
+
     /**
-     * A convenience callback method for doing additional actions as needed
+     * Prepare the data for validation.
+     *
+     * @return void
      */
-	public function afterResolve(){
+    protected function prepareForValidation()
+    {
+        parent::prepareForValidation();
+
+        /**
+         * Get the entity associated with the request
+         */
+        $this->entityId = $this->route('_entity', $this->input('_entity', null));
+        if ($this instanceof EntityRequestInterface) {
+            $entity = null;
+            if ($this->entityId) {
+                $entity = $this->findEntity($this->entityId);
+            }
+            if (!$entity && $this->throwNotFoundException) {
+                throw new NotFoundHttpException(__('Entity not found'));
+            } else {
+                $this->setEntity($entity);
+            }
+        }
+
+        /**
+         * Set the Input
+         */
+        if ( $this instanceof InputInterface) {
+            $this->setInput( $this->makeInput( $this->all() ) );
+        }
 
     }
 
-	public function setRouteResolver( Closure $callback ) {
-		parent::setRouteResolver( $callback );
-
-		/**
-		 * Get the entity associated with the request
-		 */
-        $this->entityId = $this->route('_entity', $this->input('_entity', null));
-		if ($this instanceof EntityRequestInterface) {
-            $entity = null;
-		    if ($this->entityId) {
-                $entity = $this->findEntity($this->entityId);
-            }
-			if (!$entity && $this->throwNotFoundException) {
-                throw new NotFoundHttpException(__('Entity not found'));
-			} else {
-				$this->setEntity($entity);
-			}
-		}
-
-		/**
-		 * Set the Input
-		 */
-		if ( $this instanceof InputInterface) {
-			$this->setInput( $this->makeInput( $this->all() ) );
-		}
-
-		$this->afterResolve();
-
-		return $this;
-	}
-
-	/**
+    /**
 	 * Checks if the request is Authorized
 	 *
 	 * This uses the first part of validateResolved

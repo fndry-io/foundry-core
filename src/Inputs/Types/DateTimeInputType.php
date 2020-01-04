@@ -119,6 +119,19 @@ class DateTimeInputType extends InputType implements Castable {
     public function setSelectableDays($days)
     {
         $this->setAttribute('pickerOptions.days', $days);
+        return $this;
+    }
+
+    public function setMaxDate($date)
+    {
+        $this->setAttribute('pickerOptions.maxDate', $date);
+        return $this;
+    }
+
+    public function setMinDate($date)
+    {
+        $this->setAttribute('pickerOptions.minDate', $date);
+        return $this;
     }
 
 }

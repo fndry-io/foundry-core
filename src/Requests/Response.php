@@ -36,6 +36,8 @@ class Response {
 
 	protected $filters;
 
+	protected $additional = [];
+
 	/**
 	 * Response Constructor
 	 *
@@ -106,6 +108,19 @@ class Response {
 	static function error( $error, $code , $data = []) {
 		return new Response( $data, false, $code, $error );
 	}
+
+    /**
+     * Add additional meta data to the resource response.
+     *
+     * @param  array  $data
+     * @return $this
+     */
+    public function additional(array $data)
+    {
+        $this->additional = $data;
+
+        return $this;
+    }
 
 	/**
 	 * Convert the response to an array
@@ -244,7 +259,7 @@ class Response {
 
     public function withFilters(InputTypeCollection $filters)
     {
-        $this->filters = $filters;
+        $this->additional['filters'] = $filters;
         return $this;
     }
 
@@ -257,6 +272,9 @@ class Response {
             'status' => $this->status,
             'code' => $this->code
         ];
+        if ($this->additional) {
+            $array['meta'] = $this->additional;
+        }
         if ($this->error) {
             $array['error'] = $this->error;
         }
