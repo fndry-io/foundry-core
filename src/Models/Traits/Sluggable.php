@@ -95,10 +95,10 @@ trait Sluggable {
 		} else {
 			$query = static::query();
 		}
-		$query->select( $field )->where( $field, 'like', $slug . '%' );
+		$query->select( $this->qualifyColumn($field) )->where( $this->qualifyColumn($field), 'like', $slug . '%' );
 
 		if ( $this->getKey() ) {
-			$query->where( 'id', '!=', $this->getKey() );
+			$query->where( $this->qualifyColumn('id'), '!=', $this->getKey() );
 		}
 
 		return $query->get();
