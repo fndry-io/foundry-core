@@ -24,7 +24,6 @@ trait ViewableInput
         $form = new FormType( uniqid('form_') );
 
         if ($request instanceof EntityRequestInterface && ($entity = $request->getEntity())) {
-            $params['_entity'] = $entity->getKey();
             $form->setEntity( $entity );
         }
 
@@ -33,7 +32,7 @@ trait ViewableInput
         $this->cast($inputs);
         $form->setValues( $inputs );
 
-        $form->setAction( $request->fullUrl() );
+        $form->setAction( $request->url() );
         $form->setParams( $params );
         $form->setRequest( $request );
 
