@@ -12,7 +12,7 @@ use Foundry\Core\Requests\Contracts\InputInterface;
  *
  * @package Foundry\Requests
  */
-abstract class FormRequest extends BaseFormRequest implements FormRequestInterface {
+abstract class FormRequest extends FoundryFormRequest implements FormRequestInterface {
 
 	/**
 	 * Build a form object for this form request

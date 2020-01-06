@@ -3,7 +3,13 @@
 namespace Foundry\Core\Requests\Contracts;
 
 use Foundry\Core\Inputs\Inputs;
+use Illuminate\Validation\ValidationException;
 
+/**
+ * Interface InputInterface
+ * @package Foundry\Core\Requests\Contracts
+ * @deprecated InputInterface is deprecated in favour of traditional Controllers and Requests
+ */
 interface InputInterface {
 
 	/**
@@ -35,4 +41,9 @@ interface InputInterface {
 	 * @param Inputs $input
 	 */
 	public function setInput( Inputs $input ): void;
+
+    /**
+     * @return ValidationException|void
+     */
+    public function validateInputs();
 }

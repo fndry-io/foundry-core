@@ -43,16 +43,19 @@ trait FullTextSearchable
 	 */
 	public function scopeSearch($query, $term)
 	{
-		$columns = implode(',', array_map(function($value) {
-			return $this->table . '.' . $value;
-		}, $this->searchable));
+	    if ($columns = $this->getSearchableColumns()) {
+            $columns = implode(',', array_map(function($value) {
+                return $this->table . '.' . $value;
+            }, $this->getSearchableColumns()));
 
-		$as = $this->table . '_relevance_score';
+            $as = $this->table . '_relevance_score';
 
-		$query->selectRaw("MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE) AS {$as}", [$this->fullTextWildcards($term)])
-		             ->whereRaw("MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)", [$this->fullTextWildcards($term)])
-		             ->orderByDesc("{$as}");
-
+            $query->selectRaw("MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE) AS {$as}", [$this->fullTextWildcards($term)])
+                ->whereRaw("MATCH ({$columns}) AGAINST (? IN BOOLEAN MODE)", [$this->fullTextWildcards($term)])
+                ->orderByDesc("{$as}");
+        }
 		return $query;
 	}
+
+	abstract public function getSearchableColumns() : array;
 }

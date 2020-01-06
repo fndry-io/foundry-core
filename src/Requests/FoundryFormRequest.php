@@ -18,7 +18,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  *
  * @package Foundry\Requests
  */
-abstract class BaseFormRequest extends LaravelFormRequest {
+abstract class FoundryFormRequest extends LaravelFormRequest {
 
     /**
      * @var bool Controls if a NotFoundHttpException should be thrown if the entity is not found
@@ -43,14 +43,6 @@ abstract class BaseFormRequest extends LaravelFormRequest {
 	public function rules(){
 		return [];
 	}
-
-//	public function setRouteResolver( Closure $callback ) {
-//		parent::setRouteResolver( $callback );
-//
-//
-//
-//		return $this;
-//	}
 
     /**
      * Prepare the data for validation.

@@ -16,37 +16,14 @@ use Illuminate\Support\Collection;
  */
 trait Sluggable {
 
-
-	/**
-	 * Get field name representing the slug, default slug
-	 *
-	 * @return string
-	 */
-	public function getSlugField() {
-		return isset( $this->slug_field ) ?
-			$this->slug_field :
-			'slug';
-	}
-
-	/**
-	 * Get field name from which slug is to be created, default name
-	 *
-	 * @return string
-	 */
-	public function getSluggableField() {
-		return isset( $this->sluggable ) ?
-			$this->sluggable :
-			'name';
-	}
-
 	/**
 	 * Laravel Model Boot function
 	 */
 	protected static function bootSluggable() {
 		static::creating( function ( $model ) {
 			/**@var $model Sluggable */
-			if (empty($model[ $model->getSlugField() ])) {
-				$model[ $model->getSlugField() ] = $model->createSlug( $model[ $model->getSluggableField() ] );
+			if (empty($model->{$model->getSluggableColumn()})) {
+				$model->{$model->getSluggableColumn()} = $model->createSlug( $model->{$model->getSluggableSourceColumn()} );
 			}
 		} );
 	}
@@ -54,26 +31,26 @@ trait Sluggable {
 	/**
 	 * Create a new slug
 	 *
-	 * @param $sluggable
+	 * @param string $text
 	 *
 	 * @return string
 	 * @throws \Exception
 	 */
-	public function createSlug( $sluggable ) {
+	public function createSlug( string $text ) {
 		//Create slug
-		$slug  = str_slug( $sluggable );
-		$field = $this->getSlugField();
+		$slug  = str_slug( $text );
+		$column = $this->getSluggableColumn();
 		// Get any that could possibly be related.
-		$allSlugs = $this->getRelatedSlugs( $slug, $field );
+		$allSlugs = $this->getRelatedSlugs( $slug );
 		// If we haven't used it before then we are all good.
 		/**@var $allSlugs Collection */
-		if ( ! $allSlugs->contains( $field, $slug ) ) {
+		if ( ! $allSlugs->contains( $column, $slug ) ) {
 			return $slug;
 		}
 		// Just append numbers until we find one not used.
 		for ( $i = 1; $i <= 1000; $i ++ ) {
 			$newSlug = $slug . '-' . $i;
-			if ( ! $allSlugs->contains( $field, $newSlug ) ) {
+			if ( ! $allSlugs->contains( $column, $newSlug ) ) {
 				return $newSlug;
 			}
 		}
@@ -85,23 +62,63 @@ trait Sluggable {
 	 * Get models with given slug
 	 *
 	 * @param $slug
-	 * @param $field
 	 *
 	 * @return mixed
 	 */
-	private function getRelatedSlugs( $slug, $field ) {
+	private function getRelatedSlugs( $slug ) {
 		if (method_exists($this, 'trashed')) {
 			$query = static::withTrashed();
 		} else {
 			$query = static::query();
 		}
-		$query->select( $this->qualifyColumn($field) )->where( $this->qualifyColumn($field), 'like', $slug . '%' );
+		$query->select( $this->getQualifiedSluggableColumn(), $this->getQualifiedSluggableSourceColumn() )->where( $this->getQualifiedSluggableColumn(), 'like', $slug . '%' );
 
-		if ( $this->getKey() ) {
-			$query->where( $this->qualifyColumn('id'), '!=', $this->getKey() );
+		//ensure not the same record
+		if ( $key = $this->getKey() ) {
+			$query->where( $this->getQualifiedKeyName(), '!=', $key );
 		}
 
 		return $query->get();
 	}
+
+    /**
+     * Get the name of the "deleted at" column.
+     *
+     * @return string
+     */
+    public function getSluggableColumn()
+    {
+        return defined('static::SLUGGABLE_COLUMN') ? static::SLUGGABLE_COLUMN : 'slug';
+    }
+
+    /**
+     * Get the fully qualified "namespaced at" column.
+     *
+     * @return string
+     */
+    public function getQualifiedSluggableColumn()
+    {
+        return $this->qualifyColumn($this->getSluggableColumn());
+    }
+
+    /**
+     * Get the name of the "deleted at" column.
+     *
+     * @return string
+     */
+    public function getSluggableSourceColumn()
+    {
+        return defined('static::SLUGGABLE_SOURCE') ? static::SLUGGABLE_SOURCE : 'name';
+    }
+
+    /**
+     * Get the fully qualified "namespaced at" column.
+     *
+     * @return string
+     */
+    public function getQualifiedSluggableSourceColumn()
+    {
+        return $this->qualifyColumn($this->getSluggableSourceColumn());
+    }
 
 }

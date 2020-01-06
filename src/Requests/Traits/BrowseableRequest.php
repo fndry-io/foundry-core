@@ -13,7 +13,7 @@ trait BrowseableRequest {
      * @param $sortDesc
      * @return array
      */
-    protected function getBrowseMeta($page, $limit, $sortBy, $sortDesc): array
+    public function getBrowseMeta($page, $limit, $sortBy, $sortDesc): array
     {
         $page = $this->input('page', $page);
         $limit = $this->input('limit', $limit);

@@ -4,13 +4,17 @@ namespace Foundry\Core\Inputs;
 
 use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
+use Foundry\Core\Inputs\Types\FormType;
 use Foundry\Core\Inputs\Types\Traits\HasValue;
+use Foundry\Core\Requests\Contracts\ViewableInputInterface;
 use Foundry\Core\Requests\Response;
 use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Class Inputs
@@ -65,18 +69,19 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 * Validates the Inputs
 	 *
 	 * @param array|null $rules
-	 * @return Response
-	 */
-	public function validate($rules = null) : Response
+     * @return true
+     * @throws ValidationException
+     */
+	public function validate($rules = null)
 	{
 		if (!$rules) {
 			$rules = $this->rules();
 		}
-		$validator = Validator::make($this->values(), $rules);
-		if ($validator->fails()) {
-			return Response::error(__('Error validating request'), 422, $validator->errors());
-		}
-		return Response::success($validator->validated());
+        $validator = Validator::make($this->values(), $rules);
+        if ($validator->fails()) {
+            throw new ValidationException($validator);
+        }
+        return true;
 	}
 
 	/**
@@ -362,13 +367,29 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	/**
 	 * Create an input class from the given values
 	 *
-	 * @param $values
-	 *
-	 * @return Inputs
-	 */
-	static function fromValues($values)
+     * @param array $values
+     * @return static
+     */
+	static function make(array $values)
 	{
 		return new static($values);
 	}
+
+    /**
+     * @param Request $request
+     * @return FormType|void
+     * @throws ValidationException If the request is not to view the form and the validation fails
+     */
+    public function viewOrValidate(Request $request)
+    {
+        if ($request->input('_form', false)) {
+            if ( $this instanceof ViewableInputInterface ) {
+                return $this->view($request);
+            } else {
+                throw new \Exception( sprintf( 'Input %s must be an instance of ViewableInputInterface to be viewable', get_class( $input ) ) );
+            }
+        }
+        $this->validate();
+    }
 
 }
