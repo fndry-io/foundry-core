@@ -41,8 +41,8 @@ class DateTimeInputType extends InputType implements Castable {
 	) {
 		$type = 'datetime';
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
-        $this->addRule( 'date_format:' . $this->format );
-		$this->setInterval(['minutes' => 5]);
+        $this->addRule( 'valid_date:' . $this->format );
+		$this->setInterval(['minutes' => 1]);
 		$this->setMask("0000-00-00 00:00");
 		$this->setMaskFormat("YYYY-MM-DD HH:mm");
         $this->setDateFormat("YYYY-MM-DDTHH:mm:ssZZ");
@@ -55,7 +55,12 @@ class DateTimeInputType extends InputType implements Castable {
 		return 'string';
 	}
 
-	public function getValue()
+	public function getFormat()
+    {
+        return $this->format;
+    }
+
+    public function getValue()
 	{
 		$value = parent::getValue();
 		if ($value instanceof \DateTime) {
