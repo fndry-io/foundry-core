@@ -20,8 +20,6 @@ class DateInputType extends DateTimeInputType {
     public function __construct(string $name, string $label = null, bool $required = true, string $value = null, string $position = 'full', string $rules = null, string $id = null, string $placeholder = null)
     {
         parent::__construct($name, $label, $required, $value, $position, $rules, $id, $placeholder);
-
-        $this->addRule( 'date_format:' . $this->format );
         $this->setMask("0000-00-00");
         $this->setMaskFormat("YYYY-MM-DD");
         $this->setDateFormat("YYYY-MM-DD");
