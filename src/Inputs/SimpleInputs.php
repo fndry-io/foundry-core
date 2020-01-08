@@ -14,14 +14,4 @@ class SimpleInputs extends Inputs {
 	function types(): InputTypeCollection {
 		return $this->types;
 	}
-
-	/**
-	 * @param $inputs
-	 * @param $types
-	 *
-	 * @return SimpleInputs
-	 */
-	static function make($inputs, $types) {
-		return new static($inputs, $types);
-	}
 }
