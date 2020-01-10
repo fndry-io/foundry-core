@@ -58,10 +58,7 @@ abstract class FoundryFormRequest extends LaravelFormRequest {
          */
         $this->entityId = $this->route('_entity', $this->input('_entity', null));
         if ($this instanceof EntityRequestInterface) {
-            $entity = null;
-            if ($this->entityId) {
-                $entity = $this->findEntity($this->entityId);
-            }
+            $entity = $this->findEntity($this->entityId);
             if (!$entity && $this->throwNotFoundException) {
                 throw new NotFoundHttpException(__('Entity not found'));
             } else {
