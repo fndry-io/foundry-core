@@ -77,7 +77,7 @@ abstract class ModelRepository implements RepositoryInterface
 	{
 		if ($id instanceof \Illuminate\Database\Eloquent\Model) {
 			return $id;
-		} else if (is_int($id)) {
+		} else if (is_int($id) || is_string($id)) {
 		    if ($fail) {
                 return $this->query()->findOrFail($id);
             } else {
