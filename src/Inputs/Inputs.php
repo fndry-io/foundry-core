@@ -240,6 +240,14 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 		$this->cast($this->values);
 	}
 
+	public function setValue($key, $value)
+    {
+        Arr::set($this->values, $key, $value);
+        if ($type = $this->getType($key)) {
+            $this->castInput($this->values, $type);
+        }
+    }
+
 	/**
 	 * Get all the values
 	 *
