@@ -275,7 +275,8 @@ abstract class ModelRepository implements RepositoryInterface
 	 * @param array $data
 	 *
 	 * @return Model|boolean
-	 */
+     * @throws \Exception
+     */
 	public function update($id, $data)
 	{
 		$model = $this->getModel($id);

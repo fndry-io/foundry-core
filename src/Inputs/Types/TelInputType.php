@@ -33,6 +33,10 @@ class TelInputType extends InputType {
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
 		$this->addRule('telephone');
 		$this->setCountryCode('1');
+        $this->setMax( 16 )
+            ->setPlaceholder('+1 ...')
+            ->setHelp(__('An international number starting with a dialing code. E.G. +1 555 555 5555'));
+
 	}
 
 	public function setCountryCode($code)
