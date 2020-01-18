@@ -263,6 +263,12 @@ class Response {
         return $this;
     }
 
+    public function withMessage($message)
+    {
+        $this->message = $message;
+        return $this;
+    }
+
     /**
      * @return array
      */
