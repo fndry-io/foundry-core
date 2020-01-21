@@ -139,6 +139,12 @@ class DateTimeInputType extends InputType implements Castable {
         return $this;
     }
 
+    public function setValidDates($dates)
+    {
+        $this->setAttribute('pickerOptions.validDates', $dates);
+        return $this;
+    }
+
     public function disabledAutoUpdate()
     {
         $this->setAttribute('pickerOptions.autoUpdate', false);
