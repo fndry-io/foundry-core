@@ -32,8 +32,8 @@ trait ViewableInput
         $this->cast($inputs);
         $form->setValues( $inputs );
 
-        $form->setAction( $request->url() );
-        $form->setParams( $params );
+        $form->setAction( $request->route()->uri() );
+        $form->setParams( $request->route()->parameters() );
         $form->setRequest( $request );
 
         return $form;

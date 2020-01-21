@@ -337,9 +337,13 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	/**
 	 * @return InputTypeCollection|null
 	 */
-	public function getTypes()
+	public function getTypes($keys = null)
 	{
-		return $this->types;
+	    if ($keys) {
+	        return $this->types()->only($keys);
+        } else {
+            return $this->types;
+        }
 	}
 
 	public function toArray() {

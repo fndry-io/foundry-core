@@ -3,7 +3,6 @@
 namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Traits\HasClass;
-use Illuminate\Support\Str;
 
 /**
  * Class ContentType
@@ -34,7 +33,7 @@ class ContentType extends BaseType {
 
 	public function setContent(string $content)
     {
-        $this->setAttribute('content', $content);
+        $this->setAttribute('content', nl2br($content));
         return $this;
     }
 

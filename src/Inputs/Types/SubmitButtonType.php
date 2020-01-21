@@ -11,7 +11,7 @@ class SubmitButtonType extends ButtonType {
 
 	public function __construct(
 		string $label,
-		string $action,
+		string $action = null,
 		string $title = null,
 		array $query = [],
 		string $method = 'POST',
