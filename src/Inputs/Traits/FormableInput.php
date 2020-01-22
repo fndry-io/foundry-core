@@ -32,7 +32,7 @@ trait ViewableInput
         $this->cast($inputs);
         $form->setValues( $inputs );
 
-        $form->setAction( $request->route()->uri() );
+        $form->setAction( '/' . $request->route()->uri() );
         $form->setParams( $request->route()->parameters() );
         $form->setRequest( $request );
 
