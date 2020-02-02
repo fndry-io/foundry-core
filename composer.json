@@ -1,7 +1,6 @@
 {
     "name": "foundry/core",
     "description": "Foundry Framework.",
-    "version": "1.0.0",
     "keywords": [
         "foundry",
         "framework",
