@@ -36,6 +36,7 @@
     "extra": {
         "laravel": {
             "providers": [
+                "Foundry\\Core\\CoreServiceProvider"
             ],
             "aliases": {
             }
