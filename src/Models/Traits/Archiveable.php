@@ -3,7 +3,6 @@
 namespace Foundry\Core\Models\Traits;
 
 use Carbon\Carbon;
-use Foundry\Core\Models\ArchivedScope;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
@@ -15,16 +14,6 @@ trait Archiveable
 {
 
 	/**
-	 * Boot the archivable trait for a model.
-	 *
-	 * @return void
-	 */
-	public static function bootArchiveable()
-	{
-		static::addGlobalScope(new ArchivedScope());
-	}
-
-	/**
 	 * Initialize the archivable trait for an instance.
 	 *
 	 * @return void
@@ -34,14 +23,14 @@ trait Archiveable
 		$this->dates[] = $this->getArchivedAtColumn();
 	}
 
-	public function scopeArchived(Builder $query)
+	public function scopeOnlyArchived(Builder $query)
 	{
-		return $query->whereNotNull($this->getArchivedAtColumn());
+		return $query->whereNotNull($this->getQualifiedArchivedAtColumn());
 	}
 
-	public function scopeUnarchived(Builder $query)
+    public function scopeWithoutArchived(Builder $query)
 	{
-		return $query->whereNotNull($this->getArchivedAtColumn());
+		return $query->whereNull($this->getQualifiedArchivedAtColumn());
 	}
 
 	public function setArchivedAt( $archived_at ): void {

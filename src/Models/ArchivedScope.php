@@ -5,6 +5,11 @@ namespace Foundry\Core\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Scope;
 
+/**
+ * Class ArchivedScope
+ * @package Foundry\Core\Models
+ * @deprecated This scope is no longer used
+ */
 class ArchivedScope implements Scope
 {
     /**
