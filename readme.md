@@ -1,12 +1,10 @@
-#Foundry Core
+# Foundry Core
 
-
-
-#Standards
+# Standards
 
 The following outline the standards for sepcific parts and class objects within the Foundry Framework.
 
-##Repositories, Models and/or Entities
+## Repositories, Models and/or Entities
 
 The objective with the Foundry Framework is to get the data layer and anything dealing with working with the data 
 abstracted from the rest of the framework. Similar to a black box and allowing the data store to be changed as needed.
@@ -22,7 +20,7 @@ The following rules and guidelines apply to Repositories:
  - They SHOULD return boolean's, arrays or collections of the Models they work with
  - They can throw exceptions.
  
-##Services
+## Services
 
 The objective of Services is to abstract the business layer of the system and allow for Services to be called by other
 Services, and all services return a known structure.
