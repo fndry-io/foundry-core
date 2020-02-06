@@ -2,13 +2,12 @@
 
 namespace Foundry\Core;
 
-use Foundry\Core\Config\SettingRepository;
 use Foundry\Core\Contracts\Repository;
-//use Foundry\Core\Models\Listeners\SettingSaved;
+use Foundry\Core\Listeners\SettingSaved;
 use Foundry\Core\Providers\ConsoleServiceProvider;
 use Foundry\Core\Providers\EventServiceProvider;
+use Foundry\Core\Repositories\SettingRepository;
 use Foundry\Core\Requests\FormRequestHandler;
-//use Foundry\Core\View\Components\ViewComponentHandler;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,6 +25,7 @@ class CoreServiceProvider extends ServiceProvider {
 	public function boot() {
 
 		$this->registerNamespaces();
+        $this->loadMigrationsFrom(base_path('foundry/core/database/migrations'));
 	}
 
 	/**
@@ -46,19 +46,19 @@ class CoreServiceProvider extends ServiceProvider {
 	 */
 	protected function registerServices() {
 
-//		$this->app->singleton( Repository::class, function () {
-//
-//			if ( Cache::has( 'settings' ) ) {
-//				$settings = Cache::get( 'settings' );
-//			} else {
-//				$settings = SettingSaved::getSettingsItems();
-//				Cache::put( 'settings', $settings, now()->addDays( 30 ) );
-//			}
-//
-//			return new SettingRepository( $settings );
-//		} );
-//
-//		$this->app->alias( Repository::class, 'settings' );
+		$this->app->singleton( Repository::class, function () {
+
+			if ( Cache::has( 'settings' ) ) {
+				$settings = Cache::get( 'settings' );
+			} else {
+				$settings = SettingSaved::getSettingsItems();
+				Cache::put( 'settings', $settings, now()->addDays( 30 ) );
+			}
+
+			return new SettingRepository( $settings );
+		} );
+
+		$this->app->alias( Repository::class, 'settings' );
 
 		/**
 		 * Register the FormRequestHandler Facade and link it to the FormRequestHandler Class

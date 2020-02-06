@@ -2,8 +2,8 @@
 
 namespace Foundry\Core\Seeders;
 
-use Illuminate\Database\Seeder;
-use Foundry\Core\Config\SettingRepository;
+use Foundry\Core\Repositories\SettingRepository;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Artisan;
 
@@ -14,9 +14,9 @@ use Illuminate\Support\Facades\Artisan;
  *
  * @package Foundry\Seeders
  */
-abstract class SettingSeeder extends Seeder {
+trait SettingSeeder{
 
-	/**
+    /**
 	 * @return array
 	 */
 	protected abstract function settings(): array;
@@ -28,12 +28,14 @@ abstract class SettingSeeder extends Seeder {
 	 *
 	 * @return void
 	 */
-	public function run() {
+	public function seed() {
 		$table = SettingRepository::getTable();
 
 		if ( ! Schema::hasTable( $table ) ) {
 			Artisan::call( 'migrate' );
-		}
+		}else{
+		    DB::table($table)->truncate();
+        }
 
 		$illegal = 0;
 
@@ -72,7 +74,7 @@ abstract class SettingSeeder extends Seeder {
 
 
 		if ( $illegal > 0 ) {
-			$this->command->error( 'There was/were ' . $illegal . ' setting(s) with illegal names' );
+			dd( 'There was/were ' . $illegal . ' setting(s) with illegal names' );
 		}
 
 	}

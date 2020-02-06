@@ -28,7 +28,7 @@ interface Repository {
 	 *
 	 * @return array
 	 */
-	public function all();
+	public function items();
 
 	/**
 	 * Set a given key value.

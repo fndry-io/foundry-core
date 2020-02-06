@@ -2,8 +2,8 @@
 
 namespace Foundry\Core\Providers;
 
-use Foundry\Core\Models\Events\SettingSaved;
-use Foundry\Core\Models\Listeners\SettingSaved as SettingSavedListener;
+use Foundry\Core\Events\SettingSaved;
+use Foundry\Core\Listeners\SettingSaved as SettingSavedListener;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider {
