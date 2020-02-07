@@ -11,7 +11,7 @@ if ( ! function_exists( 'setting' ) ) {
 	 * @param  array|string $key
 	 * @param  mixed $default
 	 *
-	 * @return mixed|\Foundry\Config\SettingRepository
+	 * @return mixed|\Foundry\Core\Config\SettingRepository
 	 */
 	function setting( $key = null, $default = null ) {
 		if ( is_null( $key ) ) {
