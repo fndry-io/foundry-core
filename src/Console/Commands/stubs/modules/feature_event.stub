@@ -1,0 +1,7 @@
+<?php
+
+namespace {{MODULE_NAMESPACE}}\Events;
+
+class {{FEATURE_NAME}}{{EVENT_NAME}} extends {{FEATURE_NAME}}Saved
+{
+}

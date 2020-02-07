@@ -2,14 +2,10 @@
 
 namespace Foundry\Core;
 
-use Foundry\Core\Config\SettingRepository;
-use Foundry\Core\Contracts\Repository;
-//use Foundry\Core\Models\Listeners\SettingSaved;
 use Foundry\Core\Providers\ConsoleServiceProvider;
 use Foundry\Core\Providers\EventServiceProvider;
 use Foundry\Core\Requests\FormRequestHandler;
-//use Foundry\Core\View\Components\ViewComponentHandler;
-use Illuminate\Support\Facades\Cache;
+use Foundry\Core\Console\Commands\MakeModuleCommand;
 use Illuminate\Support\ServiceProvider;
 
 class CoreServiceProvider extends ServiceProvider {
@@ -26,6 +22,7 @@ class CoreServiceProvider extends ServiceProvider {
 	public function boot() {
 
 		$this->registerNamespaces();
+        $this->registerCommands();
 	}
 
 	/**
@@ -83,5 +80,17 @@ class CoreServiceProvider extends ServiceProvider {
 		$this->app->register( ConsoleServiceProvider::class );
 		$this->app->register( EventServiceProvider::class );
 	}
+
+    /**
+     * Registers the commands for this service provider
+     *
+     * @return void
+     */
+    public function registerCommands()
+    {
+        $this->commands([
+            MakeModuleCommand::class
+        ]);
+    }
 
 }

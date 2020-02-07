@@ -1,0 +1,105 @@
+<?php
+
+namespace {{SERVICE_NAMESPACE}};
+
+use Foundry\Core\Inputs\Inputs;
+use Foundry\Core\Requests\Response;
+use Foundry\Core\Services\BaseService;
+use {{MODULE_NAMESPACE}}\Entities\Contracts\Is{{FEATURE_NAME}};
+use {{MODULE_NAMESPACE}}\Inputs\{{FEATURE_NAME}}\Add{{FEATURE_NAME}}Input;
+use {{MODULE_NAMESPACE}}\Inputs\{{FEATURE_NAME}}\Edit{{FEATURE_NAME}}Input;
+use {{MODULE_NAMESPACE}}\Inputs\{{FEATURE_NAME}}\{{FEATURE_NAME}}Input;
+use {{MODULE_NAMESPACE}}\Inputs\{{FEATURE_NAME}}\Search{{FEATURE_NAME}}Input;
+use {{MODULE_NAMESPACE}}\Repositories\{{FEATURE_NAME}}Repository;
+
+class {{FEATURE_NAME}}Service extends BaseService
+{
+
+    /**
+     * Read a {{FEATURE_NAME}}
+     *
+     * @param {{FEATURE_OBJECT_NAME}}
+     * @return Response
+     * @throws \Exception
+     */
+    public function read({{FEATURE_OBJECT_NAME}})
+    {
+        return Response::success({{FEATURE_NAME}}Repository::repository()->read({{FEATURE_OBJECT_NAME}}));
+    }
+
+    /**
+     * @param Search{{FEATURE_NAME}}Input $inputs
+     * @param int $page
+     * @param int $perPage
+     * @param null $sortBy
+     * @param null $sortDesc
+     * @return Response
+     */
+    public function browse(Search{{FEATURE_NAME}}Input $inputs, $page = 1, $perPage = 20, $sortBy = null, $sortDesc = null): Response
+    {
+        return Response::success({{FEATURE_NAME}}Repository::repository()->browse($inputs->values(), $page, $perPage, $sortBy, $sortDesc));
+    }
+
+    /**
+     * @param {{FEATURE_NAME}}Input|Inputs $input
+     *
+     * @return Response
+     * @throws \Exception
+     */
+    public function add(Add{{FEATURE_NAME}}Input $input): Response
+    {
+        {{FEATURE_OBJECT_NAME}} = {{FEATURE_NAME}}Repository::repository()->insert($input->values());
+        if ({{FEATURE_OBJECT_NAME}}) {
+            return Response::success({{FEATURE_OBJECT_NAME}}->load(['series']));
+        } else {
+            return Response::error(__('Unable to create {{FEATURE_NAME}}'), 500);
+        }
+    }
+
+    /**
+     * @param {{FEATURE_NAME}}Input|Inputs $input
+     * @param Is{{FEATURE_NAME}} {{FEATURE_OBJECT_NAME}}
+     *
+     * @return Response
+     * @throws \Exception
+     */
+    public function edit(Edit{{FEATURE_NAME}}Input $input, Is{{FEATURE_NAME}} {{FEATURE_OBJECT_NAME}}): Response
+    {
+        {{FEATURE_OBJECT_NAME}} = {{FEATURE_NAME}}Repository::repository()->update({{FEATURE_OBJECT_NAME}}->id, $input->values());
+        if ({{FEATURE_OBJECT_NAME}}) {
+            return Response::success({{FEATURE_OBJECT_NAME}});
+        } else {
+            return Response::error(__('Unable to update {{FEATURE_NAME}}'), 500);
+        }
+    }
+
+    /**
+     * @param Is{{FEATURE_NAME}} {{FEATURE_OBJECT_NAME}}
+     *
+     * @return Response
+     * @throws \Exception
+     */
+    public function delete(Is{{FEATURE_NAME}} {{FEATURE_OBJECT_NAME}}): Response
+    {
+        if ({{FEATURE_NAME}}Repository::repository()->delete({{FEATURE_OBJECT_NAME}})) {
+            return Response::success();
+        } else {
+            return Response::error(__('Unable to delete {{FEATURE_NAME}}'), 500);
+        }
+    }
+
+    /**
+     * @param Is{{FEATURE_NAME}} {{FEATURE_OBJECT_NAME}}
+     *
+     * @return Response
+     * @throws \Exception
+     */
+    public function restore( Is{{FEATURE_NAME}} {{FEATURE_OBJECT_NAME}} ): Response {
+        if ({{FEATURE_NAME}}Repository::repository()->restore({{FEATURE_OBJECT_NAME}})) {
+            return Response::success();
+        } else {
+            return Response::error(__('Unable to restore {{FEATURE_NAME}}'), 500);
+        }
+    }
+
+}

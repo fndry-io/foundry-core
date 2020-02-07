@@ -1,0 +1,45 @@
+<?php
+
+namespace {{MODULE_NAMESPACE}}\Inputs\{{FEATURE_NAME}};
+
+use Foundry\Core\Inputs\Inputs;
+use Foundry\Core\Inputs\Types\FormType;
+use Foundry\Core\Inputs\Types\RowType;
+use Foundry\Core\Inputs\Types\SectionType;
+use Foundry\Core\Inputs\Types\Traits\ViewableInput;
+use Foundry\Core\Requests\Contracts\ViewableInputInterface;
+use Foundry\Core\Support\InputTypeCollection;
+
+use Illuminate\Http\Request;
+{{FEATURE_INPUT_TYPES_USE}}
+
+class {{FEATURE_NAME}}Input extends Inputs implements ViewableInputInterface
+{
+    use ViewableInput;
+
+    /**
+     * @return InputTypeCollection
+     */
+    public function types() : InputTypeCollection
+    {
+        return InputTypeCollection::fromTypes([
+            {{FEATURE_INPUT_TYPES}}
+        ]);
+    }
+
+    public function view(Request $request): FormType
+    {
+        $form = $this->form($request);
+
+        $details = (new SectionType(__('Details')))->addChildren(
+            {{FEATURE_INPUT_TYPE_INPUTS}}
+        );
+
+        $form->addChildren(
+            $details
+        );
+
+        return $form;
+    }
+
+}

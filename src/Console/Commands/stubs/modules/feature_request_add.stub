@@ -1,0 +1,19 @@
+<?php
+
+namespace {{MODULE_NAMESPACE}}\Http\Requests\{{FEATURE_NAME}};
+
+use Foundry\Core\Requests\FoundryFormRequest;
+
+class {{ACTION}}{{FEATURE_NAME}}Request extends FoundryFormRequest
+{
+
+    /**
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        return ($this->user() && $this->user()->can('{{ACTION_LOWER}} {{PROVIDER}} {{FEATURE_PLURAL_NAME}}'));
+    }
+
+
+}

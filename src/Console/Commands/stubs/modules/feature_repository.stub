@@ -1,0 +1,213 @@
+<?php
+
+namespace {{REPOSITORY_NAMESPACE}};
+
+use Foundry\Core\Repositories\ModelRepository;
+use Foundry\Core\Repositories\Traits\SoftDeleteable;
+use Illuminate\Contracts\Pagination\Paginator;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
+use {{MODULE_NAMESPACE}}\Events\{{FEATURE_NAME}}Created;
+use {{MODULE_NAMESPACE}}\Events\{{FEATURE_NAME}}Deleted;
+use {{MODULE_NAMESPACE}}\Events\{{FEATURE_NAME}}Updated;
+use {{MODULE_NAMESPACE}}\Events\{{FEATURE_NAME}}Restored;
+use {{MODULE_NAMESPACE}}\Entities\Contracts\Is{{FEATURE_NAME}};
+use {{MODULE_NAMESPACE}}\Models\{{FEATURE_NAME}};
+
+/**
+ * Class {{REPOSITORY_NAME}}
+ *
+ * @method static {{FEATURE_NAME}} make($values)
+ * @method Is{{FEATURE_NAME}}|{{FEATURE_NAME}} getModel(Is{{FEATURE_NAME}}|{{FEATURE_NAME}}|int $id)
+ * @method delete(Is{{FEATURE_NAME}}|{{FEATURE_NAME}}|int $id, bool $force = false)
+ *
+ * @package {{REPOSITORY_NAMESPACE}}
+ */
+class {{REPOSITORY_NAME}} extends ModelRepository
+{
+    use SoftDeleteable;
+
+    /**
+     * The event map for the model.
+     *
+     * @var array
+     */
+    protected $dispatchesEvents = [
+        'inserted' => {{FEATURE_NAME}}Created::class,
+        'updated' => {{FEATURE_NAME}}Updated::class,
+        'deleted' => {{FEATURE_NAME}}Deleted::class,
+        'restored' => {{FEATURE_NAME}}Restored::class
+    ];
+
+    /**
+     * @return {{FEATURE_NAME}}|string
+     */
+    public function getClassName()
+    {
+        return {{FEATURE_NAME}}::class;
+    }
+
+    /**
+     * @param array $data
+     * @param int $page
+     * @param int $perPage
+     * @param null $sortBy
+     * @param null $sortDesc
+     * @return Paginator
+     */
+    public function browse( array $data, $page = 1, $perPage = 20, $sortBy = null, $sortDesc = null ) : Paginator
+    {
+        return $this->filter(function(Builder $query) use ( $data, $sortBy, $sortDesc ) {
+
+            $query->addSelect([
+                '{{MODEL_TABLE_NAME}}.*'
+            ])
+            ;
+
+            if ($search = Arr::get($data,'search')) {
+                $query->search($search);
+            }
+
+//            $sortDesc = ($sortDesc === true) ? 'DESC' : 'ASC';
+//            if ($sortBy === 'title') {
+//                $query->orderBy('{{MODEL_TABLE_NAME}}.title', $sortDesc);
+//            }
+
+//            if (empty($query->orders)) {
+//                $query->orderBy('{{MODEL_TABLE_NAME}}.title', $sortDesc);
+//            }
+
+            return $query;
+
+        }, $page, $perPage);
+    }
+
+    /**
+     * @param {{FEATURE_NAME}}|int {{FEATURE_OBJECT_NAME}}
+     *
+     * @return {{FEATURE_NAME}}
+     * @throws \Exception
+     */
+    public function read({{FEATURE_OBJECT_NAME}})
+    {
+        {{FEATURE_OBJECT_NAME}} = $this->getModel({{FEATURE_OBJECT_NAME}});
+//        {{FEATURE_OBJECT_NAME}}->load([]);
+        return {{FEATURE_OBJECT_NAME}};
+    }
+
+    /**
+     * @param string|null $search
+     * @param int $limit
+     *
+     * @return mixed
+     */
+    public function getLabelList($search = null, $limit = 20)
+    {
+        $query = $this->query();
+//        $query
+//            ->select('{{MODEL_TABLE_NAME}}.id', '{{MODEL_TABLE_NAME}}.title')
+//            ->orderBy('{{MODEL_TABLE_NAME}}.title', 'ASC')
+//            ->with('series')
+//        ;
+
+        if ($search) {
+//            $query->where('{{MODEL_TABLE_NAME}}.title', 'like', "%" . $search . "%");
+        }
+
+        if ($limit) {
+            $query->limit($limit);
+        }
+
+        return $query->get();
+    }
+
+    /**
+     * @param array $data
+     * @return bool|{{FEATURE_NAME}}
+     * @throws \Exception
+     */
+    public function insert($data)
+    {
+        {{FEATURE_OBJECT_NAME}} = self::make($data);
+
+//        if($id = Arr::get($data,'author')) {
+//            if( $author = UserRepository::repository()->find($id) ){
+//                {{FEATURE_OBJECT_NAME}}->author()->associate($author);
+//            }
+//        }
+
+//        if ($id = Arr::get($data, 'series')) {
+//            if ($series = Series::query()->find($id)) {
+//                {{FEATURE_OBJECT_NAME}}->series()->associate($series);
+//            }
+//        }
+
+        $result = {{FEATURE_OBJECT_NAME}}->save();
+
+
+        if($result) {
+
+//            if($tags = Arr::get($data,'tags')) {
+//                {{FEATURE_OBJECT_NAME}}->tags()->sync($tags);
+//            }
+
+        }
+
+        if ($result) {
+            $this->dispatch('inserted', {{FEATURE_OBJECT_NAME}});
+
+            return {{FEATURE_OBJECT_NAME}};
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * @param Is{{FEATURE_NAME}}|{{FEATURE_NAME}}|int $id
+     * @param array $data
+     * @return bool|{{FEATURE_NAME}}
+     * @throws \Exception
+     */
+    public function update($id, $data)
+    {
+        {{FEATURE_OBJECT_NAME}} = $this->getModel($id);
+        {{FEATURE_OBJECT_NAME}}->fill($data);
+
+//        if (Arr::exists($data, 'author')) {
+//            if($id = Arr::get($data,'author')) {
+//                if( $author = UserRepository::repository()->find($id) ){
+//                    {{FEATURE_OBJECT_NAME}}->author()->associate($author);
+//                }
+//            } else {
+//                {{FEATURE_OBJECT_NAME}}->author()->dissociate();
+//            }
+//        }
+
+//        if (Arr::exists($data, 'series')) {
+//            $series_id = Arr::get($data, 'series');
+//            if ($series = Series::query()->find($series_id)) {
+//                {{FEATURE_OBJECT_NAME}}->series()->associate($series);
+//            } else {
+//                {{FEATURE_OBJECT_NAME}}->series()->dissociate();
+//            }
+//        }
+
+
+        $result = {{FEATURE_OBJECT_NAME}}->save();
+
+        if($result) {
+
+//            if(Arr::exists($data,'tags')) {
+//                {{FEATURE_OBJECT_NAME}}->tags()->sync(Arr::get($data,'tags'));
+//            }
+
+        }
+        if ($result) {
+            $this->dispatch('updated', {{FEATURE_OBJECT_NAME}});
+            return {{FEATURE_OBJECT_NAME}};
+        } else {
+            return false;
+        }
+    }
+
+}

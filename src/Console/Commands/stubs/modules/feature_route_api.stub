@@ -1,0 +1,13 @@
+
+//{{FEATURE_NAME_PLURAL}} Routes
+Route::middleware('auth:system')->group(function () {
+
+    Route::get(                  '/{{PROVIDER}}/{{FEATURE_NAME_PLURAL_LOWER}}',      '{{FEATURE_NAME_PLURAL}}Controller@browse' )->name('{{PROVIDER}}.{{FEATURE_NAME_PLURAL_LOWER}}.browse');
+    Route::get(                  '/{{PROVIDER}}/{{FEATURE_NAME_PLURAL_LOWER}}/select',      '{{FEATURE_NAME_PLURAL}}Controller@select' )->name('{{PROVIDER}}.{{FEATURE_NAME_PLURAL_LOWER}}.select');
+    Route::match(['GET', 'POST'],'/{{PROVIDER}}/{{FEATURE_NAME_PLURAL_LOWER}}/add',              '{{FEATURE_NAME_PLURAL}}Controller@add'     )->name('{{PROVIDER}}.{{FEATURE_NAME_PLURAL_LOWER}}.add');
+    Route::match(['GET', 'POST'],'/{{PROVIDER}}/{{FEATURE_NAME_PLURAL_LOWER}}/{_entity}/edit', '{{FEATURE_NAME_PLURAL}}Controller@edit')->name('{{PROVIDER}}.{{FEATURE_NAME_PLURAL_LOWER}}.edit');
+    Route::post(                 '/{{PROVIDER}}/{{FEATURE_NAME_PLURAL_LOWER}}/{_entity}/delete', '{{FEATURE_NAME_PLURAL}}Controller@delete')->name('{{PROVIDER}}.{{FEATURE_NAME_PLURAL_LOWER}}.delete');
+    Route::post(                 '/{{PROVIDER}}/{{FEATURE_NAME_PLURAL_LOWER}}/{_entity}/restore', '{{FEATURE_NAME_PLURAL}}Controller@restore')->name('{{PROVIDER}}.{{FEATURE_NAME_PLURAL_LOWER}}.restore');
+    Route::get(                  '/{{PROVIDER}}/{{FEATURE_NAME_PLURAL_LOWER}}/{_entity}', '{{FEATURE_NAME_PLURAL}}Controller@read')->name('{{PROVIDER}}.{{FEATURE_NAME_PLURAL_LOWER}}.read');
+
+});

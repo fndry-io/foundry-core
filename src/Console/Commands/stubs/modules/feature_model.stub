@@ -1,0 +1,43 @@
+<?php
+
+namespace {{MODEL_NAMESPACE}};
+
+use Foundry\Core\Models\Model;
+use Foundry\Core\Models\Traits\SoftDeleteable;
+use Foundry\Core\Models\Traits\Timestampable;
+use Foundry\Core\Models\Traits\Visible;
+use {{MODEL_CONTRACT_NAMESPACE}}\{{MODEL_CONTRACT_NAME}};
+
+/**
+ * Class {{MODEL_NAME}}
+ *
+ * @package {{MODEL_NAMESPACE}}
+ */
+class {{MODEL_NAME}} extends Model implements {{MODEL_CONTRACT_NAME}}
+{
+    use Timestampable;
+    use SoftDeleteable;
+    use Visible;
+
+    protected $table = '{{MODEL_TABLE_NAME}}';
+
+    protected $fillable = [
+        {{FILLABLE}}
+    ];
+
+    protected $visible = [
+        {{VISIBLE}}
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d\TH:i:sO',
+        'updated_at' => 'datetime:Y-m-d\TH:i:sO',
+        {{CASTS}}
+    ];
+
+}

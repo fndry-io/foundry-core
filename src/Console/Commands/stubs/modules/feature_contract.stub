@@ -1,0 +1,11 @@
+<?php
+
+namespace {{CONTRACT_NAMESPACE}};
+
+use Foundry\Core\Entities\Contracts\IsEntity;
+use Foundry\Core\Entities\Contracts\IsSoftDeletable;
+
+interface {{CONTRACT_NAME}} extends IsEntity, IsSoftDeletable
+{
+
+}

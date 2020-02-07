@@ -1,0 +1,29 @@
+<?php
+
+namespace {{MODULE_NAMESPACE}}\Http\Requests\{{FEATURE_NAME}};
+
+use {{MODULE_NAMESPACE}}\Repositories\{{FEATURE_NAME}}Repository;
+use {{MODULE_NAMESPACE}}\Entities\Contracts\Is{{FEATURE_NAME}};
+
+class {{REQUEST_ACTION}}{{FEATURE_NAME}}Request extends {{FEATURE_NAME}}Request
+{
+
+    /**
+     * @return bool
+     */
+    public function authorize(): bool
+    {
+        return ($this->user() && $this->user()->can('{{REQUEST_ACTION_LOWER}} {{PROVIDER}} {{FEATURE_PLURAL_NAME}}'));
+    }
+
+    /**
+     * @param $id
+     * @return null|Is{{FEATURE_NAME}}|object
+     * @throws \Exception
+     */
+    public function findEntity($id)
+    {
+        return {{FEATURE_NAME}}Repository::repository()->query()->withTrashed()->find($id);
+    }
+
+}

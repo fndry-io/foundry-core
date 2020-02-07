@@ -1,0 +1,90 @@
+<?php
+
+namespace {{MODULE_NAMESPACE}}\Providers;
+
+use Foundry\Core\Support\ServiceProvider;
+
+class ModuleServiceProvider extends ServiceProvider
+{
+
+	/**
+	 * Indicates if loading of the provider is deferred.
+	 *
+	 * @var bool
+	 */
+	protected $defer = false;
+
+    /**
+     * Register any application services.
+     *
+     * @return void
+     */
+    public function register()
+    {
+	    $this->app->register(RouteServiceProvider::class);
+        $this->app->register(EventServiceProvider::class);
+    }
+
+	/**
+	 * Boot the application events.
+	 *
+	 * @return void
+	 */
+	public function boot()
+	{
+//		$this->registerTranslations();
+//		$this->registerConfig();
+		$this->registerViews();
+		$this->loadMigrationsFrom(base_path('modules/{{PROVIDER}}/{{NAME}}/database/migrations'));
+	}
+
+	/**
+	 * Register translations.
+	 *
+	 * @return void
+	 */
+	public function registerTranslations()
+	{
+	    $path = base_path('modules/{{PROVIDER}}/{{NAME}}/resources/lang');
+        $this->loadTranslationsFrom($path, '{{PROVIDER}}_{{NAME}}');
+        $this->publishes([
+            $path => resource_path('lang/modules/{{PROVIDER}}/{{NAME}}'),
+        ]);
+	}
+
+	/**
+	 * Register config.
+	 *
+	 * @return void
+	 */
+	protected function registerConfig()
+	{
+		$config = base_path('modules/{{PROVIDER}}/{{NAME}}/config/policies.php');
+
+		$this->publishes([
+			$config => config_path('{{PROVIDER}}/{{NAME}}.php')
+		], 'config');
+
+		$this->mergeConfigFrom($config, 'foundry.policies');
+	}
+
+	/**
+	 * Get the services provided by the provider.
+	 *
+	 * @return array
+	 */
+	public function provides()
+	{
+		return [];
+	}
+
+	public function registerViews()
+    {
+        $path = base_path('modules/{{PROVIDER}}/{{NAME}}/resources/views');
+        $this->loadViewsFrom($path, '{{PROVIDER}}_{{NAME}}');
+        $this->publishes([
+            $path => resource_path('views/vendor/{{PROVIDER}}/{{NAME}}'),
+        ]);
+    }
+
+}

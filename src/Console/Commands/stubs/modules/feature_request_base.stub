@@ -1,0 +1,35 @@
+<?php
+
+namespace {{MODULE_NAMESPACE}}\Http\Requests\{{FEATURE_NAME}};
+
+use Foundry\Core\Entities\Entity;
+use Foundry\Core\Models\Model;
+use Foundry\Core\Requests\Contracts\EntityRequestInterface;
+use Foundry\Core\Requests\FoundryFormRequest;
+use Foundry\Core\Requests\Traits\HasEntity;
+use {{MODULE_NAMESPACE}}\Entities\Contracts\Is{{FEATURE_NAME}};
+use {{MODULE_NAMESPACE}}\Repositories\{{FEATURE_NAME}}Repository;
+use {{MODULE_NAMESPACE}}\Models\{{FEATURE_NAME}};
+
+/**
+ * Class {{FEATURE_NAME}}Request
+ *
+ * @method Is{{FEATURE_NAME}} getEntity()
+ *
+ * @package {{MODULE_NAMESPACE}}\Http\Requests\Policies
+ */
+abstract class {{FEATURE_NAME}}Request extends FoundryFormRequest implements EntityRequestInterface
+{
+	use HasEntity;
+
+    /**
+     * @param $id
+     * @return Entity|Model|{{FEATURE_NAME}}|null
+     * @throws \Exception
+     */
+	public function findEntity($id)
+	{
+        return {{FEATURE_NAME}}Repository::repository()->read($id);
+	}
+
+}

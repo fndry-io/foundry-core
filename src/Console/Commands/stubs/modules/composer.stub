@@ -1,0 +1,30 @@
+{
+    "name": "{{MODULE_NAME}}",
+    "keywords": [
+        "foundry"
+    ],
+    "license": "proprietary",
+    "type": "foundry-module",
+    "authors": [
+        {
+            "name": "Greg gunner",
+            "email": "greg@co-foundry.co.za"
+        }
+    ],
+    "require": {
+        "php": "^7.2"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+            ],
+            "aliases": {
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "{{MODULE_PSR_NAMESPACE}}": "app/"
+        }
+    }
+}

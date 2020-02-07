@@ -1,0 +1,25 @@
+<?php
+
+namespace {{MODULE_NAMESPACE}}\Inputs\{{FEATURE_NAME}};
+
+use Foundry\Core\Inputs\Types\FormType;
+use Foundry\Core\Inputs\Types\SubmitButtonType;
+use Foundry\Core\Inputs\Types\Traits\ViewableInput;
+use Illuminate\Http\Request;
+
+class {{FEATURE_ACTION}}{{FEATURE_NAME}}Input extends {{FEATURE_NAME}}Input
+{
+
+    use ViewableInput;
+
+    public function view(Request $request): FormType
+    {
+        $form = parent::view($request);
+        $form->setTitle(__('{{FEATURE_ACTION}} {{FEATURE_NAME}}'));
+
+        $form->setButtons((new SubmitButtonType(__('{{FEATURE_ACTION}}'), $form->getAction())));
+
+        return $form;
+    }
+
+}

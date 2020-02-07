@@ -1,0 +1,140 @@
+<?php
+
+namespace {{MODULE_NAMESPACE}}\Http\Controllers;
+
+use Foundry\Core\Requests\Response;
+use Foundry\System\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
+use {{MODULE_NAMESPACE}}\Http\Requests\{{FEATURE_NAME}}\Add{{FEATURE_NAME}}Request;
+use {{MODULE_NAMESPACE}}\Http\Requests\{{FEATURE_NAME}}\Browse{{FEATURE_NAME}}Request;
+use {{MODULE_NAMESPACE}}\Http\Requests\{{FEATURE_NAME}}\Delete{{FEATURE_NAME}}Request;
+use {{MODULE_NAMESPACE}}\Http\Requests\{{FEATURE_NAME}}\Edit{{FEATURE_NAME}}Request;
+use {{MODULE_NAMESPACE}}\Http\Requests\{{FEATURE_NAME}}\Read{{FEATURE_NAME}}Request;
+use {{MODULE_NAMESPACE}}\Http\Requests\{{FEATURE_NAME}}\Restore{{FEATURE_NAME}}Request;
+use {{MODULE_NAMESPACE}}\Http\Requests\{{FEATURE_NAME}}\Select{{FEATURE_NAME}}Request;
+use {{MODULE_NAMESPACE}}\Http\Resources\{{FEATURE_NAME}};
+use {{MODULE_NAMESPACE}}\Inputs\{{FEATURE_NAME}}\Add{{FEATURE_NAME}}Input;
+use {{MODULE_NAMESPACE}}\Inputs\{{FEATURE_NAME}}\Edit{{FEATURE_NAME}}Input;
+use {{MODULE_NAMESPACE}}\Inputs\{{FEATURE_NAME}}\Search{{FEATURE_NAME}}Input;
+use {{MODULE_NAMESPACE}}\Repositories\{{FEATURE_NAME}}Repository;
+use {{MODULE_NAMESPACE}}\Services\{{FEATURE_NAME}}Service;
+
+/**
+ * Class {{FEATURE_NAME}}Controller
+ *
+ * @package {{MODULE_NAMESPACE}}\Http\Controllers
+ */
+class {{FEATURE_PLURAL_NAME}}Controller extends Controller
+{
+    /**
+     * @param Browse{{FEATURE_NAME}}Request $request
+     * @return Response
+     * @throws ValidationException|\Exception
+     */
+    public function browse(Browse{{FEATURE_NAME}}Request $request)
+    {
+
+        $inputs = Search{{FEATURE_NAME}}Input::make($request->all());
+
+        $inputs->validate();
+
+        $page = $request->input('page', 1);
+        $limit = $request->input('limit', 20);
+        list($page, $limit, $sortBy, $sortDesc) = $request->getBrowseMeta($page, $limit, 'title', false);
+
+        return {{FEATURE_NAME}}Service::service()
+            ->browse($inputs, $page, $limit, $sortBy, $sortDesc)
+            ->asResource({{FEATURE_NAME}}::class, true)
+            ->withFilters($inputs->getTypes())
+            ->toJsonResponse($request);
+    }
+
+    /**
+     * @param Select{{FEATURE_NAME}}Request $request
+     * @return Response
+     */
+    public function select(Select{{FEATURE_NAME}}Request $request)
+    {
+        $q = $request->input('q', '');
+        if (strlen($q) < 3) {
+            return Response::error(__('Search query must be greater than 3 characters'), 422);
+        }
+        $results = {{FEATURE_NAME}}Repository::repository()->getLabelList($q);
+        return Response::success($results)->toJsonResponse($request);
+    }
+
+    /**
+     * @param Read{{FEATURE_NAME}}Request $request
+     * @return Response
+     * @throws \Exception
+     */
+    public function read(Read{{FEATURE_NAME}}Request $request)
+    {
+        $policy = $request->getEntity();
+        return {{FEATURE_NAME}}Service::service()
+            ->read($policy)
+            ->asResource({{FEATURE_NAME}}::class)
+            ->toJsonResponse($request);
+    }
+
+    /**
+     * @param Edit{{FEATURE_NAME}}Request $request
+     * @return Response|JsonResponse|void
+     * @throws ValidationException|\Exception
+     */
+    public function edit(Edit{{FEATURE_NAME}}Request $request)
+    {
+        $inputs = Edit{{FEATURE_NAME}}Input::make($request->all());
+
+        if ($view = $inputs->viewOrValidate($request)) {
+            return Response::success($view)->toJsonResponse($request);
+        }
+
+        return {{FEATURE_NAME}}Service::service()
+            ->edit($inputs, $request->getEntity())
+            ->asResource({{FEATURE_NAME}}::class)
+            ->toJsonResponse($request);
+    }
+
+    /**
+     * @param Add{{FEATURE_NAME}}Request $request
+     * @return JsonResponse|void
+     * @throws ValidationException|\Exception
+     */
+    public function add(Add{{FEATURE_NAME}}Request $request)
+    {
+        $inputs = Add{{FEATURE_NAME}}Input::make($request->all());
+
+        if ($view = $inputs->viewOrValidate($request)) {
+            return Response::success($view)->toJsonResponse($request);
+        }
+
+        return {{FEATURE_NAME}}Service::service()
+            ->add($inputs)
+            ->asResource({{FEATURE_NAME}}::class)
+            ->toJsonResponse($request);
+    }
+
+    /**
+     * @param Delete{{FEATURE_NAME}}Request $request
+     * @return Response
+     * @throws \Exception
+     */
+    public function delete(Delete{{FEATURE_NAME}}Request $request)
+    {
+        return {{FEATURE_NAME}}Service::service()->delete($request->getEntity())->toJsonResponse($request);
+    }
+
+    /**
+     * @param Restore{{FEATURE_NAME}}Request $request
+     * @return Response
+     * @throws \Exception
+     */
+    public function restore(Restore{{FEATURE_NAME}}Request $request)
+    {
+        return {{FEATURE_NAME}}Service::service()->restore($request->getEntity())->toJsonResponse($request);
+    }
+
+
+}

@@ -1,0 +1,17 @@
+<?php
+
+namespace {{MODULE_NAMESPACE}}\Http\Requests\{{FEATURE_NAME}};
+
+use Foundry\Core\Requests\FoundryFormRequest;
+use Foundry\Core\Requests\Traits\BrowseableRequest;
+
+class Browse{{FEATURE_NAME}}Request extends FoundryFormRequest
+{
+    use BrowseableRequest;
+
+    public function authorize()
+    {
+        return ($this->user() && $this->user()->can('browse {{PROVIDER}} {{FEATURE_PLURAL_NAME}}'));
+    }
+
+}

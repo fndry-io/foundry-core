@@ -1,0 +1,29 @@
+<?php
+
+namespace {{MODULE_NAMESPACE}}\Inputs\{{FEATURE_NAME}}\Types;
+
+use Foundry\Core\Inputs\Contracts\Field;
+use Foundry\Core\Inputs\Types\{{INPUT_TYPE}};
+use Foundry\Core\Inputs\Types\Contracts\Inputable;
+
+/**
+ * Class {{INPUT_CLASS_NAME}}
+ *
+ * @package Modules\Foundry\Policies\Inputs\Policy\Types
+ */
+class {{INPUT_CLASS_NAME}} extends {{INPUT_TYPE}} implements Field {
+
+	/**
+	 * @return self
+	 */
+	static function input( ): Inputable {
+		return ( new static(
+			'{{INPUT_NAME}}',
+			__( '{{INPUT_LABEL}}' ),
+			{{INPUT_REQUIRED}}
+		) )
+		{{INPUT_ADDITIONAL}}
+			;
+	}
+
+}

@@ -1,0 +1,28 @@
+<?php
+
+namespace {{MODULE_NAMESPACE}}\Listeners;
+
+use Foundry\System\Models\Permission;
+
+class Sync{{FEATURE_NAME}}Permissions
+{
+    public function handle()
+    {
+        $permissions = [
+            '{{PROVIDER}}' => [
+                '{{FEATURE_PLURAL_NAME}}' => [
+                    'manage {{PROVIDER}} {{FEATURE_PLURAL_NAME}}',
+                    'browse {{PROVIDER}} {{FEATURE_PLURAL_NAME}}',
+                    'read {{PROVIDER}} {{FEATURE_PLURAL_NAME}}',
+                    'edit {{PROVIDER}} {{FEATURE_PLURAL_NAME}}',
+                    'add {{PROVIDER}} {{FEATURE_PLURAL_NAME}}',
+                    'delete {{PROVIDER}} {{FEATURE_PLURAL_NAME}}',
+                ]
+            ]
+        ];
+        foreach ($permissions as $guard => $groups) {
+            Permission::seed('{{PROVIDER}}/{{FEATURE_PLURAL_NAME}}', $guard, $groups);
+        }
+    }
+
+}

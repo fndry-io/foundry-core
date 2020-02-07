@@ -1,0 +1,15 @@
+<?php
+
+namespace {{MODULE_NAMESPACE}}\Events;
+
+use {{MODULE_NAMESPACE}}\Entities\Contracts\Is{{FEATURE_NAME}};
+
+class {{FEATURE_NAME}}Saved
+{
+    public ${{FEATURE_OBJECT_NAME}};
+
+    public function __construct(Is{{FEATURE_NAME}} ${{FEATURE_OBJECT_NAME}})
+    {
+        $this->{{FEATURE_OBJECT_NAME}} = ${{FEATURE_OBJECT_NAME}};
+    }
+}
