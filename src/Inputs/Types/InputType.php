@@ -66,7 +66,6 @@ abstract class InputType extends BaseType implements Inputable {
 		$this->setRules( $rules );
 
 		$this->setId( $id );
-		$this->setPlaceholder( $placeholder ? $placeholder : $label ? $label : $name );
 	}
 
 	/**
@@ -76,6 +75,9 @@ abstract class InputType extends BaseType implements Inputable {
 	 */
 	public function jsonSerialize(): array
 	{
+        if (!$this->getPlaceholder()) {
+            $this->setPlaceholder( $this->getLabel() );
+        }
 		$field = parent::jsonSerialize();
 
 		//set the rules

@@ -12,9 +12,9 @@ trait HasPlaceholder {
 	protected $placeholder;
 
 	/**
-	 * @return string
+	 * @return string|null
 	 */
-	public function getPlaceholder(): string {
+	public function getPlaceholder() {
 		return $this->getAttribute('placeholder');
 	}
 
