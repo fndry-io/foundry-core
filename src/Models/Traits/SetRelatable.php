@@ -31,7 +31,7 @@ trait SetRelatable
         $class = $relation->getRelated();
 
         if (!is_object($model) && !empty($model)) {
-            $model = $class::query()->findOrFail($model);
+            $model = $class::query()->withoutGlobalScopes()->findOrFail($model);
         }
 
         if ($model) {
