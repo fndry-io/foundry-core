@@ -8,7 +8,6 @@ use Foundry\Core\Inputs\Types\FormType;
 use Foundry\Core\Inputs\Types\Traits\HasValue;
 use Foundry\Core\Requests\Contracts\EntityRequestInterface;
 use Foundry\Core\Requests\Contracts\ViewableInputInterface;
-use Foundry\Core\Requests\Response;
 use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
@@ -404,7 +403,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
             if ( $this instanceof ViewableInputInterface ) {
                 return $this->view($request);
             } else {
-                throw new \Exception( sprintf( 'Input %s must be an instance of ViewableInputInterface to be viewable', get_class( $input ) ) );
+                throw new \Exception( sprintf( 'Input %s must be an instance of ViewableInputInterface to be viewable', get_class( $this ) ) );
             }
         }
         if ($request instanceof EntityRequestInterface && ($entity = $request->getEntity())) {
