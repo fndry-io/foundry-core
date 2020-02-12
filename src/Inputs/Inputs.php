@@ -6,6 +6,7 @@ use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\FormType;
 use Foundry\Core\Inputs\Types\Traits\HasValue;
+use Foundry\Core\Requests\Contracts\EntityRequestInterface;
 use Foundry\Core\Requests\Contracts\ViewableInputInterface;
 use Foundry\Core\Requests\Response;
 use Foundry\Core\Support\InputTypeCollection;
@@ -25,6 +26,10 @@ use Illuminate\Validation\ValidationException;
  */
 abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 
+    /**
+     * @var mixed|null The entity if set
+     */
+    protected $entity = null;
 
 	/**
 	 * @var array Array of rules. These will be merged into the rules from the types
@@ -402,7 +407,29 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
                 throw new \Exception( sprintf( 'Input %s must be an instance of ViewableInputInterface to be viewable', get_class( $input ) ) );
             }
         }
+        if ($request instanceof EntityRequestInterface && ($entity = $request->getEntity())) {
+            $this->setEntity( $entity );
+        }
         $this->validate();
+    }
+
+    /**
+     * Set the entity for the inputs
+     *
+     * @param mixed $entity
+     *
+     * @return $this
+     */
+    public function setEntity( $entity = null ) {
+        $this->entity = $entity;
+        return $this;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getEntity() {
+        return $this->entity;
     }
 
 }
