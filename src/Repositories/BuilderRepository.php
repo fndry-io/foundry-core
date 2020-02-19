@@ -22,7 +22,7 @@ class BuilderRepository{
            return new $class();
        }
 
-       throw new \Exception("Block title $name was not found! Are you sure it is registered?");
+       throw new \Exception("Block titled '$name' was not found! Are you sure it is registered?");
     }
 
 }
