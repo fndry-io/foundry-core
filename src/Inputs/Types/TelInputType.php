@@ -42,6 +42,7 @@ class TelInputType extends InputType {
 	public function setCountryCode($code)
 	{
 		$this->setAttribute('country', $code);
+		return $this;
 	}
 
 	public function getCountryCode()
