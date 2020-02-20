@@ -4,6 +4,7 @@ namespace Foundry\Core;
 
 use Foundry\Core\Builder\BlocksConfig;
 use Foundry\Core\Builder\Contracts\SiteBuilder;
+use Foundry\Core\Builder\Contracts\SiteBuilderResources;
 use Foundry\Core\Builder\ResourcesConfig;
 use Foundry\Core\Contracts\Repository;
 use Foundry\Core\Listeners\SettingSaved;
@@ -115,10 +116,10 @@ class CoreServiceProvider extends ServiceProvider {
 
     private function registerPageResourcesSingleton()
     {
-        $this->app->singleton( SiteBuilder::class, function () {
+        $this->app->singleton( SiteBuilderResources::class, function () {
             return new ResourcesConfig( [] );
         } );
 
-        $this->app->alias( SiteBuilder::class, 'page_resources' );
+        $this->app->alias( SiteBuilderResources::class, 'builder_resources' );
     }
 }

@@ -14,11 +14,11 @@ abstract class SiteBuilder implements Repository, ArrayAccess {
         }
     }
 
-    static function registerPageResources($resources)
+    static function registerResources($resources)
     {
         foreach ($resources as $key => $resource){
-            //todo check if resource is a type of read request
-            app()['page_resources']->set($key, $resource);
+            //todo check if resource has the required keys and is of the correct type
+            app()['builder_resources']->set($key, $resource);
         }
     }
 }

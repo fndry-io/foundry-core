@@ -2,10 +2,10 @@
 
 namespace Foundry\Core\Builder;
 
-use Foundry\Core\Builder\Contracts\SiteBuilder;
+use Foundry\Core\Builder\Contracts\SiteBuilderResources;
 use Illuminate\Support\Arr;
 
-class ResourcesConfig extends SiteBuilder
+class ResourcesConfig extends SiteBuilderResources
 {
 
     /**
