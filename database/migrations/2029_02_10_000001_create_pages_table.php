@@ -24,7 +24,7 @@ class CreatePagesTable extends Migration
             $table->string('width', 20)->nullable();
             $table->string('height',20)->nullable();
             $table->json('styles')->nullable();
-            $table->json('classes')->nullable();
+            $table->string('classes')->nullable();
             $table->json('children')->nullable();
 
             $table->string('resource_type')->nullable();

@@ -29,8 +29,7 @@ class Site extends Model {
      */
     protected $fillable = [
         'title',
-        'uuid',
-        'pages'
+        'uuid'
     ];
 
     protected $dates = [

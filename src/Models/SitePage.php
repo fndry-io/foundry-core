@@ -74,8 +74,46 @@ class SitePage extends Model {
 
     ];
 
+    public function setStylesAttribute($value)
+    {
+        return $this->attributes['styles'] = json_encode($value);
+    }
+
+    public function getStylesAttribute($value)
+    {
+        return $this->jsonEncode($value);
+    }
+
+    public function setMetaAttribute($value)
+    {
+        return $this->attributes['meta'] = json_encode($value);
+    }
+
+    public function getMetaAttribute($value)
+    {
+        return $this->jsonEncode($value);
+    }
+
+    public function setChildrenAttribute($value)
+    {
+        $this->attributes['children'] = json_encode($value);
+    }
+
+    public function getChildrenAttribute($value)
+    {
+        return $this->jsonEncode($value);
+    }
+
     public function site()
     {
         return $this->belongsTo(Site::class);
+    }
+
+    private function jsonEncode($value)
+    {
+        if($value)
+            return json_decode($value, true);
+
+        return $value;
     }
 }
