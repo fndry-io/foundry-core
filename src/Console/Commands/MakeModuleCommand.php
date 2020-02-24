@@ -164,7 +164,7 @@ class MakeModuleCommand extends Command
                     $__input['cast'] = 'datetime:Y-m-d';
                     break;
                 case 'DateTimeInputType':
-                    $__input['cast'] = 'datetime:Y-m-d\TH:i:sO';
+                    $__input['cast'] = 'datetime:Y-m-d\TH:i:sP';
                     break;
             }
 

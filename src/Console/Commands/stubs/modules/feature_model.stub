@@ -35,8 +35,8 @@ class {{MODEL_NAME}} extends Model implements {{MODEL_CONTRACT_NAME}}
      * @var array
      */
     protected $casts = [
-        'created_at' => 'datetime:Y-m-d\TH:i:sO',
-        'updated_at' => 'datetime:Y-m-d\TH:i:sO',
+        'created_at' => 'datetime:Y-m-d\TH:i:sP',
+        'updated_at' => 'datetime:Y-m-d\TH:i:sP',
         {{CASTS}}
     ];
 
