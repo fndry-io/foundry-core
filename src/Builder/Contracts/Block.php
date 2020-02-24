@@ -26,7 +26,7 @@ abstract class Block implements Arrayable{
 
     /**
      * Returns an array of all available attributes for a given block
-     * "template" attribute is absolute required to render the view
+     * "template" attribute is absolutely required to render the view
      * Any variable that is available in the view file needs to be included
      * in this array, unless it is a page resource
      *

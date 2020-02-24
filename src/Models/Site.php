@@ -55,6 +55,6 @@ class Site extends Model {
 
     public function pages()
     {
-        return $this->hasMany(SitePage::class);
+        return $this->hasMany(SitePage::class,'site_id','id');
     }
 }
