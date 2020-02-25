@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class ModelRepository
@@ -78,10 +79,11 @@ abstract class ModelRepository implements RepositoryInterface
 		if ($id instanceof \Illuminate\Database\Eloquent\Model) {
 			return $id;
 		} else if (is_int($id) || is_string($id)) {
-		    if ($fail) {
-                return $this->query()->findOrFail($id);
+            $model = $this->query()->find($id);
+		    if ($fail && !$model) {
+                throw new NotFoundHttpException(__('Not found'));
             } else {
-                return $this->query()->find($id);
+		        return $model;
             }
 		} else {
 			throw new \Exception('Invalid id value passed to findOrAbort');
