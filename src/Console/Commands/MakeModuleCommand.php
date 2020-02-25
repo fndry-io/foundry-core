@@ -20,7 +20,7 @@ class MakeModuleCommand extends Command
 	protected $signature = 'foundry:make:module 
 	{name : The name of the module in lower case as provider_name/module_name}
 	{--feature= : The name of the feature to create. This would typically be the model name.}
-	{--type= : The type of file to generate. Black to create all, or Model, Repository, Service, Inputs, Controller, Contract, Events, Permissions, Requests, Routes, UnitTest.}
+	{--type= : The type of file to generate. Black to create all, or Model, Repository, Service, Inputs, Controller, Contract, Events, Permissions, Requests, Route, UnitTest.}
 	{--input=* : The inputs to create.}
 	{--required=* : The required inputs.}
 	{--fillable=* : The fillable inputs.}
@@ -290,7 +290,7 @@ class MakeModuleCommand extends Command
             'MODULE_NAMESPACE' => $module_namespace,
             'FEATURE_OBJECT_NAME' => '$' . Str::snake($feature)
         ];
-        $this->writeStub($feature . "Service" . '.php', $module_dir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Repositories', $this->makeStub($stub_variables, $stub_file));
+        $this->writeStub($feature . "Service" . '.php', $module_dir . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'Services', $this->makeStub($stub_variables, $stub_file));
     }
 
     /**
