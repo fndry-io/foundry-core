@@ -3,9 +3,8 @@
 namespace Foundry\Core\Builder\Contracts;
 
 use Foundry\Core\Inputs\Inputs;
-use Illuminate\Contracts\Support\Arrayable;
 
-abstract class Block implements Arrayable
+abstract class Block
 {
 
     /**
@@ -14,17 +13,29 @@ abstract class Block implements Arrayable
     const TEMPLATE_PATH = '';
 
     /**
+     * @var array
+     */
+    protected $data = [];
+
+    /**
      * @var array Values for the block
      */
     protected $values = [];
 
     /**
-     * Block constructor.
-     * @param $values
+     * @var array Default values for the block
      */
-    public function __construct($values = [])
+    protected $defaults = [];
+
+    /**
+     * Block constructor.
+     * @param $data
+     */
+    public function __construct($data = [])
     {
-        $this->init($values);
+        $this->data = $data;
+        $this->defaults = $this->getDefaultValues();
+        $this->init($data);
     }
 
     /**
@@ -58,6 +69,32 @@ abstract class Block implements Arrayable
     }
 
     /**
+     * Get the value from the block values or defaults
+     *
+     * @param $key
+     * @param null $default
+     * @return mixed|null
+     */
+    protected function getValue($key, $default = null)
+    {
+        if (isset($this->$key)) {
+            return $this->$key;
+        } elseif (isset($this->defaults[$key])) {
+            return $this->defaults[$key];
+        } else {
+            return $default;
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return array_merge($this->getDefaultValues(), $this->data);
+    }
+
+    /**
      * Returns an array of all available attributes for a given block
      * "template" attribute is absolutely required to render the view
      * Any variable that is available in the view file needs to be included
@@ -82,10 +119,11 @@ abstract class Block implements Arrayable
         if (!static::TEMPLATE_PATH) {
             throw new \Exception('A block needs to provide the path of its templates by overwriting the const field "TEMPLATE_PATH".');
         }
-        if (!isset($this->template)) {
+        $template = $this->getValue('template');
+        if (empty($template)) {
             throw new \Exception("No template has been provided for " . static::getName());
         }
-        return static::TEMPLATE_PATH . "." . $this->template;
+        return static::TEMPLATE_PATH . "." . $template;
     }
 
     /**
@@ -105,31 +143,13 @@ abstract class Block implements Arrayable
     abstract public function getForm(): Inputs;
 
     /**
-     * Converts the block to an array
-     *
-     * @return array
-     */
-    public function toArray()
-    {
-        $data = [];
-        $keys = array_keys(static::getDefaultValues());
-        $values = $this->getValues();
-
-        foreach ($keys as $key) {
-            $data[$key] = $values[$key];
-        }
-
-        return $data;
-    }
-
-    /**
      * @param $name
      * @return mixed
      * @throws \Exception
      */
     public function __get($name)
     {
-        if (isset($this->$name)) {
+        if (isset($this->values[$name])) {
             return $this->values[$name];
         }
         throw new \Exception('Undefined property ' . $name . ' on Block ' . static::getName());
