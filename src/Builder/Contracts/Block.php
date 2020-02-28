@@ -83,7 +83,7 @@ abstract class Block implements Arrayable
             throw new \Exception('A block needs to provide the path of its templates by overwriting the const field "TEMPLATE_PATH".');
         }
         if (!isset($this->template)) {
-            throw new \Exception("No template has been provided for " . static::$name);
+            throw new \Exception("No template has been provided for " . static::getName());
         }
         return static::TEMPLATE_PATH . "." . $this->template;
     }
@@ -132,7 +132,7 @@ abstract class Block implements Arrayable
         if (isset($this->$name)) {
             return $this->values[$name];
         }
-        throw new \Exception('Undefined property ' . $name . ' on Block ' . static::$name);
+        throw new \Exception('Undefined property ' . $name . ' on Block ' . static::getName());
     }
 
     /**
