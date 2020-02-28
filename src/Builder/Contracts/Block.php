@@ -71,7 +71,7 @@ abstract class Block implements Arrayable
      * @return string
      * @throws \Exception
      */
-    abstract public function getName(): string;
+    abstract static public function getName(): string;
 
     /**
      * @return string

@@ -9,8 +9,9 @@ abstract class SiteBuilder implements Repository, ArrayAccess {
 
     static function registerBlocks($blocks)
     {
+        /** @var Block $block */
         foreach ($blocks as $block){
-            app()['blocks']->set($block::$name, $block);
+            app()['blocks']->set($block::getName(), $block);
         }
     }
 
