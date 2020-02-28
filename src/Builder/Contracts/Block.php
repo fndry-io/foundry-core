@@ -2,27 +2,60 @@
 
 namespace Foundry\Core\Builder\Contracts;
 
-
+use Foundry\Core\Inputs\Inputs;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Str;
 
-abstract class Block implements Arrayable{
+abstract class Block implements Arrayable
+{
 
     /**
      * Location of the view files for this block including the domain
      */
-    const TEMPLATE_LOCATION = '';
+    const TEMPLATE_PATH = '';
 
     /**
-     * The form, if any for this block in order to edit displayed data
+     * @var array Values for the block
      */
-    const FORM = '';
-
+    protected $values = [];
 
     /**
-     * The unique name for this block. No two blocks can have the same name
+     * Block constructor.
+     * @param $values
      */
-    static $name = '';
+    public function __construct($values = [])
+    {
+        $this->init($values);
+    }
+
+    /**
+     * Init the block with it's values
+     *
+     * This should be overridden in extending classes if the values need to be expanded on, or additional data fetched
+     *
+     * @param $values
+     */
+    public function init($values = [])
+    {
+        $this->setValues($values);
+    }
+
+    /**
+     * @param array $values
+     */
+    public function setValues(array $values)
+    {
+        $this->values = $values;
+    }
+
+    /**
+     * Merge provided values with default
+     *
+     * @return array
+     */
+    protected function getValues()
+    {
+        return array_merge($this->getDefaultValues(), $this->values);
+    }
 
     /**
      * Returns an array of all available attributes for a given block
@@ -36,24 +69,9 @@ abstract class Block implements Arrayable{
 
     /**
      * @return string
-     */
-    public function getForm(): string
-    {
-        return static::FORM;
-    }
-
-    /**
-     * @return string
      * @throws \Exception
      */
-    public function getName() : string
-    {
-        if(!static::$name){
-            throw new \Exception("A block requires a name, please overwrite the NAME constant field");
-        }
-
-        return static::$name;
-    }
+    abstract public function getName(): string;
 
     /**
      * @return string
@@ -61,146 +79,69 @@ abstract class Block implements Arrayable{
      */
     protected function getTemplate(): string
     {
-
-        if(!static::TEMPLATE_LOCATION){
-            throw new \Exception('A block needs to provide the location of its templates by overwriting the const field "TEMPLATE_LOCATION".');
+        if (!static::TEMPLATE_PATH) {
+            throw new \Exception('A block needs to provide the path of its templates by overwriting the const field "TEMPLATE_PATH".');
         }
-
-        if(!isset($this->template)){
-            throw new \Exception("No template has been provided for ". static::$name);
+        if (!isset($this->template)) {
+            throw new \Exception("No template has been provided for " . static::$name);
         }
-
-        return static::TEMPLATE_LOCATION.".".$this->template;
-
+        return static::TEMPLATE_PATH . "." . $this->template;
     }
 
     /**
-     * Merge provided values with default
-     *
-     * @param $values
-     * @return array
-     */
-    protected function getParams($values)
-    {
-        return array_merge($this->getDefaultValues(), $values);
-    }
-
-
-    /**
-     * @param $values
      * @return string
      * @throws \Exception
      */
-    public function getView($values) : string
+    public function getView(): string
     {
-        $this->fill($this->getParams($values));
-        $view = $this->getTemplate();
-
-        return  (string) view($view, $this->toArray());
-
+        return (string) view($this->getTemplate(), $this->getValues());
     }
+
+    /**
+     * Return the inputs class for controlling the form
+     *
+     * @return Inputs
+     */
+    abstract public function getForm(): Inputs;
 
     /**
      * Converts the block to an array
      *
      * @return array
      */
-    public function toArray() {
+    public function toArray()
+    {
         $data = [];
-
         $keys = array_keys(static::getDefaultValues());
+        $values = $this->getValues();
 
         foreach ($keys as $key) {
-            $data[$key] = $this->{$key};
-//            if ($value instanceof Arrayable) {
-//                $data[$key] = $value->toArray();
-//            } else {
-//                $data[$key] = $value;
-//            }
+            $data[$key] = $values[$key];
         }
 
         return $data;
     }
 
-    public function fill(array $params)
-    {
-        foreach ($params as $key => $value) {
-            $this->__set($key, $value);
-        }
-    }
-
     /**
-     *
-     * This will call any setPropertyName method if it exists
-     *
      * @param $name
-     * @param $value
-     */
-    public function __set( $name, $value ) {
-        if (method_exists($this, 'set' . Str::ucfirst(Str::camel($name)))) {
-            call_user_func([$this, 'set' . Str::ucfirst(Str::camel($name))], $value);
-        } else {
-            $this->$name = $value;
-        }
-    }
-
-    /**
-     *
-     * This will call any getPropertyName method if it exists
-     *
-     * @param $name
-     *
      * @return mixed
+     * @throws \Exception
      */
-    public function __get( $name ) {
-        if (method_exists($this, 'get' . Str::ucfirst(Str::camel($name)))) {
-            return call_user_func([$this, 'get' . Str::ucfirst(Str::camel($name))]);
-        } else {
-            return $this->get($name);
+    public function __get($name)
+    {
+        if (isset($this->$name)) {
+            return $this->values[$name];
         }
+        throw new \Exception('Undefined property ' . $name . ' on Block ' . static::$name);
     }
 
     /**
-     * @param $key
-     * @param null $default
-     *
-     * @return $this|mixed|null
+     * @param $name
+     * @return bool
      */
-    public function get($key, $default = null) {
-        if (is_null($key) || trim($key) == '') {
-            return $this;
-        }
-
-        if (strpos($key, '.') !== false) {
-            $parts = explode('.', $key);
-            $count = count($parts);
-            for ($i=0;$i<$count;$i++) {
-                $end = $count === ($i + 1);
-                if (isset($this->{$parts[$i]})) {
-                    $item = $this->{$parts[$i]};
-
-                    if ($end) {
-                        return $item;
-                    }
-
-                    if (empty($item)){
-                        return $item;
-                    }
-
-                    if ($item instanceof Block) {
-                        array_shift($parts);
-                        return $item->get(implode('.', $parts), $default);
-                    } else {
-                        return $item;
-                    }
-                }
-            }
-        } elseif (isset($this->{$key})) {
-            return $this->{$key};
-        }
-
-
-        return $default;
+    public function __isset($name)
+    {
+        return isset($this->values[$name]);
     }
 }
 
