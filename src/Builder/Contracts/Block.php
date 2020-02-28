@@ -111,12 +111,12 @@ abstract class Block implements Arrayable{
         $keys = array_keys(static::getDefaultValues());
 
         foreach ($keys as $key) {
-            $value = $this->__get($key);
-            if ($value instanceof Arrayable) {
-                $data[$key] = $value->toArray();
-            } else {
-                $data[$key] = $value;
-            }
+            $data[$key] = $this->{$key};
+//            if ($value instanceof Arrayable) {
+//                $data[$key] = $value->toArray();
+//            } else {
+//                $data[$key] = $value;
+//            }
         }
 
         return $data;
