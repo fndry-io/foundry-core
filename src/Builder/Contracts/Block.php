@@ -3,6 +3,7 @@
 namespace Foundry\Core\Builder\Contracts;
 
 use Foundry\Core\Inputs\Inputs;
+use Illuminate\Support\Str;
 
 abstract class Block
 {
@@ -106,9 +107,16 @@ abstract class Block
 
     /**
      * @return string
-     * @throws \Exception
      */
     abstract static public function getName(): string;
+
+    /**
+     * @return string
+     */
+    static public function getLabel(): string
+    {
+        return Str::title(str_replace('_', ' ' , static::getName()));
+    }
 
     /**
      * @return string

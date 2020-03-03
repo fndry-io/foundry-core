@@ -22,4 +22,24 @@ abstract class SiteBuilder implements Repository, ArrayAccess {
             app()['builder_resources']->set($key, $resource);
         }
     }
+
+    static function getBlocks()
+    {
+        $blocks = app()['blocks']->items();
+        $data = [];
+        if ($blocks) {
+            /**
+             * @var string $name
+             * @var Block $class
+             */
+            foreach ($blocks as $name => $class) {
+                array_push($data, [
+                    'name' => $name,
+                    'label' => $class::getLabel(),
+                    'type' => 'template'
+                ]);
+            }
+        }
+        return $data;
+    }
 }
