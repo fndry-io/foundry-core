@@ -179,7 +179,7 @@ class BuilderRepository
                      * @var $entity Block
                      */
                     $entity = $this->block($child['name']);
-                    $child['template'] = $entity->getView($child['entity']);
+                    $child['template'] = $entity->view($child['entity']);
 
                     return $child;
 

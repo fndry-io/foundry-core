@@ -166,10 +166,14 @@ abstract class Block implements Arrayable
     }
 
     /**
+     * Generate a View for being rendered
+     *
+     * This method should be overridden by implementing classes when they need to fetch and set extra data to the view file
+     *
      * @return View
      * @throws \Exception
      */
-    public function getView(): View
+    public function view(): View
     {
         //todo handle the exception properly to comply with Laravel View and not throwing exceptions
         return view($this->getTemplate(), ['settings' => $this->getSettings(), 'data' => $this->data, 'resource' => $this->resource]);
@@ -221,7 +225,7 @@ abstract class Block implements Arrayable
     {
         return [
             'name' => static::getName(),
-            'template' => $this->getView()->render(),
+            'template' => $this->view()->render(),
             'settings' => $this->getSettings()
         ];
     }
