@@ -209,10 +209,11 @@ abstract class ModelRepository implements RepositoryInterface
 	 * @param \Closure $builder (QueryBuilder $query) The closure to send the Query Builder to
 	 * @param int $page
 	 * @param int $perPage
+     * @param string $pageName
 	 *
 	 * @return Paginator
 	 */
-	public function filter(\Closure $builder = null, int $page = 1, int $perPage = 20): Paginator
+	public function filter(\Closure $builder = null, int $page = 1, int $perPage = 20, $pageName = 'page'): Paginator
 	{
 		$query = $this->query();
 		if ($builder) {
@@ -220,10 +221,8 @@ abstract class ModelRepository implements RepositoryInterface
 		} else {
 			$query->select(['*']);
 		}
-
-		return $this->paginate($query, $page, $perPage);
+		return $this->paginate($query, $page, $perPage, $pageName);
 	}
-
 
 	/**
 	 * @param $query
