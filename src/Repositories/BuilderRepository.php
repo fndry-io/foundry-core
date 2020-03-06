@@ -9,23 +9,141 @@ use Foundry\Core\Models\SitePage;
 use Foundry\Core\Requests\Response;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
+use Modules\Foundry\Builder\Models\Template;
 
 class BuilderRepository
 {
 
     /**
-     * Get a block
+     * Render a block
      *
-     * @param string $name
-     * @param array $values
+     * @param $parent | Containing parent for the given block
+     * @param $block | The name of the block to be rendered
+     * @param $settings | Settings to pass to the block
      * @return Block
      * @throws \Exception
      */
-    public function block($name, $values = [])
+    public function renderBlock($parent, $block, $settings)
+    {
+        $parents = explode('.', $parent);
+
+        if(sizeof($parents)){
+            $resource = $this->findResource($parents);
+            try {
+                return $this->block($block, $settings, $resource);
+            } catch (\Exception $e) {
+                throw $e;
+            }
+        }else
+            throw new \Exception("A block can't be rendered outside a container! Please pass the parent container id");
+
+    }
+
+    /**
+     * @param array $parents
+     * @return mixed|object|null
+     * @throws \Exception
+     */
+    private function findResource(array $parents)
+    {
+        if(sizeof($parents)){
+            /**
+             * @var $template Template
+             */
+            $template = Template::query()
+                                    ->where('id', $parents[0])
+                                    ->first();
+
+            $children = $template->children;
+
+            if(!$template)
+                throw new \Exception('Template not found!');
+
+            $resource = $this->getTemplateResource($template);
+
+            $id = $parents[0];
+
+            for ($i = 1; $i < sizeof($parents); $i++){
+                    $id = $id.'.'.$parents[$i];
+                    $block = $this->findBlock($children, $id);
+
+                    if(!$block)
+                        throw new \Exception("Unable to find block with id $id on template $template->id");
+
+                    $children = $block['children'];
+
+                    if($block['type'] === 'template')
+                        $resource = $this->getBlockResource($block['name'], $resource, $block['entity']? $block['entity'] : []);
+            }
+
+            return $resource;
+        }
+
+        return null;
+    }
+
+
+    /**
+     * @param array $array
+     * @param $id
+     * @return mixed|null
+     */
+    private function findBlock(array $array, $id)
+    {
+        foreach ($array as $child){
+            if($child['id'] === $id)
+                return $child;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the resource for a given block
+     *
+     * @param $name | block name
+     * @param $resource | parent block resource
+     * @param $settings | settings for block
+     * @return mixed
+     * @throws \Exception
+     */
+    private function getBlockResource($name, $resource, $settings)
+    {
+        $block = $this->block($name, $settings, $resource);
+
+        return $block->getResource();
+    }
+
+    /**
+     * Determines if a template has a fixed resource
+     * and fetches it if required
+     *
+     * @param Template $template
+     * @return object|null
+     */
+    public function getTemplateResource(Template $template)
+    {
+        if($template->resource_type && $template->resource_id){
+            return $this->getResource($template->resource_type, (int) $template->resource_id);
+        }
+
+        return null;
+    }
+
+    /**
+     * Get a block
+     *
+     * @param string $name
+     * @param array $settings
+     * @param null $resource
+     * @return Block
+     * @throws \Exception
+     */
+    public function block($name, $settings = [], $resource = null)
     {
         $class = app('blocks')->get($name);
         if ($class) {
-            return new $class($values);
+            return new $class($settings, $resource);
         }
         throw new \Exception("Block titled '$name' was not found! Are you sure it is registered?");
     }
@@ -87,7 +205,13 @@ class BuilderRepository
         $page->save();
     }
 
-    public function getResourceList($resource)
+    /**
+     * Find resource repo class
+     *
+     * @param $resource
+     * @return ResourceRepository|Response
+     */
+    public function getResourceRepo($resource)
     {
         $resource = app()['builder_resources']->get($resource);
 
@@ -101,8 +225,7 @@ class BuilderRepository
                 $repository = new $repo();
 
                 if (is_a($repository, ResourceRepository::class)) {
-                    $list = $repository->getSelectionList();
-                    return Response::success($list);
+                   return $repository;
                 }
 
                 return Response::error(sprintf("Resource repo '%s' doesn't implement '%s' contract", get_class($repository), ResourceRepository::class), 406);
@@ -112,6 +235,33 @@ class BuilderRepository
         }
 
         return Response::error("Builder resource '$resource' was not found", 404);
+    }
+
+    /**
+     * Get array of objects for a given resource name
+     *
+     * @param $resource
+     * @return Response
+     */
+    public function getResourceList($resource)
+    {
+        $repository = $this->getResourceRepo($resource);
+        $list = $repository->getSelectionList();
+        return Response::success($list);
+    }
+
+    /**
+     * Get a resource object
+     *
+     * @param $resource | resource type
+     * @param $id | id of the fixed resource
+     *
+     * @return object
+     */
+    public function getResource($resource, $id)
+    {
+        $repository = $this->getResourceRepo($resource);
+        return $repository->readResource($id);
     }
 
     /**

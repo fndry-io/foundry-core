@@ -173,7 +173,7 @@ abstract class Block implements Arrayable
      * @return View
      * @throws \Exception
      */
-    public function view(): View
+    public function getView(): View
     {
         //todo handle the exception properly to comply with Laravel View and not throwing exceptions
         return view($this->getTemplate(), ['settings' => $this->getSettings(), 'data' => $this->data, 'resource' => $this->resource]);
