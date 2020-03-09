@@ -5,7 +5,7 @@ namespace Foundry\Core\Repositories;
 use Foundry\Core\Builder\Contracts\Block;
 use Foundry\Core\Builder\Contracts\ResourceRepository;
 use Foundry\Core\Models\Site;
-use Foundry\Core\Models\SitePage;
+use Foundry\Core\Models\Page;
 use Foundry\Core\Requests\Response;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -183,11 +183,11 @@ class BuilderRepository
      */
     private function savePage(array $data, int $site_id)
     {
-        $page = SitePage::query()
+        $page = Page::query()
             ->where('uuid', $data['id'])->first();
 
         if (!$page)
-            $page = new SitePage(['uuid' => $data['id']]);
+            $page = new Page(['uuid' => $data['id']]);
 
         $page->site_id = $site_id;
 
