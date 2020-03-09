@@ -64,6 +64,7 @@ class BuilderRepository
             $id = $parents[0];
 
             for ($i = 1; $i < sizeof($parents); $i++){
+                if($children && sizeof($children)){
                     $id = $id.'.'.$parents[$i];
                     $block = $this->findBlock($children, $id);
 
@@ -74,6 +75,7 @@ class BuilderRepository
 
                     if($block['type'] === 'template')
                         $resource = $this->getBlockResource($block['name'], $resource, $block['entity']? $block['entity'] : []);
+                }
             }
 
             return $resource;
