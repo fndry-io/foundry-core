@@ -421,14 +421,14 @@ class FormType extends ParentType implements Entityable {
 	/**
 	 * @param $name
 	 *
-	 * @return InputType|null
-	 */
+	 * @return InputType|CollectionType|null
+     * @throws \Exception
+     */
 	public function get( $name ) {
 		if ( $input = Arr::get($this->inputs, $name, null)) {
 			return $input;
 		}
-
-		return null;
+		throw new \Exception(__('Input "'.$name.'" not found!'));
 	}
 
 	/**
