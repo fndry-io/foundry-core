@@ -4,6 +4,7 @@ namespace Foundry\Core\Builder\Contracts;
 
 use ArrayAccess;
 use Foundry\Core\Contracts\Repository;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -11,10 +12,13 @@ abstract class SiteBuilder implements Repository, ArrayAccess {
 
     static function registerBlocks($blocks)
     {
-        /** @var Block $block */
-        foreach ($blocks as $block){
-            app()['blocks']->set($block::getName(), $block);
+        if(!App::runningInConsole()){
+            /** @var Block $block */
+            foreach ($blocks as $block){
+                app()['blocks']->set($block::getName(), $block);
+            }
         }
+
     }
 
     /**
@@ -29,27 +33,30 @@ abstract class SiteBuilder implements Repository, ArrayAccess {
      */
     static function registerResources($resources)
     {
-        $keys = [
-            'label',
-            'repo',
-            'model'
-        ];
+        if(!App::runningInConsole()){
+            $keys = [
+                'label',
+                'repo',
+                'model'
+            ];
 
-        foreach ($resources as $key => $resource){
+            foreach ($resources as $key => $resource){
 
-            if(self::array_keys_exists($keys, $resource)){
-                DB::table('foundry_builder_source_types')
+                if(self::array_keys_exists($keys, $resource)){
+                    DB::table('foundry_builder_source_types')
                         ->where('name', $key)
                         ->updateOrInsert([
                             'name' => $key,
                             'model' => $resource['model']
                         ]);
 
-                app()['builder_resources']->set($key, $resource);
-            }else{
-                Log::error(sprintf("The following resource doesn't have all the required keys: %s", json_encode($resource)));
+                    app()['builder_resources']->set($key, $resource);
+                }else{
+                    Log::error(sprintf("The following resource doesn't have all the required keys: %s", json_encode($resource)));
+                }
             }
         }
+
     }
 
     static function array_keys_exists(array $keys, array $arr) {
