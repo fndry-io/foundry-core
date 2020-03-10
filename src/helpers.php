@@ -386,3 +386,23 @@ if ( ! function_exists( 'recursive_get_by_reference' ) ) {
         return $value;
     }
 }
+
+if ( ! function_exists( 'page_url' ) ) {
+
+    /**
+     * Create a url for a given page based off of the uri of a resource type
+     *  Todo improve this accept multiple replaces
+     * @param $uri
+     * @param $replace
+     * @return string|string[]|null
+     */
+    function page_url($uri, $replace)
+    {
+        if($uri)
+            $url = preg_replace('/[\[{\(].*[\]}\)]/U' , str_slug($replace), $uri);
+        else
+            $url = str_slug($replace);
+
+        return $url;
+    }
+}
