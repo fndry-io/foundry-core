@@ -2,7 +2,9 @@
 
 namespace Foundry\Core\Builder\Contracts;
 
-interface IsBuilderResource{
+use Foundry\Core\Models\Page;
+
+trait IsBuilderResource{
 
     /**
      * Allows pre-filling of page data when creating a page for a given resource
@@ -20,5 +22,32 @@ interface IsBuilderResource{
      * @param string $uri | Resource type URI configuration
      * @return array
      */
-    public function getPageData(string $uri = null): array;
+    public abstract  function getPageData(string $uri = null): array;
+
+
+    /**
+     * @return array
+     */
+    public function getPageAttribute()
+    {
+        $page = [];
+        $page['create'] = true;
+
+        $source = array_filter(app()['builder_resources']->items(), function($s){
+            return $s['model'] === get_class($this);
+        });
+
+        if($source){
+            $p = Page::query()
+                    ->select(['id'])
+                    ->where('resource_id', $this->id)
+                    ->where('resource_type', array_keys($source)[0])
+                    ->first();
+
+            $page['edit'] = $p? $p->id: null;
+
+        }
+
+        return $page;
+    }
 }

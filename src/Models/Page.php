@@ -30,6 +30,10 @@ class Page extends Model {
 
     protected $table = 'foundry_builder_pages';
 
+    protected $casts = [
+        'seo' => 'array'
+    ];
+
     /**
      * The attributes that are mass assignable.
      *
@@ -68,22 +72,4 @@ class Page extends Model {
 
     ];
 
-
-    public function setSeoAttribute($value)
-    {
-        $this->attributes['seo'] = $value? json_encode($value): $value;
-    }
-
-    public function getSeoAttribute($value)
-    {
-        return $this->jsonDecode($value);
-    }
-
-    private function jsonDecode($value)
-    {
-        if($value)
-            return json_decode($value, true);
-
-        return $value;
-    }
 }

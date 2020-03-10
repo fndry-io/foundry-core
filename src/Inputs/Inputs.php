@@ -115,17 +115,35 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 		return $this->values;
 	}
 
-	/**
-	 * Only extract the desired value
-	 *
-	 * @param array $keys
-	 *
-	 * @return array
-	 */
-	public function only($keys = [])
-	{
-		return Arr::only($this->values, $keys);
-	}
+    public function only($keys)
+    {
+        $results = [];
+
+        $placeholder = null;
+
+        foreach (is_array($keys) ? $keys : func_get_args() as $key) {
+            $value = data_get($this->values, $key, $placeholder);
+
+            if ($value !== $placeholder) {
+                Arr::set($results, $key, $value);
+            }
+        }
+
+        return $results;
+    }
+
+
+//    /**
+//	 * Only extract the desired value
+//	 *
+//	 * @param array $keys
+//	 *
+//	 * @return array
+//	 */
+//	public function only($keys = [])
+//	{
+//		return Arr::only($this->values, $keys);
+//	}
 
 	/**
      * Get a value
