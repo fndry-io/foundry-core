@@ -7,6 +7,7 @@ use Foundry\Core\Contracts\Repository;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Modules\Foundry\Builder\Repositories\SourceTypeRepository;
 
 abstract class SiteBuilder implements Repository, ArrayAccess {
 
@@ -37,19 +38,15 @@ abstract class SiteBuilder implements Repository, ArrayAccess {
             $keys = [
                 'label',
                 'repo',
-                'model'
+                //'model'
             ];
+
+            $repo = new SourceTypeRepository();
 
             foreach ($resources as $key => $resource){
 
                 if(self::array_keys_exists($keys, $resource)){
-                    DB::table('foundry_builder_source_types')
-                        ->where('name', $key)
-                        ->updateOrInsert([
-                            'name' => $key,
-                            'model' => $resource['model']
-                        ]);
-
+                    $repo->persist(array_merge($resource, ['name' => $key]));
                     app()['builder_resources']->set($key, $resource);
                 }else{
                     Log::error(sprintf("The following resource doesn't have all the required keys: %s", json_encode($resource)));

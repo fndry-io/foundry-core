@@ -44,7 +44,7 @@ class Page extends Model {
         'content_layout_id',
         'layout_id',
         'resource_type',
-        'resource_id'
+        'resource_id',
     ];
 
     protected $dates = [

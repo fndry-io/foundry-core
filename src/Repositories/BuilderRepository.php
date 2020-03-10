@@ -248,7 +248,7 @@ class BuilderRepository
     public function getResourceList($resource)
     {
         $repository = $this->getResourceRepo($resource);
-        $list = $repository->getSelectionList();
+        $list = $repository->getResourceSelectionList();
         return Response::success($list);
     }
 
@@ -263,7 +263,7 @@ class BuilderRepository
     public function getResource($resource, $id)
     {
         $repository = $this->getResourceRepo($resource);
-        return $repository->readResource($id);
+        return $repository->read($id);
     }
 
     /**
@@ -279,73 +279,4 @@ class BuilderRepository
         return $query->paginate($perPage, null, $pageName, $page);
     }
 
-    /**
-     * Returns a list of results
-     *
-     * @param \Closure $builder (QueryBuilder $query) The closure to send the Query Builder to
-     * @param int $page
-     * @param int $perPage
-     *
-     * @return Paginator
-     */
-    public function filter(\Closure $builder = null, int $page = 1, int $perPage = 20): Paginator
-    {
-        $query = Site::query();
-
-        if ($builder) {
-            $query = $builder($query);
-        } else {
-            $query->select(['*']);
-        }
-
-        return $this->paginate($query, $page, $perPage);
-    }
-
-    public function browseSites(array $inputs, $page = 1, $perPage = 20): Paginator
-    {
-
-        return $this->filter(function (Builder $query) use ($inputs) {
-            $query->select('id', 'title', 'uuid')
-                ->orderBy('id', 'DESC');
-
-            return $query;
-        }, $page, $perPage);
-    }
-
-    public function getSite($uuid)
-    {
-        $site = Site::with('pages')
-            ->where('uuid', $uuid)->first()->toArray();
-
-
-        if ($site) {
-
-            $site['id'] = $site['uuid'];
-            unset($site['uuid']);
-
-            $pages = $site['pages'];
-            $site['pages'] = array_map(function ($page) {
-                $children = $page['children'];
-                $page['children'] = array_map(function ($child) {
-                    /**
-                     * @var $entity Block
-                     */
-                    $entity = $this->block($child['name']);
-                    $child['template'] = $entity->view($child['entity']);
-
-                    return $child;
-
-                }, $children);
-
-                $page['id'] = $page['uuid'];
-                unset($page['uuid']);
-                return $page;
-
-            }, $pages);
-
-            return Response::success(['site' => $site]);
-        }
-
-        return Response::error('Site not found', 404);
-    }
 }
