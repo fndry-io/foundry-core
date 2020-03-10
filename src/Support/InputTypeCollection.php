@@ -2,6 +2,7 @@
 
 namespace Foundry\Core\Support;
 
+use Foundry\Core\Inputs\Types\CollectionInputType;
 use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\FormType;
@@ -86,8 +87,11 @@ class InputTypeCollection extends Collection {
 			 */
 			$item = $this->get($key);
 
-			if ($item instanceof InputTypeCollection) {
-				foreach ($item->rules() as $name => $rule) {
+			if ($item instanceof CollectionInputType) {
+			    if ($item->isMultiple()) {
+                    $key = $key . '.*';
+                }
+				foreach ($item->getCollection()->getTypes()->rules() as $name => $rule) {
 					$rules["$key.$name"] = $rule;
 				}
 			} elseif ($item instanceof Choosable && $item->isMultiple()) {
