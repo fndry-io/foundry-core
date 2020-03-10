@@ -183,7 +183,7 @@ class FormType extends ParentType implements Entityable {
 	 *
 	 * @return InputType|null
 	 */
-	public function getInput( $name ) {
+	public function &getInput( $name ) {
 		foreach ( $this->inputs as &$input ) {
 			if ( $name === $input->getName() ) {
 				return $input;
@@ -376,7 +376,7 @@ class FormType extends ParentType implements Entityable {
 	public function setRules( $rules = [] ) {
 		$this->rules = $rules;
 		foreach ( $this->getRules() as $key => $rules ) {
-			if ( $input = $this->getInput( $key ) ) {
+			if ( $input =& $this->getInput( $key ) ) {
 				/**@var InputType $input */
 				$input->setRules( $rules );
 			}
@@ -419,16 +419,24 @@ class FormType extends ParentType implements Entityable {
 	}
 
 	/**
-	 * @param $name
+	 * @param $key
 	 *
-	 * @return InputType|CollectionType|null
+	 * @return InputType|CollectionInputType|null
      * @throws \Exception
      */
-	public function get( $name ) {
-		if ( $input = Arr::get($this->inputs, $name, null)) {
-			return $input;
-		}
-		throw new \Exception(__('Input "'.$name.'" not found!'));
+	public function &get( $key ) {
+
+        if (Arr::exists($this->inputs, $key)) {
+            return $this->inputs[$key];
+        }
+
+        $value =& recursive_get_by_reference($this->inputs, $key);
+
+        if ($value === null) {
+            throw new \Exception(sprintf('Input "%s" not found!', $key));
+        }
+
+        return $value;
 	}
 
 	/**
@@ -446,6 +454,10 @@ class FormType extends ParentType implements Entityable {
 		if ($this->inputs) {
 			$json['values'] = $this->getValues();
 		}
+
+        if ($this->inputs) {
+            $json['inputs'] = $this->getInputs();
+        }
 
 		return $json;
 	}

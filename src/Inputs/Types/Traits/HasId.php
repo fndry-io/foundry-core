@@ -29,7 +29,7 @@ trait HasId {
 	public function setId( $id = null ) {
 		if ( $id == null ) {
 			if ( method_exists( $this, 'getName' ) ) {
-				$id = ucfirst(Str::camel( Str::slug( str_replace('.', '_', $this->getName()) . '_' . $this->getType() ) ));
+				$id = uniqid( ucfirst(Str::camel( Str::slug( str_replace('.', '_', $this->getName()) . '_' . $this->getType() ) )) );
 			} else {
 				$id = uniqid( 'Id' );
 			}

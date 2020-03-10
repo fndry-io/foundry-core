@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 
 if ( ! function_exists( 'setting' ) ) {
@@ -354,4 +355,34 @@ if ( ! function_exists( 'field_options_label' ) ) {
         }
     }
 
+}
+
+if ( ! function_exists( 'recursive_get_by_reference' ) ) {
+    /**
+     * Recursively get an entry in given array by reference
+     *
+     *
+     * @param array $array The array to
+     * @param string|array $key
+     * @return mixed|null
+     * @see https://www.php.net/manual/en/language.references.return.php
+     */
+    function &recursive_get_by_reference($array, $key)
+    {
+        $value = null;
+
+        if (Arr::exists($array, $key)) {
+            return $array[$key];
+        }
+
+        if (strpos($key, '.') !== false) {
+            $segments = explode('.', $key);
+            $key = array_shift($array);
+            if (isset($array[$key])) {
+                $value =& recursive_get_by_reference($array[$key], implode('.', $segments));
+            }
+        }
+
+        return $value;
+    }
 }

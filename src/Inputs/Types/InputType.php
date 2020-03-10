@@ -81,7 +81,7 @@ abstract class InputType extends BaseType implements Inputable {
 		$field = parent::jsonSerialize();
 
 		//set the rules
-		if ( $field['rules'] ) {
+		if ( $field['rules'] || $field['required'] ) {
 			$_rules = [];
 			$rules  = $this->getRules();
 			if ( $rules ) {
