@@ -174,7 +174,7 @@ class SettingRepository extends ModelRepository implements Repository, ArrayAcce
     {
 
         return $this->filter(function (Builder $query) use ($inputs) {
-            $query->select('id', 'domain', 'name', 'default','value')
+            $query->select('id', 'domain', 'name', 'default','value', 'model')
                 ->orderBy('name', 'ASC');
 
             return $query;
