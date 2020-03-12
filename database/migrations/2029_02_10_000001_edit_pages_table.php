@@ -23,7 +23,7 @@ class EditPagesTable extends Migration
             $table->string('url');
             $table->string('resource_type')->nullable();
             $table->unsignedInteger('resource_id')->nullable();
-            $table->unsignedBigInteger('layout_id');
+            $table->unsignedBigInteger('layout_id')->nullable();
             $table->unsignedBigInteger('content_layout_id')->nullable();
             $table->string('status',20)->default('draft');
             $table->json('seo')->nullable();
