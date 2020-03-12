@@ -2,14 +2,15 @@
 
 namespace Foundry\Core\Repositories;
 
+use Carbon\Carbon;
 use Foundry\Core\Builder\Contracts\Block;
 use Foundry\Core\Builder\Contracts\ResourceRepository;
-use Foundry\Core\Models\Site;
 use Foundry\Core\Models\Page;
 use Foundry\Core\Requests\Response;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Modules\Foundry\Builder\Models\Template;
+use Modules\Foundry\Builder\Repositories\TemplateRepository;
 
 class BuilderRepository
 {
@@ -20,15 +21,17 @@ class BuilderRepository
      * @param $parent | Containing parent for the given block
      * @param $block | The name of the block to be rendered
      * @param $settings | Settings to pass to the block
+     * @param null $resource | Parent resource if available
      * @return Block
      * @throws \Exception
      */
-    public function renderBlock($parent, $block, $settings)
+    public function renderBlock($parent, $block, $settings, $resource = null)
     {
         $parents = explode('.', $parent);
 
         if(sizeof($parents)){
-            $resource = $this->findResource($parents);
+            if(!$resource)
+                $resource = $this->findResource($parents);
             try {
                 return $this->block($block, $settings, $resource);
             } catch (\Exception $e) {
@@ -127,6 +130,22 @@ class BuilderRepository
     {
         if($template->resource_type && $template->resource_id){
             return $this->getResource($template->resource_type, (int) $template->resource_id);
+        }
+
+        return null;
+    }
+
+    /**
+     * Determines if a page has a fixed resource
+     * and fetches it if required
+     *
+     * @param Page $page
+     * @return object|null
+     */
+    public function getPageResource(Page $page)
+    {
+        if($page->resource_type && $page->resource_id){
+            return $this->getResource($page->resource_type, (int) $page->resource_id);
         }
 
         return null;
@@ -277,6 +296,103 @@ class BuilderRepository
     protected function paginate(Builder $query, $page, $perPage, $pageName = 'page'): Paginator
     {
         return $query->paginate($perPage, null, $pageName, $page);
+    }
+
+    /**
+     * Fetch a page from the DB based off of the url
+     *
+     * @param $url
+     * @param string $status
+     * @return array
+     * @throws \Exception
+     */
+    public function renderPage($url, $status = 'published'){
+
+        $query = Page::query()
+                        ->where('url', $url)
+                        ->where('status', $status);
+
+        if($status === 'published'){
+            $query->where('published_at', '>=', Carbon::now());
+        }
+
+        /**
+         * @var $page Page
+         */
+        $page = $query->first();
+
+
+        if(!$page)
+            abort(404,'Page not found!');
+
+        $blocks = [];
+
+        /**
+         * @var $layout Template
+         * @var $content Template
+         */
+        $layout = TemplateRepository::repository()->read($page->layout_id);
+        $content = TemplateRepository::repository()->read($page->content_layout_id);
+
+        $resource = $this->getPageResource($page);
+
+        if(!$layout || !$content){
+            //todo show appropriate error message
+        }else{
+            $blocks = $this->renderBlocks($layout, $content, $resource);
+        }
+
+        return [$page, $blocks];
+    }
+
+    /**
+     * Create a blocks tree
+     *
+     * @param Template $template
+     * @param Template $content
+     * @param $page_resource
+     * @return array
+     */
+    private function renderBlocks(Template $template, Template $content, $page_resource)
+    {
+        $children = $template->children;
+        $resource = $this->getTemplateResource($template);
+
+        //todo should page resource override root template resource
+        if(!$resource)
+            $resource = $page_resource;
+
+        $tree = function($parent, &$block, $resource) use (&$tree, $content) {
+
+            if($block['type'] === 'template'){
+                $settings = isset($block['entity'])? $block['entity']: [];
+                $block['block'] = $this->renderBlock($parent,$block['name'],$settings, $resource);
+                $resource = $block['block']->getResource();
+            }
+
+            if($block['type'] === 'content'){
+                //todo should content template resource override root template resource
+                $contentResource = $this->getTemplateResource($content);
+                if($contentResource)
+                    $resource = $contentResource;
+
+                $block['children'] = $content->children;
+            }
+
+            if(sizeof($block['children'])){
+                foreach ($block['children'] as &$child){
+                    $tree($block['id'], $child, $resource);
+                }
+
+            }
+
+        };
+
+        foreach ($children as &$child){
+            $tree($template->id, $child, $resource);
+        }
+
+        return $children;
     }
 
 }
