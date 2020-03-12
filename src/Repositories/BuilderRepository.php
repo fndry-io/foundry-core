@@ -313,7 +313,7 @@ class BuilderRepository
                         ->where('status', $status);
 
         if($status === 'published'){
-            $query->where('published_at', '>=', Carbon::now());
+            $query->where('published_at', '<=', Carbon::now());
         }
 
         /**
