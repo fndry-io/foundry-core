@@ -72,4 +72,14 @@ class Page extends Model {
 
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::saving(function($model){
+            if ($model->status === 'published' && empty($model->published_at)) {
+                $model->published_at = new Carbon();
+            }
+        });
+    }
+
 }
