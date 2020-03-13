@@ -343,9 +343,24 @@ if ( ! function_exists( 'field_options_label' ) ) {
      * @return mixed
      */
     function field_options_label( $class, $value, $default = null, $valueKey = 'value', $textKey = 'text') {
+
+        if (is_array($value)) {
+            $_options = [];
+            foreach ($value as $_value) {
+                $_option = field_options_label( $class, $_value, null, $valueKey, $textKey);
+                if ($_option !== null) {
+                    $_options[] = $_option;
+                }
+            }
+            if (!empty($_options)) {
+                return $_options;
+            }
+            return $default;
+        }
+
         /** @var \Foundry\Core\Inputs\Contracts\FieldOptions|string $class */
         /** @var array $options */
-        $options = Cache::rememberForever('options::' . $class, function() use ($class, $textKey, $valueKey){
+        $options = Cache::remember('options::' . $class, 30, function() use ($class, $textKey, $valueKey){
             return \Illuminate\Support\Arr::pluck($class::options(), $textKey, $valueKey);
         });
         if (isset($options[$value])) {
