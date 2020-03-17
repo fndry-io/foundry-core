@@ -16,11 +16,6 @@ abstract class Block implements Arrayable
     const TEMPLATE_PATH = '';
 
     /**
-     * @var array The blocks data after init. This would be the data the block is responsible for getting.
-     */
-    protected $data;
-
-    /**
      * @var mixed The resource to be given to the block
      */
     protected $resource;
@@ -33,19 +28,20 @@ abstract class Block implements Arrayable
     /**
      * @var array Values for the block
      */
-    protected $settings = [];
+    protected $data = [];
 
     /**
      * Block constructor.
-     * @param array $settings
+     * @param array $data
      * @param null $resource
      */
-    public function __construct($settings = [], $resource = null)
+    public function __construct($data = [], $resource = null)
     {
-        $this->setSettings($settings);
-        $this->setDefaults($this->getDefaultSettings());
+        $this->beforeCreate();
+        $this->setData($data);
+        $this->setDefaults($this->getDefault());
         $this->setResource($resource);
-        $this->init();
+        $this->created();
     }
 
     /**
@@ -53,17 +49,37 @@ abstract class Block implements Arrayable
      *
      * This should be overridden in extending classes if the values need to be expanded on, or additional data fetched
      */
-    public function init()
+    public function beforeCreate()
     {
 
     }
 
     /**
-     * @param array $settings
+     * Init the block after creation
+     *
+     * This should be overridden in extending classes if the values need to be expanded on, or additional data fetched
      */
-    protected function setSettings(array $settings)
+    public function created()
     {
-        $this->settings = $settings;
+
+    }
+
+    /**
+     * Init the block before render
+     *
+     * This should be overridden in extending classes if the values need to be expanded on, or additional data fetched
+     */
+    public function beforeRender()
+    {
+
+    }
+
+    /**
+     * @param array $data
+     */
+    protected function setData(array $data)
+    {
+        $this->data = $data;
     }
 
     /**
@@ -71,9 +87,9 @@ abstract class Block implements Arrayable
      *
      * @return array
      */
-    public function getSettings()
+    public function getData()
     {
-        return array_merge($this->getDefaultSettings(), $this->settings);
+        return array_merge($this->getDefault(), $this->data);
     }
 
     /**
@@ -83,10 +99,10 @@ abstract class Block implements Arrayable
      * @param null $default
      * @return mixed|null
      */
-    protected function getSetting($key, $default = null)
+    protected function get($key, $default = null)
     {
-        if (isset($this->settings[$key])) {
-            return $this->settings[$key];
+        if (isset($this->data[$key])) {
+            return $this->data[$key];
         } elseif (isset($this->defaults[$key])) {
             return $this->defaults[$key];
         } else {
@@ -134,7 +150,7 @@ abstract class Block implements Arrayable
      *
      * @return array
      */
-    abstract public function getDefaultSettings(): array;
+    abstract public function getDefault(): array;
 
     /**
      * @return string
@@ -150,19 +166,26 @@ abstract class Block implements Arrayable
     }
 
     /**
+     * @param bool $server
      * @return string
      * @throws \Exception
      */
-    protected function getTemplate(): string
+    protected function getTemplate($server = true): string
     {
         if (!static::TEMPLATE_PATH) {
             throw new \Exception('A block needs to provide the path of its templates by overwriting the const field "TEMPLATE_PATH".');
         }
-        $template = $this->getSetting('template');
+        $template = $this->get('template');
         if (empty($template)) {
             throw new \Exception("No template has been provided for " . static::getName());
         }
-        return static::TEMPLATE_PATH . "." . $template;
+        //return static::TEMPLATE_PATH . "." . $template;
+        if($server)
+            return  $template;
+        else{
+            return  file_get_contents(base_path(static::TEMPLATE_PATH . DIRECTORY_SEPARATOR . $template.".vuejs.html"));
+        }
+
     }
 
     /**
@@ -176,7 +199,23 @@ abstract class Block implements Arrayable
     public function getView(): View
     {
         //todo handle the exception properly to comply with Laravel View and not throwing exceptions
-        return view($this->getTemplate(), ['settings' => $this->getSettings(), 'data' => $this->data, 'resource' => $this->resource]);
+        return view($this->getTemplate(), ['settings' => $this->getData(), 'data' => $this->data, 'resource' => $this->resource]);
+    }
+
+    /**
+     * @param bool $server
+     * @return array
+     * @throws \Exception
+     */
+    public function render($server = true)
+    {
+        $this->beforeRender();
+
+        return [
+            'block' => $this->getData(),
+            'resources' => $this->resource,
+            'template' => $this->getTemplate($server)
+        ];
     }
 
     /**
@@ -226,7 +265,7 @@ abstract class Block implements Arrayable
         return [
             'name' => static::getName(),
             'template' => $this->view()->render(),
-            'settings' => $this->getSettings()
+            'settings' => $this->getData()
         ];
     }
 

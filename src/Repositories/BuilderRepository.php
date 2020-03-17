@@ -62,7 +62,8 @@ class BuilderRepository
             if(!$template)
                 throw new \Exception('Template not found!');
 
-            $resource = $this->getTemplateResource($template);
+            $resource = [];
+            $resource['parent'] = $this->getTemplateResource($template);
 
             $id = $parents[0];
 
@@ -77,7 +78,7 @@ class BuilderRepository
                     $children = $block['children'];
 
                     if($block['type'] === 'template')
-                        $resource = $this->getBlockResource($block['name'], $resource, $block['entity']? $block['entity'] : []);
+                        $resource = $this->getBlockResource($block['name'], $resource, $block['data'] && isset($block['data']['block'])? $block['data']['block'] : []);
                 }
             }
 
@@ -155,16 +156,16 @@ class BuilderRepository
      * Get a block
      *
      * @param string $name
-     * @param array $settings
+     * @param array $data
      * @param null $resource
      * @return Block
      * @throws \Exception
      */
-    public function block($name, $settings = [], $resource = null)
+    public function block($name, $data = [], $resource = null)
     {
         $class = app('blocks')->get($name);
         if ($class) {
-            return new $class($settings, $resource);
+            return new $class($data, $resource);
         }
         throw new \Exception("Block titled '$name' was not found! Are you sure it is registered?");
     }
