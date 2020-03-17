@@ -6,6 +6,7 @@ use Foundry\Core\Inputs\Inputs;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
+use WMDE\VueJsTemplating\Templating;
 
 abstract class Block implements Arrayable
 {
@@ -170,21 +171,19 @@ abstract class Block implements Arrayable
      * @return string
      * @throws \Exception
      */
-    protected function getTemplate($server = true): string
+    protected function getTemplate(): string
     {
         if (!static::TEMPLATE_PATH) {
             throw new \Exception('A block needs to provide the path of its templates by overwriting the const field "TEMPLATE_PATH".');
         }
+
         $template = $this->get('template');
+
         if (empty($template)) {
             throw new \Exception("No template has been provided for " . static::getName());
         }
-        //return static::TEMPLATE_PATH . "." . $template;
-        if($server)
-            return  $template;
-        else{
-            return  file_get_contents(base_path(static::TEMPLATE_PATH . DIRECTORY_SEPARATOR . $template.".vuejs.html"));
-        }
+
+        return  file_get_contents(base_path(static::TEMPLATE_PATH . DIRECTORY_SEPARATOR . $template.".vuejs.html"));
 
     }
 
@@ -204,19 +203,42 @@ abstract class Block implements Arrayable
 
     /**
      * @param bool $server
-     * @return array
+     * @return array|string
      * @throws \Exception
      */
     public function render($server = true)
     {
         $this->beforeRender();
 
-        return [
+        $template =  $this->getTemplate();
+
+        $data = [
             'block' => $this->getData(),
             'resources' => $this->resource,
-            'template' => $this->getTemplate($server)
         ];
+
+        if($server){
+            return  $this->createAndRender($template, $data);
+        }else{
+
+            $data['template'] = $template;
+
+            return  $data;
+        }
     }
+
+    /**
+     * @param $template
+     * @param array $data
+     * @param array $filters
+     * @return string
+     */
+    private function createAndRender($template, array $data, array $filters = [] ) {
+        $templating = new Templating();
+        $template = "<template>$template</template>";
+        return $templating->render( $template, $data, $filters );
+    }
+
 
     /**
      * Return the inputs class for controlling the form and the settings for the block

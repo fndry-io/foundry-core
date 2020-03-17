@@ -357,25 +357,25 @@ class BuilderRepository
     private function renderBlocks(Template $template, Template $content, $page_resource)
     {
         $children = $template->children;
-        $resource = $this->getTemplateResource($template);
+        $parent_resource = $this->getTemplateResource($template);
 
-        //todo should page resource override root template resource
-        if(!$resource)
-            $resource = $page_resource;
+        $resource = [
+            'page' => $page_resource,
+            'parent' => $parent_resource
+        ];
 
         $tree = function($parent, &$block, $resource) use (&$tree, $content) {
 
             if($block['type'] === 'template'){
-                $settings = isset($block['entity'])? $block['entity']: [];
-                $block['block'] = $this->renderBlock($parent,$block['name'],$settings, $resource);
+                $data = isset($block['data']) && isset($block['data']['block'])? $block['data']['block']: [];
+                $block['block'] = $this->renderBlock($parent,$block['name'],$data, $resource);
                 $resource = $block['block']->getResource();
             }
 
             if($block['type'] === 'content'){
-                //todo should content template resource override root template resource
                 $contentResource = $this->getTemplateResource($content);
                 if($contentResource)
-                    $resource = $contentResource;
+                    $resource['parent'] = $contentResource;
 
                 $block['children'] = $content->children;
             }
