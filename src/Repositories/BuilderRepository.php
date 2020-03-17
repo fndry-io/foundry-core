@@ -171,33 +171,6 @@ class BuilderRepository
     }
 
     /**
-     * Save Builder Site
-     *
-     * @param array $site
-     * @return Response
-     */
-    public function saveSite(array $site)
-    {
-        $web_site = Site::query()
-            ->where('uuid', $site['id'])->first();
-
-        if (!$web_site)
-            $web_site = new Site(['uuid' => $site['id']]);
-
-        $web_site->title = $site['title'];
-
-        if ($web_site->save()) {
-            foreach ($site['pages'] as $page) {
-                $this->savePage($page, $web_site->id);
-            }
-
-            return Response::success();
-        }
-
-        return Response::error('Unable to save site, please try again', 500);
-    }
-
-    /**
      * Save a builder site page
      *
      * @param array $data

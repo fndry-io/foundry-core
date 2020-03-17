@@ -173,19 +173,33 @@ abstract class Block implements Arrayable
      */
     protected function getTemplate(): string
     {
-        if (!static::TEMPLATE_PATH) {
-            throw new \Exception('A block needs to provide the path of its templates by overwriting the const field "TEMPLATE_PATH".');
+        if (!sizeof($this->getTemplates())) {
+            throw new \Exception('A block needs to provide an array of available templates. At lease one template is required.');
         }
 
         $template = $this->get('template');
+        $config = $this->getTemplates()[$template];
 
-        if (empty($template)) {
+        if (empty($template) || !$config || !isset($config['value'])) {
             throw new \Exception("No template has been provided for " . static::getName());
         }
 
-        return  file_get_contents(base_path(static::TEMPLATE_PATH . DIRECTORY_SEPARATOR . $template.".vuejs.html"));
+        return  file_get_contents($config['value']);
 
     }
+
+    /**
+     * Returns an array of available templates for the given block
+     * return [
+     *    'tempate_1' => [
+     *          'text' => 'Friendly name',
+     *          'value' => 'path to template',
+     *          ....
+     *      ]
+     * ]
+     * @return array
+     */
+    protected abstract function getTemplates(): array;
 
     /**
      * Generate a View for being rendered
@@ -291,6 +305,15 @@ abstract class Block implements Arrayable
         ];
     }
 
+    public function getStyles(): array
+    {
+        return  [];
+    }
+
+    public function getScripts(): array
+    {
+        return  [];
+    }
 }
 
 
