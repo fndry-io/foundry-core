@@ -173,6 +173,9 @@ abstract class Block implements Arrayable
      */
     protected function getTemplate(): string
     {
+        if(is_a($this, IsContainer::class))
+            return  '';
+
         if (!sizeof($this->getTemplates())) {
             throw new \Exception('A block needs to provide an array of available templates. At lease one template is required.');
         }
@@ -313,6 +316,11 @@ abstract class Block implements Arrayable
     public function getScripts(): array
     {
         return  [];
+    }
+
+    static function getType(): string
+    {
+        return 'template';
     }
 }
 

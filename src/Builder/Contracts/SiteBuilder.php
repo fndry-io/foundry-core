@@ -67,14 +67,21 @@ abstract class SiteBuilder implements Repository, ArrayAccess {
         if ($blocks) {
             /**
              * @var string $name
-             * @var Block $class
+             * @var Block|IsContainer $class
              */
             foreach ($blocks as $name => $class) {
-                array_push($data, [
-                    'name' => $name,
-                    'label' => $class::getLabel(),
-                    'type' => 'template'
-                ]);
+
+                $attr = [
+                        'name' => $name,
+                        'label' => $class::getLabel(),
+                        'type' => $class::getType()
+                    ];
+
+                if(is_a(new $class(), IsContainer::class)){
+                    $attr = array_merge($attr, $class::getContainerAttributes());
+                }
+
+                array_push($data,$attr);
             }
         }
         return $data;
