@@ -202,7 +202,7 @@ abstract class Block implements Arrayable
      * ]
      * @return array
      */
-    protected abstract function getTemplates(): array;
+    protected abstract static function getTemplates(): array;
 
     /**
      * Generate a View for being rendered
@@ -321,6 +321,13 @@ abstract class Block implements Arrayable
     static function getType(): string
     {
         return 'template';
+    }
+
+    static function getTemplateOptions()
+    {
+        return array_map(function($item){
+            return array_values($item);
+        }, static::getTemplates());
     }
 }
 
