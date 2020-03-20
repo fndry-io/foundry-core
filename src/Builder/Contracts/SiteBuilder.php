@@ -63,7 +63,9 @@ abstract class SiteBuilder implements Repository, ArrayAccess {
     static function getBlocks()
     {
         $blocks = app()['blocks']->items();
+
         $data = [];
+
         if ($blocks) {
             /**
              * @var string $name
@@ -74,7 +76,8 @@ abstract class SiteBuilder implements Repository, ArrayAccess {
                 $attr = [
                         'name' => $name,
                         'label' => $class::getLabel(),
-                        'type' => $class::getType()
+                        'type' => $class::getType(),
+                        'data' => (new $class())->render(false)
                     ];
 
                 if(is_a(new $class(), IsContainer::class)){

@@ -183,11 +183,12 @@ abstract class Block implements Arrayable
         $template = $this->get('template');
         $config = $this->getTemplates()[$template];
 
+
         if (empty($template) || !$config || !isset($config['value'])) {
             throw new \Exception("No template has been provided for " . static::getName());
         }
 
-        return  file_get_contents($config['value']);
+        return  file_get_contents($config['path']);
 
     }
 
@@ -202,7 +203,7 @@ abstract class Block implements Arrayable
      * ]
      * @return array
      */
-    protected abstract static function getTemplates(): array;
+    static abstract function getTemplates(): array;
 
     /**
      * Generate a View for being rendered
@@ -325,9 +326,7 @@ abstract class Block implements Arrayable
 
     static function getTemplateOptions()
     {
-        return array_map(function($item){
-            return array_values($item);
-        }, static::getTemplates());
+        return array_values(static::getTemplates());
     }
 }
 
