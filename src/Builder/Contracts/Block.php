@@ -176,7 +176,10 @@ abstract class Block implements Arrayable
         if(is_a($this, IsContainer::class))
             return  '';
 
-        if (!sizeof($this->getTemplates())) {
+        if(static::getType() === 'editor')
+            return static::getTemplates();
+
+        if (!sizeof(static::getTemplates())) {
             throw new \Exception('A block needs to provide an array of available templates. At lease one template is required.');
         }
 
@@ -190,6 +193,7 @@ abstract class Block implements Arrayable
 
         return  file_get_contents($config['path']);
 
+
     }
 
     /**
@@ -201,9 +205,9 @@ abstract class Block implements Arrayable
      *          ....
      *      ]
      * ]
-     * @return array
+     * @return null|array|string
      */
-    static abstract function getTemplates(): array;
+    static abstract function getTemplates();
 
     /**
      * Generate a View for being rendered
@@ -221,10 +225,11 @@ abstract class Block implements Arrayable
 
     /**
      * @param bool $server
+     * @param bool $test
      * @return array|string
      * @throws \Exception
      */
-    public function render($server = true)
+    public function render($server = true, $test = false)
     {
         $this->beforeRender();
 
@@ -236,7 +241,7 @@ abstract class Block implements Arrayable
         ];
 
         if($server){
-            return  $this->createAndRender($template, $data);
+            return  $this->createAndRender($template, $data, [], $test);
         }else{
 
             $data['template'] = $template;
@@ -249,11 +254,13 @@ abstract class Block implements Arrayable
      * @param $template
      * @param array $data
      * @param array $filters
+     * @param bool $test
      * @return string
      */
-    private function createAndRender($template, array $data, array $filters = [] ) {
+    private function createAndRender($template, array $data, array $filters = [], $test = false ) {
         $templating = new Templating();
-        $template = "<template>$template</template>";
+        if(!$test)
+            $template = "<template>$template</template>";
         return $templating->render( $template, $data, $filters );
     }
 

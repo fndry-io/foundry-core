@@ -59,8 +59,8 @@ abstract class IsContainer extends Block{
         return $results;
     }
 
-    static function getTemplates(): array
+    static function getTemplates()
     {
-        return  [];
+        return  null;
     }
 }
