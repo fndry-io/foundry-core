@@ -98,31 +98,20 @@ abstract class Block implements Arrayable
     /**
      * Merge props with data
      *
+     * @param null $key
+     * @param null $default
      * @return array
      */
-    public function getData()
+    public function getData($key = null, $default = null)
     {
-        return array_merge($this->getProps(), $this->data);
-    }
+        if($key){
+            if(isset($this->data[$key]))
+                return $key;
 
-    /**
-     * Get the value from the block values or defaults
-     *
-     * @param $key
-     * @param null $default
-     * @return mixed|null
-     */
-    protected function get($key, $default = null)
-    {
-        if (isset($this->data[$key])) {
-            return $this->data[$key];
-        } elseif (isset($this->props[$key])) {
-            return $this->props[$key];
-        } elseif (isset($this->defaults[$key])) {
-            return $this->defaults[$key];
-        }else {
-            return $default;
+            return  $default;
         }
+
+        return $this->data;
     }
 
     /**
@@ -197,7 +186,7 @@ abstract class Block implements Arrayable
             throw new \Exception('A block needs to provide an array of available templates. At lease one template is required.');
         }
 
-        $template = $this->get('template');
+        $template = $this->template;
         $config = $this->getTemplates()[$template];
 
 
@@ -249,7 +238,7 @@ abstract class Block implements Arrayable
         $this->beforeRender();
 
         $data = [
-            'block' => $this->getData(),
+            'block' => array_merge($this->getProps(), $this->data),
             'resources' => $this->resource,
         ];
 
@@ -290,9 +279,7 @@ abstract class Block implements Arrayable
      */
     public function __get($name)
     {
-        if(isset($this->data[$name]))
-            return $this->data[$name];
-        elseif(isset($this->props[$name]))
+        if(isset($this->props[$name]))
             return $this->props[$name];
         elseif (isset($this->defaults[$name]))
             return $this->defaults[$name];
