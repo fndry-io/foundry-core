@@ -29,17 +29,19 @@ abstract class Block implements Arrayable
     /**
      * @var array Values for the block
      */
+    protected $props = [];
+
     protected $data = [];
 
     /**
      * Block constructor.
-     * @param array $data
+     * @param array $props
      * @param null $resource
      */
-    public function __construct($data = [], $resource = null)
+    public function __construct($props = [], $resource = null)
     {
         $this->beforeCreate();
-        $this->setData($data);
+        $this->setProps($props);
         $this->setDefaults($this->getDefault());
         $this->setResource($resource);
         $this->created();
@@ -76,11 +78,11 @@ abstract class Block implements Arrayable
     }
 
     /**
-     * @param array $data
+     * @param array $props
      */
-    protected function setData(array $data)
+    protected function setProps(array $props)
     {
-        $this->data = $data;
+        $this->props = $props;
     }
 
     /**
@@ -88,9 +90,19 @@ abstract class Block implements Arrayable
      *
      * @return array
      */
+    public function getProps()
+    {
+        return array_merge($this->getDefault(), $this->props);
+    }
+
+    /**
+     * Merge props with data
+     *
+     * @return array
+     */
     public function getData()
     {
-        return array_merge($this->getDefault(), $this->data);
+        return array_merge($this->getProps(), $this->data);
     }
 
     /**
@@ -104,9 +116,11 @@ abstract class Block implements Arrayable
     {
         if (isset($this->data[$key])) {
             return $this->data[$key];
+        } elseif (isset($this->props[$key])) {
+            return $this->props[$key];
         } elseif (isset($this->defaults[$key])) {
             return $this->defaults[$key];
-        } else {
+        }else {
             return $default;
         }
     }
@@ -220,7 +234,7 @@ abstract class Block implements Arrayable
     public function getView(): View
     {
         //todo handle the exception properly to comply with Laravel View and not throwing exceptions
-        return view($this->getTemplate(), ['settings' => $this->getData(), 'data' => $this->data, 'resource' => $this->resource]);
+        return view($this->getTemplate(), ['settings' => $this->getProps(), 'data' => $this->props, 'resource' => $this->resource]);
     }
 
     /**
@@ -231,21 +245,19 @@ abstract class Block implements Arrayable
      */
     public function render($server = true, $test = false)
     {
-        $this->beforeRender();
-
         $template =  $this->getTemplate();
 
         $data = [
-            'block' => $this->getData(),
             'resources' => $this->resource,
         ];
 
         if($server){
+            $this->beforeRender();
+            $data['block'] = $this->getData();
             return  $this->createAndRender($template, $data, [], $test);
         }else{
-
+            $data['block'] = $this->getProps();
             $data['template'] = $template;
-
             return  $data;
         }
     }
@@ -279,9 +291,13 @@ abstract class Block implements Arrayable
      */
     public function __get($name)
     {
-        if (isset($this->data[$name])) {
+        if(isset($this->data[$name]))
             return $this->data[$name];
-        }
+        elseif(isset($this->props[$name]))
+            return $this->props[$name];
+        elseif (isset($this->defaults[$name]))
+            return $this->defaults[$name];
+
         throw new \Exception('Undefined data property ' . $name . ' on Block ' . static::getName());
     }
 
@@ -300,7 +316,7 @@ abstract class Block implements Arrayable
      */
     public function __isset($name)
     {
-        return isset($this->data[$name]);
+        return isset($this->$data[$name]);
     }
 
     /**
@@ -312,7 +328,7 @@ abstract class Block implements Arrayable
         return [
             'name' => static::getName(),
             'template' => $this->view()->render(),
-            'settings' => $this->getData()
+            'settings' => $this->getProps()
         ];
     }
 
@@ -334,6 +350,22 @@ abstract class Block implements Arrayable
     static function getTemplateOptions()
     {
         return array_values(static::getTemplates());
+    }
+
+    public function getClasses(): string
+    {
+        if(isset($this->props['advanced']) && isset($this->props['advanced']['classes']))
+            return $this->props['advanced']['classes'];
+
+        return  '';
+    }
+
+    public function getId(): string
+    {
+        if(isset($this->props['advanced']) && isset($this->props['advanced']['id']))
+            return $this->props['advanced']['id'];
+
+        return  '';
     }
 }
 

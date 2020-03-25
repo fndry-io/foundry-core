@@ -339,11 +339,9 @@ class BuilderRepository
 
         $tree = function($parent, &$block, $resource) use (&$tree, $content) {
 
-            if($block['type'] === 'template'){
-                $data = isset($block['data']) && isset($block['data']['block'])? $block['data']['block']: [];
-                $block['block'] = $this->renderBlock($parent,$block['name'],$data, $resource);
-                $resource = $block['block']->getResource();
-            }
+            $data = isset($block['data']) && isset($block['data']['block'])? $block['data']['block']: [];
+            $block['block'] = $this->renderBlock($parent,$block['name'],$data, $resource);
+            $resource = $block['block']->getResource();
 
             if($block['type'] === 'content'){
                 $contentResource = $this->getTemplateResource($content);
