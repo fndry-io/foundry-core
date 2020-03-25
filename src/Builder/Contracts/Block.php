@@ -246,17 +246,16 @@ abstract class Block implements Arrayable
     public function render($server = true, $test = false)
     {
         $template =  $this->getTemplate();
+        $this->beforeRender();
 
         $data = [
+            'block' => $this->getData(),
             'resources' => $this->resource,
         ];
 
         if($server){
-            $this->beforeRender();
-            $data['block'] = $this->getData();
             return  $this->createAndRender($template, $data, [], $test);
         }else{
-            $data['block'] = $this->getProps();
             $data['template'] = $template;
             return  $data;
         }
