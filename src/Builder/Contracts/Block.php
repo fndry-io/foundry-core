@@ -4,17 +4,18 @@ namespace Foundry\Core\Builder\Contracts;
 
 use Foundry\Core\Inputs\Inputs;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Contracts\View\View;
 use Illuminate\Support\Str;
 use WMDE\VueJsTemplating\Templating;
 
+/**
+ * Class Block
+ *
+ * The base Block class for building Page Builder Blocks
+ *
+ * @package Foundry\Core\Builder\Contracts
+ */
 abstract class Block implements Arrayable
 {
-
-    /**
-     * Location of the view files for this block including the domain
-     */
-    const TEMPLATE_PATH = '';
 
     /**
      * @var mixed The resource to be given to the block
@@ -27,10 +28,13 @@ abstract class Block implements Arrayable
     protected $defaults;
 
     /**
-     * @var array Values for the block
+     * @var array The props of the block
      */
     protected $props = [];
 
+    /**
+     * @var array The data of the block
+     */
     protected $data = [];
 
     /**
@@ -105,12 +109,10 @@ abstract class Block implements Arrayable
     public function getProp($key)
     {
         $props = $this->getProps();
-
-        if (isset($props[$key]))
-            return  $props[$key];
-        else
-            throw new \Exception('Undefined props property ' . $key . ' on Block ' . static::getName());
-
+        if (isset($props[$key])){
+            return $props[$key];
+        }
+        throw new \Exception('Undefined props property ' . $key . ' on Block ' . static::getName());
     }
 
     /**
@@ -156,21 +158,29 @@ abstract class Block implements Arrayable
     }
 
     /**
-     * Returns an array of all available attributes for a given block
+     * Returns an array of all available default props for a given block
+     *
+     * This will be merged into the props given to the block on creation
+     *
      * "template" attribute is absolutely required to render the view
+     *
      * Any variable that is available in the view file needs to be included
-     * in this array, unless it is a page resource
+     * in this array, unless it is a resource or a data variable
      *
      * @return array
      */
     abstract public function getDefault(): array;
 
     /**
+     * Get the Block name
+     *
      * @return string
      */
     abstract static public function getName(): string;
 
     /**
+     * Get the Block Label
+     *
      * @return string
      */
     static public function getLabel(): string
@@ -179,7 +189,8 @@ abstract class Block implements Arrayable
     }
 
     /**
-     * @param bool $server
+     * Get the template source code for use in rendering
+     *
      * @return string
      * @throws \Exception
      */
@@ -204,8 +215,6 @@ abstract class Block implements Arrayable
         }
 
         return  file_get_contents($config['path']);
-
-
     }
 
     /**
@@ -222,20 +231,6 @@ abstract class Block implements Arrayable
     static abstract function getTemplates();
 
     /**
-     * Generate a View for being rendered
-     *
-     * This method should be overridden by implementing classes when they need to fetch and set extra data to the view file
-     *
-     * @return View
-     * @throws \Exception
-     */
-    public function getView(): View
-    {
-        //todo handle the exception properly to comply with Laravel View and not throwing exceptions
-        return view($this->getTemplate(), ['settings' => $this->getProps(), 'data' => $this->props, 'resource' => $this->resource]);
-    }
-
-    /**
      * @param bool $server
      * @param bool $test
      * @return array|string
@@ -247,13 +242,13 @@ abstract class Block implements Arrayable
         $this->beforeRender();
 
         $data = [
-            'block' => array_merge($this->getProps(), $this->data),
+            'block' => array_merge($this->getProps(), $this->getData()),
             'resources' => $this->resource,
         ];
 
         if($server){
             return  $this->createAndRender($template, $data, [], $test);
-        }else{
+        } else {
             $data['template'] = $template;
             return  $data;
         }
@@ -268,8 +263,9 @@ abstract class Block implements Arrayable
      */
     private function createAndRender($template, array $data, array $filters = [], $test = false ) {
         $templating = new Templating();
-        if(!$test)
+        if(!$test) {
             $template = "<template>$template</template>";
+        }
         return $templating->render( $template, $data, $filters );
     }
 
@@ -288,9 +284,9 @@ abstract class Block implements Arrayable
      */
     public function __get($name)
     {
-        if(isset($this->data[$name]))
-            return $this->props[$name];
-
+        if(isset($this->data[$name])) {
+            return $this->data[$name];
+        }
         throw new \Exception('Undefined data property ' . $name . ' on Block ' . static::getName());
     }
 
@@ -347,17 +343,17 @@ abstract class Block implements Arrayable
 
     public function getClasses(): string
     {
-        if(isset($this->props['advanced']) && isset($this->props['advanced']['classes']))
+        if(isset($this->props['advanced']) && isset($this->props['advanced']['classes'])){
             return $this->props['advanced']['classes'];
-
+        }
         return  '';
     }
 
     public function getId(): string
     {
-        if(isset($this->props['advanced']) && isset($this->props['advanced']['id']))
+        if(isset($this->props['advanced']) && isset($this->props['advanced']['id'])){
             return $this->props['advanced']['id'];
-
+        }
         return  '';
     }
 }
