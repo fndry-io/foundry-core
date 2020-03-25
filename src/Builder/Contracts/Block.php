@@ -88,7 +88,7 @@ abstract class Block implements Arrayable
     /**
      * Merge provided values with default
      *
-     * @return array
+     * @return array|string
      */
     public function getProps()
     {
@@ -96,21 +96,30 @@ abstract class Block implements Arrayable
     }
 
     /**
+     * Get a prop value given a key
+     *
+     * @param $key
+     * @return mixed|string
+     * @throws \Exception
+     */
+    public function getProp($key)
+    {
+        $props = $this->getProps();
+
+        if (isset($props[$key]))
+            return  $props[$key];
+        else
+            throw new \Exception('Undefined props property ' . $key . ' on Block ' . static::getName());
+
+    }
+
+    /**
      * Merge props with data
      *
-     * @param null $key
-     * @param null $default
      * @return array
      */
-    public function getData($key = null, $default = null)
+    public function getData()
     {
-        if($key){
-            if(isset($this->data[$key]))
-                return $key;
-
-            return  $default;
-        }
-
         return $this->data;
     }
 
@@ -186,7 +195,7 @@ abstract class Block implements Arrayable
             throw new \Exception('A block needs to provide an array of available templates. At lease one template is required.');
         }
 
-        $template = $this->template;
+        $template = $this->getProp('template');
         $config = $this->getTemplates()[$template];
 
 
@@ -279,10 +288,8 @@ abstract class Block implements Arrayable
      */
     public function __get($name)
     {
-        if(isset($this->props[$name]))
+        if(isset($this->data[$name]))
             return $this->props[$name];
-        elseif (isset($this->defaults[$name]))
-            return $this->defaults[$name];
 
         throw new \Exception('Undefined data property ' . $name . ' on Block ' . static::getName());
     }
