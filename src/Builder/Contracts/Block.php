@@ -106,13 +106,15 @@ abstract class Block implements Arrayable
      * @return mixed|string
      * @throws \Exception
      */
-    public function getProp($key)
+    public function getProp($key, $default = null)
     {
-        $props = $this->getProps();
-        if (isset($props[$key])){
-            return $props[$key];
+        if (isset($this->props[$key])) {
+            return $this->props[$key];
+        } elseif(isset($this->defaults[$key])) {
+            return $this->defaults[$key];
+        } else {
+            return $default;
         }
-        throw new \Exception('Undefined props property ' . $key . ' on Block ' . static::getName());
     }
 
     /**

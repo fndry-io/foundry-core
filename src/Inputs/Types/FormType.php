@@ -439,6 +439,17 @@ class FormType extends ParentType implements Entityable {
         return $value;
 	}
 
+    /**
+     * Returns if a input exists
+     *
+     * @param $key
+     * @return bool
+     */
+	public function hasInput($key)
+    {
+        return Arr::exists($this->inputs, $key);
+    }
+
 	/**
 	 * @return array
 	 */
