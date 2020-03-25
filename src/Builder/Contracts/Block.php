@@ -40,7 +40,7 @@ abstract class Block implements Arrayable
      */
     public function __construct($props = [], $resource = null)
     {
-        $this->beforeCreate();
+        $this->beforeCreated();
         $this->setProps($props);
         $this->setDefaults($this->getDefault());
         $this->setResource($resource);
@@ -52,7 +52,7 @@ abstract class Block implements Arrayable
      *
      * This should be overridden in extending classes if the values need to be expanded on, or additional data fetched
      */
-    public function beforeCreate()
+    public function beforeCreated()
     {
 
     }
