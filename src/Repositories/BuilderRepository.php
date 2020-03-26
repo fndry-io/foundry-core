@@ -9,6 +9,7 @@ use Foundry\Core\Models\Page;
 use Foundry\Core\Requests\Response;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Arr;
 use Modules\Foundry\Builder\Models\Template;
 use Modules\Foundry\Builder\Repositories\TemplateRepository;
 
@@ -20,12 +21,12 @@ class BuilderRepository
      *
      * @param $parent | Containing parent for the given block
      * @param $block | The name of the block to be rendered
-     * @param $settings | Settings to pass to the block
+     * @param $props | Props to pass to the block
      * @param null $resource | Parent resource if available
      * @return Block
      * @throws \Exception
      */
-    public function renderBlock($parent, $block, $settings, $resource = null)
+    public function renderBlock($parent, $block, $props, $resource = null)
     {
         $parents = explode('.', $parent);
 
@@ -33,12 +34,14 @@ class BuilderRepository
             if(!$resource)
                 $resource = $this->findResource($parents);
             try {
-                return $this->block($block, $settings, $resource);
+                return $this->block($block, $props, $resource);
             } catch (\Exception $e) {
                 throw $e;
             }
-        }else
+        } else {
             throw new \Exception("A block can't be rendered outside a container! Please pass the parent container id");
+        }
+
 
     }
 
@@ -59,8 +62,10 @@ class BuilderRepository
 
             $children = $template->children;
 
-            if(!$template)
+            if(!$template) {
                 throw new \Exception('Template not found!');
+            }
+
 
             $resource = [];
             $resource['parent'] = $this->getTemplateResource($template);
@@ -72,13 +77,16 @@ class BuilderRepository
                     $id = $id.'.'.$parents[$i];
                     $block = $this->findBlock($children, $id);
 
-                    if(!$block)
+                    if(!$block) {
                         throw new \Exception("Unable to find block with id $id on template $template->id");
+                    }
 
                     $children = $block['children'];
 
-                    if($block['type'] === 'template')
+                    if($block['type'] === 'template') {
                         $resource = $this->getBlockResource($block['name'], $resource, $block['data'] && isset($block['data']['block'])? $block['data']['block'] : []);
+                    }
+
                 }
             }
 
@@ -156,16 +164,16 @@ class BuilderRepository
      * Get a block
      *
      * @param string $name
-     * @param array $data
+     * @param array $props
      * @param null $resource
      * @return Block
      * @throws \Exception
      */
-    public function block($name, $data = [], $resource = null)
+    public function block($name, $props = [], $resource = null)
     {
         $class = app('blocks')->get($name);
         if ($class) {
-            return new $class($data, $resource);
+            return new $class($props, $resource);
         }
         throw new \Exception("Block titled '$name' was not found! Are you sure it is registered?");
     }
@@ -339,14 +347,15 @@ class BuilderRepository
 
         $tree = function($parent, &$block, $resource) use (&$tree, $content) {
 
-            $data = isset($block['data']) && isset($block['data']['block'])? $block['data']['block']: [];
-            $block['block'] = $this->renderBlock($parent,$block['name'],$data, $resource);
+            $data = Arr::get($block, 'data.block', []);;
+            $block['block'] = $this->renderBlock($parent, $block['name'], $data, $resource);
             $resource = $block['block']->getResource();
 
             if($block['type'] === 'content'){
                 $contentResource = $this->getTemplateResource($content);
-                if($contentResource)
+                if($contentResource) {
                     $resource['parent'] = $contentResource;
+                }
 
                 $block['children'] = $content->children;
             }

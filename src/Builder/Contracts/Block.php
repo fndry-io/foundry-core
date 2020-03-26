@@ -244,6 +244,7 @@ abstract class Block implements Arrayable
         $this->beforeRender();
 
         $data = [
+            'props' => $this->getProps(),
             'block' => array_merge($this->getProps(), $this->getData()),
             'resources' => $this->resource,
         ];
@@ -295,9 +296,13 @@ abstract class Block implements Arrayable
     /**
      * @param $name
      * @param $value
+     * @throws \Exception
      */
     public function __set($name, $value)
     {
+        if (key_exists($name, $this->props) || key_exists($name, $this->defaults)) {
+            throw new \Exception('You cannot override prop ' . $name . ' on Block ' . static::getName() . '. Use a name not already set as a prop or default property.');
+        }
         $this->data[$name] = $value;
     }
 
