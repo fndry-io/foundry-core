@@ -72,6 +72,9 @@ class BuilderRepository
 
             $id = $parents[0];
 
+            if(sizeof($parents) === 1)
+                return  $resource;
+
             for ($i = 1; $i < sizeof($parents); $i++){
                 if($children && sizeof($children)){
                     $id = $id.'.'.$parents[$i];
