@@ -2,10 +2,6 @@
 
 namespace Foundry\Core;
 
-use Foundry\Core\Builder\BlocksConfig;
-use Foundry\Core\Builder\Contracts\SiteBuilder;
-use Foundry\Core\Builder\Contracts\SiteBuilderResources;
-use Foundry\Core\Builder\ResourcesConfig;
 use Foundry\Core\Contracts\Repository;
 use Foundry\Core\Listeners\SettingSaved;
 use Foundry\Core\Providers\ConsoleServiceProvider;
@@ -66,9 +62,6 @@ class CoreServiceProvider extends ServiceProvider {
 
 		$this->app->alias( Repository::class, 'settings' );
 
-        $this->registerBlocksSingleton();
-        $this->registerPageResourcesSingleton();
-
 		/**
 		 * Register the FormRequestHandler Facade and link it to the FormRequestHandler Class
 		 */
@@ -105,21 +98,5 @@ class CoreServiceProvider extends ServiceProvider {
         ]);
     }
 
-    private function registerBlocksSingleton()
-    {
-        $this->app->singleton( SiteBuilder::class, function () {
-            return new BlocksConfig( [] );
-        } );
 
-        $this->app->alias( SiteBuilder::class, 'blocks' );
-    }
-
-    private function registerPageResourcesSingleton()
-    {
-        $this->app->singleton( SiteBuilderResources::class, function () {
-            return new ResourcesConfig( [] );
-        } );
-
-        $this->app->alias( SiteBuilderResources::class, 'builder_resources' );
-    }
 }
