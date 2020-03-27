@@ -5,6 +5,7 @@ namespace Foundry\Core\Builder\Contracts;
 use Foundry\Core\Inputs\Inputs;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Str;
+use Modules\Foundry\Builder\Entities\ResourceManager;
 use WMDE\VueJsTemplating\Templating;
 
 /**
@@ -18,7 +19,7 @@ abstract class Block implements Arrayable
 {
 
     /**
-     * @var mixed The resource to be given to the block
+     * @var $resource ResourceManager The resource to be given to the block
      */
     protected $resource;
 
@@ -40,9 +41,9 @@ abstract class Block implements Arrayable
     /**
      * Block constructor.
      * @param array $props
-     * @param null $resource
+     * @param ResourceManager $resource
      */
-    public function __construct($props = [], $resource = null)
+    public function __construct($props = [], ResourceManager $resource = null)
     {
         $this->beforeCreated();
         $this->setProps($props);
@@ -137,6 +138,7 @@ abstract class Block implements Arrayable
 
     /**
      * @param array $defaults
+     * todo update own resource
      */
     protected function setDefaults(array $defaults): void
     {
@@ -146,15 +148,31 @@ abstract class Block implements Arrayable
     /**
      * @param mixed $resource
      */
-    public function setResource($resource): void
+    public function setResource(ResourceManager $resource = null): void
     {
-        $this->resource = $resource;
+        if($resource) {
+            $this->resource = $resource;
+        }else{
+            $this->resource = new ResourceManager();
+        }
     }
 
     /**
      * @return mixed
      */
     public function getResource()
+    {
+        if($this->resource){
+            return $this->resource->getResource();
+        }
+
+        return null;
+    }
+
+    /**
+     * @return ResourceManager
+     */
+    public function getResourceManager()
     {
         return $this->resource;
     }
@@ -246,7 +264,7 @@ abstract class Block implements Arrayable
         $data = [
             'props' => $this->getProps(),
             'block' => array_merge($this->getProps(), $this->getData()),
-            'resources' => $this->resource,
+            'resources' => $this->resource->toArray(),
         ];
 
         if($server){

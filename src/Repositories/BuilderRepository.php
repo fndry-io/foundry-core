@@ -10,6 +10,7 @@ use Foundry\Core\Requests\Response;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Arr;
+use Modules\Foundry\Builder\Entities\ResourceManager;
 use Modules\Foundry\Builder\Models\Template;
 use Modules\Foundry\Builder\Repositories\TemplateRepository;
 
@@ -22,11 +23,11 @@ class BuilderRepository
      * @param $parent | Containing parent for the given block
      * @param $block | The name of the block to be rendered
      * @param $props | Props to pass to the block
-     * @param null $resource | Parent resource if available
+     * @param ResourceManager $resource | Parent resource if available
      * @return Block
      * @throws \Exception
      */
-    public function renderBlock($parent, $block, $props, $resource = null)
+    public function renderBlock($parent, $block, $props, ResourceManager $resource = null)
     {
         $parents = explode('.', $parent);
 
@@ -67,8 +68,7 @@ class BuilderRepository
             }
 
 
-            $resource = [];
-            $resource['parent'] = $this->getTemplateResource($template);
+            $resource = new ResourceManager(null,$this->getTemplateResource($template));
 
             $id = $parents[0];
 
@@ -83,9 +83,17 @@ class BuilderRepository
 
                     $children = $block['children'];
 
-                    if($block['type'] === 'template') {
-                        $resource = $this->getBlockResource($block['name'], $resource, $block['data'] && isset($block['data']['block'])? $block['data']['block'] : []);
+                    /**
+                     * Own resource should now become parent resource for this block
+                     */
+                    if($resource->getOwnResource()){
+                        $resource->setParentResource($resource->getOwnResource());
+                        $resource->setOwnResource(null);
                     }
+
+                    //if($block['type'] === 'template') {
+                        $resource = $this->getBlockResource($block['name'], $resource, $block['data'] && isset($block['data']['block'])? $block['data']['block'] : []);
+                    //}
 
                 }
             }
@@ -121,11 +129,11 @@ class BuilderRepository
      * @return mixed
      * @throws \Exception
      */
-    private function getBlockResource($name, $resource, $settings)
+    private function getBlockResource($name, ResourceManager $resource, $settings)
     {
         $block = $this->block($name, $settings, $resource);
 
-        return $block->getResource();
+        return $block->getResourceManager();
     }
 
     /**
@@ -165,11 +173,11 @@ class BuilderRepository
      *
      * @param string $name
      * @param array $props
-     * @param null $resource
+     * @param ResourceManager $resource
      * @return Block
      * @throws \Exception
      */
-    public function block($name, $props = [], $resource = null)
+    public function block($name, $props = [], ResourceManager $resource = null)
     {
         $class = app('blocks')->get($name);
         if ($class) {
@@ -340,29 +348,29 @@ class BuilderRepository
         $children = $template->children;
         $parent_resource = $this->getTemplateResource($template);
 
-        $resource = [
-            'page' => $page_resource,
-            'parent' => $parent_resource
-        ];
+        /**
+         * @var $resource ResourceManager
+         */
+        $resource = new ResourceManager(null,$parent_resource,$page_resource);
 
-        $tree = function($parent, &$block, $resource) use (&$tree, $content) {
+        $tree = function($parent, &$block, ResourceManager $resource) use (&$tree, $content) {
 
-            $data = Arr::get($block, 'data.block', []);;
-            $block['block'] = $this->renderBlock($parent, $block['name'], $data, $resource);
-            $resource = $block['block']->getResource();
+            $data = Arr::get($block, 'props', []);
 
             if($block['type'] === 'content'){
                 $contentResource = $this->getTemplateResource($content);
                 if($contentResource) {
-                    $resource['parent'] = $contentResource;
+                    $resource->setParentResource($contentResource);
                 }
 
                 $block['children'] = $content->children;
             }
 
+            $block['block'] = $this->renderBlock($parent, $block['name'], $data, $resource);
+
             if(sizeof($block['children'])){
                 foreach ($block['children'] as &$child){
-                    $tree($block['id'], $child, $resource);
+                    $tree($block['id'], $child, new ResourceManager(null, $block['block']->getResource(),$resource->getPageResource()));
                 }
 
             }
