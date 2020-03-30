@@ -68,6 +68,25 @@ class CollectionInputType extends InputType {
         return $this->attributes['noContentText'];
     }
 
+    /**
+     * @return mixed
+     */
+    public function getTitleInput()
+    {
+        return $this->getAttribute('title_input');
+    }
+
+    /**
+     * @param mixed $title_input
+     * @return CollectionInputType
+     */
+    public function setTitleInput($title_input): CollectionInputType
+    {
+        $this->setAttribute('title_input', $title_input);
+
+        return $this;
+    }
+
     public function jsonSerialize(): array
     {
         $json = parent::jsonSerialize();
