@@ -78,6 +78,18 @@ class ChoiceInputType extends InputType implements Choosable, IsMultiple {
 		return $this;
 	}
 
+	public function setButtonType(string $type)
+    {
+        $this->setAttribute('button_type', $type);
+
+        return $this;
+    }
+
+    public function getButtonType()
+    {
+        return $this->getAttribute('button_type', null);
+    }
+
 	public function isInline()
 	{
 		$this->getAttribute('inline', false);
