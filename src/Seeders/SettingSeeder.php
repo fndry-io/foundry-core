@@ -34,7 +34,8 @@ trait SettingSeeder{
 		if ( ! Schema::hasTable( $table ) ) {
 			Artisan::call( 'migrate' );
 		}else{
-		    DB::table($table)->truncate();
+		    //todo work out a better was to truncate the settings for the existing module
+		    //DB::table($table)->truncate();
         }
 
 		$illegal = [];
