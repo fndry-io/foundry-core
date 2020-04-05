@@ -355,3 +355,29 @@ if ( ! function_exists( 'field_options_label' ) ) {
     }
 
 }
+
+if ( ! function_exists( 'field_option' ) ) {
+
+    /**
+     * Extracts a specific value from an existing options label field
+     *
+     * @param string $class
+     * @param string $value
+     * @param null $default
+     * @param string $valueKey
+     * @param string $textKey
+     * @return mixed
+     */
+    function field_option( $class, $value, $default = null, $valueKey = 'value', $textKey = 'text') {
+
+        if ($label = field_options_label($class, $value, $default, $valueKey, $textKey)) {
+            return [
+                'text' => $label,
+                'value' => $value
+            ];
+        } else {
+            return $default;
+        }
+    }
+
+}
