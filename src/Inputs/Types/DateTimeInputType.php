@@ -76,7 +76,7 @@ class DateTimeInputType extends InputType implements Castable {
 			if ($value instanceof \DateTime) {
 				return $value;
 			} else if (is_string($value) && $date = Carbon::parse($value)) {
-				return $date;
+				return $date->utc();
 			} else if (is_array($value) && isset($value['date'])) {
 				return Carbon::__set_state($value);
 			}
