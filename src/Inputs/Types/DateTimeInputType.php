@@ -48,6 +48,7 @@ class DateTimeInputType extends InputType implements Castable {
         $this->setDateFormat("YYYY-MM-DDTHH:mm:ssZZ");
         $this->setMode("calendar");
 		$this->setHelp(__('Date/time in 24 hour format as yyyy-mm-dd hh:mm'));
+		$this->disabledAutoUpdate();
 	}
 
 	static function cast()
@@ -75,7 +76,7 @@ class DateTimeInputType extends InputType implements Castable {
 			if ($value instanceof \DateTime) {
 				return $value;
 			} else if (is_string($value) && $date = Carbon::parse($value)) {
-				return $date;
+				return $date->utc();
 			} else if (is_array($value) && isset($value['date'])) {
 				return Carbon::__set_state($value);
 			}
@@ -101,6 +102,12 @@ class DateTimeInputType extends InputType implements Castable {
         return $this;
     }
 
+    /**
+     * Allows you to set the type of picker displayed
+     *
+     * @param string $mode Either "calendar" for a calendar or "range" for a simple clock style date
+     * @return $this
+     */
     public function setMode($mode)
     {
         $this->setAttribute('pickerOptions.mode', $mode);
