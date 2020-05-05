@@ -22,6 +22,8 @@ class Setting extends Model {
 
 	use SoftDeletes;
 
+	protected $table = 'system_settings';
+
 	//Possible values for the type field
 	static $types = [
 		'bool'    => 'bool',

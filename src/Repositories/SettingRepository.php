@@ -159,7 +159,7 @@ class SettingRepository extends ModelRepository implements Repository, ArrayAcce
 	 */
 	static function getTable(): string {
 	    //todo can be set as a configurable variable
-		return 'settings';
+		return 'system_settings';
 	}
 
     /**
