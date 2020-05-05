@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Class ModelRepository
@@ -78,10 +79,11 @@ abstract class ModelRepository implements RepositoryInterface
 		if ($id instanceof \Illuminate\Database\Eloquent\Model) {
 			return $id;
 		} else if (is_int($id) || is_string($id)) {
-		    if ($fail) {
-                return $this->query()->findOrFail($id);
+            $model = $this->query()->find($id);
+		    if ($fail && !$model) {
+                throw new NotFoundHttpException(__('Not found'));
             } else {
-                return $this->query()->find($id);
+		        return $model;
             }
 		} else {
 			throw new \Exception('Invalid id value passed to findOrAbort');
@@ -207,10 +209,11 @@ abstract class ModelRepository implements RepositoryInterface
 	 * @param \Closure $builder (QueryBuilder $query) The closure to send the Query Builder to
 	 * @param int $page
 	 * @param int $perPage
+     * @param string $pageName
 	 *
 	 * @return Paginator
 	 */
-	public function filter(\Closure $builder = null, int $page = 1, int $perPage = 20): Paginator
+	public function filter(\Closure $builder = null, int $page = 1, int $perPage = 20, $pageName = 'page'): Paginator
 	{
 		$query = $this->query();
 		if ($builder) {
@@ -218,10 +221,8 @@ abstract class ModelRepository implements RepositoryInterface
 		} else {
 			$query->select(['*']);
 		}
-
-		return $this->paginate($query, $page, $perPage);
+		return $this->paginate($query, $page, $perPage, $pageName);
 	}
-
 
 	/**
 	 * @param $query

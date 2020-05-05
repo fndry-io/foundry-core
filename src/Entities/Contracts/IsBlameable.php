@@ -1,6 +1,6 @@
 <?php
 
-namespace Foundry\Core\Entities\Traits;
+namespace Foundry\Core\Entities\Contracts;
 
 /**
  * Blameable Trait
@@ -17,13 +17,6 @@ interface IsBlameable
 	public function setCreatedBy($created_by);
 
 	/**
-	 * Returns created_by.
-	 *
-	 * @return string
-	 */
-	public function getCreatedBy();
-
-	/**
 	 * Sets $updated_by.
 	 *
 	 * @param  string $updated_by
@@ -31,10 +24,14 @@ interface IsBlameable
 	 */
 	public function setUpdatedBy($updated_by);
 
-	/**
-	 * Returns updatedBy.
-	 *
-	 * @return string
-	 */
-	public function getUpdatedBy();
+    /**
+     * @return mixed
+     */
+	public function isCreatedBy($user);
+
+    /**
+     * @return mixed
+     */
+    public function isUpdatedBy($user);
+
 }

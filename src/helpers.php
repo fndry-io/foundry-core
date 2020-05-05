@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Cache;
 
 if ( ! function_exists( 'setting' ) ) {
@@ -342,9 +343,24 @@ if ( ! function_exists( 'field_options_label' ) ) {
      * @return mixed
      */
     function field_options_label( $class, $value, $default = null, $valueKey = 'value', $textKey = 'text') {
+
+        if (is_array($value)) {
+            $_options = [];
+            foreach ($value as $_value) {
+                $_option = field_options_label( $class, $_value, null, $valueKey, $textKey);
+                if ($_option !== null) {
+                    $_options[] = $_option;
+                }
+            }
+            if (!empty($_options)) {
+                return $_options;
+            }
+            return $default;
+        }
+
         /** @var \Foundry\Core\Inputs\Contracts\FieldOptions|string $class */
         /** @var array $options */
-        $options = Cache::rememberForever('options::' . $class, function() use ($class, $textKey, $valueKey){
+        $options = Cache::remember('options::' . $class, 30, function() use ($class, $textKey, $valueKey){
             return \Illuminate\Support\Arr::pluck($class::options(), $textKey, $valueKey);
         });
         if (isset($options[$value])) {
@@ -354,4 +370,60 @@ if ( ! function_exists( 'field_options_label' ) ) {
         }
     }
 
+}
+
+if ( ! function_exists( 'field_option' ) ) {
+
+    /**
+     * Extracts a specific value from an existing options label field
+     *
+     * @param string $class
+     * @param string $value
+     * @param null $default
+     * @param string $valueKey
+     * @param string $textKey
+     * @return mixed
+     */
+    function field_option( $class, $value, $default = null, $valueKey = 'value', $textKey = 'text') {
+
+        if ($label = field_options_label($class, $value, $default, $valueKey, $textKey)) {
+            return [
+                'text' => $label,
+                'value' => $value
+            ];
+        } else {
+            return $default;
+        }
+    }
+
+}
+
+if ( ! function_exists( 'recursive_get_by_reference' ) ) {
+    /**
+     * Recursively get an entry in given array by reference
+     *
+     *
+     * @param array $array The array to
+     * @param string|array $key
+     * @return mixed|null
+     * @see https://www.php.net/manual/en/language.references.return.php
+     */
+    function &recursive_get_by_reference($array, $key)
+    {
+        $value = null;
+
+        if (Arr::exists($array, $key)) {
+            return $array[$key];
+        }
+
+        if (strpos($key, '.') !== false) {
+            $segments = explode('.', $key);
+            $key = array_shift($array);
+            if (isset($array[$key])) {
+                $value =& recursive_get_by_reference($array[$key], implode('.', $segments));
+            }
+        }
+
+        return $value;
+    }
 }

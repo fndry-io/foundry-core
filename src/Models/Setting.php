@@ -34,16 +34,6 @@ class Setting extends Model {
 	];
 
 	/**
-	 * Get fully qualified class name for the model
-	 * Needs to be overridden in child class
-	 *
-	 * @return string
-	 */
-	static function model(): string {
-		return get_class( New Setting() );
-	}
-
-	/**
 	 * Various properties of the respective setting
 	 *
 	 * e.g '{$domain}.{$name}' => array('label' => 'Short human readable description','description' => 'Long human readable description', 'default' => '{$default}', 'type' => '{$type[i]}', 'options' => 'array of available options')

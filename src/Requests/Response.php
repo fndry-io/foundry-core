@@ -5,6 +5,7 @@ namespace Foundry\Core\Requests;
 use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -189,11 +190,20 @@ class Response {
 
 	public function toJsonResponse($request)
 	{
-		if ($this->data instanceof JsonResource) {
+		if ($this->data instanceof LengthAwarePaginator) {
+		    //we need to standardise the pagination to our format
+		    $response = $this->toResponseArray();
+		    $additional = $this->data->toArray();
+            $response['data'] = $additional['data'];
+		    unset($additional['data']);
+            $response['meta'] = array_merge($response['meta'], $additional);
+
+            return new JsonResponse($response);
+		} elseif ($this->data instanceof JsonResource) {
             $array = $this->toResponseArray();
-			$this->data->additional($array);
-			return $this->data->toResponse($request);
-		} else {
+            $this->data->additional($array);
+            return $this->data->toResponse($request);
+        } else {
 			return new JsonResponse($this->jsonSerialize());
 		}
 	}

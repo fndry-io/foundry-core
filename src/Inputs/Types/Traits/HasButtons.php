@@ -16,7 +16,7 @@ trait HasButtons {
 	/**
 	 * Adds buttons to the input
 	 *
-	 * @param ButtonType ...$buttons
+	 * @param ButtonType[] $buttons
 	 *
 	 * @return $this
 	 */

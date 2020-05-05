@@ -4,6 +4,7 @@ namespace Foundry\Core\Models\Traits;
 
 use Foundry\Core\Models\Model;
 use Foundry\System\Models\User;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -50,4 +51,27 @@ trait Blameable {
         $this->updated_by = $user->display_name;
         $this->updated_by_user_id = $user->getKey();
     }
+
+    /**
+     * Determine if the create_by_user_id is the given user
+     *
+     * @param User|Authenticatable $user
+     * @return bool
+     */
+    public function isCreatedBy($user)
+    {
+        return $this->created_by_user_id === $user->getKey();
+    }
+
+    /**
+     * Determine if the updated_by_user_id is the given user
+     *
+     * @param User|Authenticatable $user
+     * @return bool
+     */
+    public function isUpdatedBy($user)
+    {
+        return $this->updated_by_user_id === $user->getKey();
+    }
+
 }

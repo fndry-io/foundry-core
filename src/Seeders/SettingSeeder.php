@@ -34,10 +34,11 @@ trait SettingSeeder{
 		if ( ! Schema::hasTable( $table ) ) {
 			Artisan::call( 'migrate' );
 		}else{
-		    DB::table($table)->truncate();
+		    //todo work out a better was to truncate the settings for the existing module
+		    //DB::table($table)->truncate();
         }
 
-		$illegal = 0;
+		$illegal = [];
 
 		$class = $this->model();
 
@@ -45,19 +46,22 @@ trait SettingSeeder{
 
 			$domain_name = explode( '.', $key );
 
-			if ( sizeof( $domain_name ) === 2 ) {
+			if ( sizeof( $domain_name ) >= 2 ) {
+
+			    $domain = array_shift($domain_name);
+			    $name = implode('.', $domain_name);
 
 				//Check if setting with given domain and name exists
-				$model = $class::where( 'domain', $domain_name[0] )
-				               ->where( 'name', $domain_name[1] )->first();
+				$model = $class::where( 'domain', $domain )
+				               ->where( 'name', $name )->first();
 
 				//If no model exists, create new one
 				if ( ! $model ) {
 					$model = new $class();
 				}
 
-				$model->domain = $domain_name[0];
-				$model->name   = $domain_name[1];
+				$model->domain = $domain;
+				$model->name   = $name;
 				$model->model  = $this->model();
 				$type          = isset( $setting['type'] ) ? $setting['type'] : 'string';
 
@@ -67,16 +71,13 @@ trait SettingSeeder{
 				$model->save();
 
 			} else {
-				$illegal += 1;
+				$illegal[] = $key;
 			}
-
 		}
 
-
-		if ( $illegal > 0 ) {
-			dd( 'There was/were ' . $illegal . ' setting(s) with illegal names' );
+		if ( count($illegal) > 0 ) {
+			dd( 'There was/were ' . count($illegal) . ' setting(s) with illegal names. These were: ' . json_encode($illegal) );
 		}
-
 	}
 
 	/**

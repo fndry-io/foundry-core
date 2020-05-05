@@ -21,7 +21,7 @@ trait HasRequired {
 		$this->setAttribute('required', $required);
 		$this->removeRules( 'required', 'nullable' );
 		if ($rule === true) {
-			if ( $this->isRequired() ) {
+			if ( $required ) {
 				$this->addRule( 'required' );
 			} else {
 				$this->addRule( 'nullable' );
