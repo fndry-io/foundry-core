@@ -55,7 +55,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 *
 	 * @param $values
 	 */
-	public function __construct($values = null, $types = null) {
+	public function __construct($values = null, $types = null, $entity = null) {
 		if ($types == null) {
 			$this->types = $this->types();
 		} else {
@@ -67,6 +67,9 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 		if ($values) {
 			$this->fill($values);
 		}
+		if ($entity) {
+		    $this->setEntity($entity);
+        }
 	}
 
 	/**
