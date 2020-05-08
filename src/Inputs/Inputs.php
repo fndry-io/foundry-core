@@ -408,14 +408,15 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 
 	/**
 	 * Create an input class from the given values
-	 *
+     *
      * @param array $values
-     * @param InputTypeCollection|null $types
+     * @param null $types
+     * @param null $entity
      * @return static
      */
-	static function make(array $values, $types = null)
+	static function make(array $values, $types = null, $entity = null)
 	{
-		return new static($values, $types);
+		return new static($values, $types, $entity);
 	}
 
     /**
