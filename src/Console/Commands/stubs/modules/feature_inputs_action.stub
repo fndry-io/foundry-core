@@ -4,7 +4,7 @@ namespace {{MODULE_NAMESPACE}}\Inputs\{{FEATURE_NAME}};
 
 use Foundry\Core\Inputs\Types\FormType;
 use Foundry\Core\Inputs\Types\SubmitButtonType;
-use Foundry\Core\Inputs\Types\Traits\ViewableInput;
+use Foundry\Core\Inputs\Traits\ViewableInput;
 use Illuminate\Http\Request;
 
 class {{FEATURE_ACTION}}{{FEATURE_NAME}}Input extends {{FEATURE_NAME}}Input

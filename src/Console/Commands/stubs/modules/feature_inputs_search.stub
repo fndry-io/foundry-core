@@ -2,7 +2,7 @@
 
 namespace {{MODULE_NAMESPACE}}\Inputs\{{FEATURE_NAME}};
 
-use Foundry\Core\Inputs\Types\Traits\ViewableInput;
+use Foundry\Core\Inputs\Traits\ViewableInput;
 use Foundry\Core\Support\InputTypeCollection;
 use Foundry\System\Inputs\Types\Search;
 

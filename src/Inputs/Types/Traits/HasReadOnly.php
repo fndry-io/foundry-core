@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-trait HasReadonly {
+trait HasReadOnly {
 
 	public function __construct() {
 		$this->setReadonly(false);

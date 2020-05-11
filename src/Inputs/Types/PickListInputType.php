@@ -23,10 +23,10 @@ class PickListInputType extends ChoiceInputType {
         self::$cast = $cast;
 
         return config('foundry.pick-list-items.model')::query()
-            ->select( [ 'picklists_items.*' ] )
-            ->join( 'picklists', 'picklist_items.picklist_id', '=', 'pick_lists.id' )
-            ->where( 'pick_list_items.status', 1 )
-            ->where( 'pick_lists.identifier', $identifier )
+            ->select( [ 'system_picklist_items.*' ] )
+            ->join( 'system_picklists', 'system_picklist_items.picklist_id', '=', 'system_picklists.id' )
+            ->where( 'system_picklist_items.status', 1 )
+            ->where( 'system_picklists.identifier', $identifier )
             ->orderBy( 'pick_list_items.label', 'ASC' )
             ->get()
             ->pluck( $label, $key )

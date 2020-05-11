@@ -1,6 +1,6 @@
 <?php
 
-namespace Foundry\Core\Inputs\Types\Traits;
+namespace Foundry\Core\Inputs\Traits;
 
 use Foundry\Core\Inputs\Types\FormType;
 use Foundry\Core\Requests\Contracts\EntityRequestInterface;

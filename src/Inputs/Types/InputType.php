@@ -14,7 +14,7 @@ use Foundry\Core\Inputs\Types\Traits\HasLabel;
 use Foundry\Core\Inputs\Types\Traits\HasMask;
 use Foundry\Core\Inputs\Types\Traits\HasName;
 use Foundry\Core\Inputs\Types\Traits\HasPlaceholder;
-use Foundry\Core\Inputs\Types\Traits\HasReadonly;
+use Foundry\Core\Inputs\Types\Traits\HasReadOnly;
 use Foundry\Core\Inputs\Types\Traits\HasRequired;
 use Foundry\Core\Inputs\Types\Traits\HasRules;
 use Foundry\Core\Inputs\Types\Traits\HasValue;
@@ -37,7 +37,7 @@ abstract class InputType extends BaseType implements Inputable {
 		HasRequired,
 		HasPlaceholder,
 		HasHelp,
-		HasReadonly,
+		HasReadOnly,
 		HasErrors,
 		HasSortable,
 		HasMask,
