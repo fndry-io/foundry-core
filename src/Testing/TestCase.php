@@ -2,7 +2,6 @@
 
 namespace Foundry\Core\Testing;
 
-use Foundry\System\Models\User;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Foundation\Testing\Assert as PHPUnit;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
@@ -24,17 +23,19 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @param string|User $username
+     * @param $value
      * @param null $guard
+     * @param string $key
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    protected function loginAs($username, $guard = null)
+    protected function loginAs($value, $guard = null, $key = 'username')
     {
         $user = null;
-        if (is_string($username)) {
-            $user = $this->getUser($username);
-        } elseif ($username instanceof User) {
-            $user = $username;
-        }
+        if ($value instanceof Authenticatable) {
+            $user = $value;
+        } elseif (is_string($value)) {
+            $user = $this->getUser($value, $guard, $key);
+        } else
         if ($user) {
             $this->be($user, $guard);
             $this->auth = $user;
@@ -42,12 +43,19 @@ abstract class TestCase extends BaseTestCase
     }
 
     /**
-     * @param $username
-     * @return \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|null|Authenticatable
+     * @param $value
+     * @param string $key
+     * @param null $guard
+     * @return mixed
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    protected function getUser($username)
+    protected function getUser($value, $guard = null, $key = 'username')
     {
-        return \Foundry\System\Models\User::query()->where('username', $username)->first();
+        $config = $this->app->make('config');
+        $provider = $config->get('auth.guards.' . $guard . '.provider');
+        /** @var Authenticatable $model */
+        $model = $config->get('auth.providers.' . $provider . '.model');
+        return $model::query()->where($key, $value)->first();
     }
 
     /**
