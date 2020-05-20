@@ -15,10 +15,10 @@ interface HasAdminRights
     /**
      * @return bool
      */
-    public function isSuperAdmin(): boolean;
+    public function isSuperAdmin(): bool;
 
     /**
      * @return bool
      */
-    public function isAdmin(): boolean;
+    public function isAdmin(): bool;
 }
