@@ -35,7 +35,7 @@ abstract class TestCase extends BaseTestCase
             $user = $value;
         } elseif (is_string($value)) {
             $user = $this->getUser($value, $guard, $key);
-        } else
+        }
         if ($user) {
             $this->be($user, $guard);
             $this->auth = $user;
