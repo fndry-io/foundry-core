@@ -77,4 +77,16 @@ class FileInputType extends InputType implements IsMultiple {
         $this->setAttribute('files', $files);
     }
 
+    public function withFileDetails()
+    {
+        $this->setAttribute('show_file_details', true);
+        return $this;
+    }
+
+    public function withoutFileDetails()
+    {
+        $this->setAttribute('show_file_details', false);
+        return $this;
+    }
+
 }
