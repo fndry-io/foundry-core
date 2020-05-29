@@ -4,9 +4,9 @@ namespace Foundry\Core\Inputs\Types;
 
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\Traits\HasClass;
-use Foundry\Core\Inputs\Types\Traits\HasForm;
 use Foundry\Core\Inputs\Types\Traits\HasHelp;
 use Foundry\Core\Inputs\Types\Traits\HasId;
+use Foundry\Core\Inputs\Types\Traits\HasInputs;
 use Foundry\Core\Inputs\Types\Traits\HasLabel;
 use Foundry\Core\Inputs\Types\Traits\HasName;
 use Foundry\Core\Inputs\Types\Traits\HasValue;
@@ -24,7 +24,7 @@ class ImageType extends BaseType implements Inputable {
         HasName,
         HasValue,
         HasHelp,
-		HasForm
+        HasInputs
 	;
 
 	public function __construct(

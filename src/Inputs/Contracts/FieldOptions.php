@@ -19,6 +19,6 @@ interface FieldOptions {
 	 *
 	 * @return array
 	 */
-	static function options( \Closure $closure = null, $value = null ): array;
+	static function options(): array;
 
 }

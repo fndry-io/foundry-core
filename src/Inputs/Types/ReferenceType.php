@@ -5,8 +5,8 @@ namespace Foundry\Core\Inputs\Types;
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Inputs\Types\Traits\HasAutocomplete;
-use Foundry\Core\Inputs\Types\Traits\HasForm;
 use Foundry\Core\Inputs\Types\Traits\HasHelp;
+use Foundry\Core\Inputs\Types\Traits\HasInputs;
 use Foundry\Core\Inputs\Types\Traits\HasLabel;
 use Foundry\Core\Inputs\Types\Traits\HasName;
 use Foundry\Core\Inputs\Types\Traits\HasReference;
@@ -29,7 +29,7 @@ class ReferenceType extends BaseType implements Referencable, Inputable {
 		HasSortable,
 		HasHelp,
 		HasAutocomplete,
-		HasForm
+		HasInputs
 	;
 
 	/**

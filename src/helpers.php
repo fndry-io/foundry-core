@@ -403,7 +403,7 @@ if ( ! function_exists( 'recursive_get_by_reference' ) ) {
      * Recursively get an entry in given array by reference
      *
      *
-     * @param array $array The array to
+     * @param array|\Illuminate\Contracts\Support\Arrayable $array The array to
      * @param string|array $key
      * @return mixed|null
      * @see https://www.php.net/manual/en/language.references.return.php

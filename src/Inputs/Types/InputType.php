@@ -7,9 +7,9 @@ use Foundry\Core\Inputs\Types\Traits\HasAutocomplete;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
 use Foundry\Core\Inputs\Types\Traits\HasClass;
 use Foundry\Core\Inputs\Types\Traits\HasErrors;
-use Foundry\Core\Inputs\Types\Traits\HasForm;
 use Foundry\Core\Inputs\Types\Traits\HasHelp;
 use Foundry\Core\Inputs\Types\Traits\HasId;
+use Foundry\Core\Inputs\Types\Traits\HasInputs;
 use Foundry\Core\Inputs\Types\Traits\HasLabel;
 use Foundry\Core\Inputs\Types\Traits\HasMask;
 use Foundry\Core\Inputs\Types\Traits\HasName;
@@ -42,7 +42,7 @@ abstract class InputType extends BaseType implements Inputable {
 		HasSortable,
 		HasMask,
 		HasAutocomplete,
-		HasForm
+        HasInputs
 	;
 
 	public function __construct(
@@ -126,32 +126,32 @@ abstract class InputType extends BaseType implements Inputable {
 
 	public function getValue()
 	{
-		if ($this->form) {
-			return $this->getForm()->getValue($this->getName());
+		if ($this->inputs) {
+			return $this->getInputs()->getValue($this->getName());
 		}
 		return null;
 	}
 
 	public function setValue($value)
 	{
-		if ($this->form) {
-			$this->getForm()->setValue($this->getName(), $value);
+		if ($this->inputs) {
+			$this->getInputs()->setValue($this->getName(), $value);
 		}
 		return $this;
 	}
 
 	public function isVisible()
 	{
-		if ($this->getForm()) {
-			return $this->getForm()->isVisible($this->getName());
+		if ($this->inputs) {
+			return $this->getInputs()->isVisible($this->getName());
 		}
 		return true;
 	}
 
 	public function isHidden()
 	{
-		if ($this->getForm()) {
-			return $this->getForm()->isHidden($this->getName());
+		if ($this->inputs) {
+			return $this->getInputs()->isHidden($this->getName());
 		}
 		return false;
 	}

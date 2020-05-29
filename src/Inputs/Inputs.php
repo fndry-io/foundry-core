@@ -2,17 +2,19 @@
 
 namespace Foundry\Core\Inputs;
 
+use Foundry\Core\Entities\Contracts\HasVisibility;
 use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\FormType;
+use Foundry\Core\Inputs\Types\InputType;
 use Foundry\Core\Inputs\Types\Traits\HasValue;
 use Foundry\Core\Requests\Contracts\EntityRequestInterface;
 use Foundry\Core\Requests\Contracts\ViewableInputInterface;
 use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -26,7 +28,7 @@ use Illuminate\Validation\ValidationException;
 abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 
     /**
-     * @var mixed|null The entity if set
+     * @var mixed|null|Model The entity if set
      */
     protected $entity = null;
 
@@ -53,24 +55,42 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	/**
 	 * Inputs constructor.
 	 *
-	 * @param $values
-	 */
+     * @param null|array $values
+     * @param null|InputTypeCollection $types
+     * @param null|Model|array $entity
+     */
 	public function __construct($values = null, $types = null, $entity = null) {
+        if ($entity) {
+            $this->setEntity($entity);
+        }
 		if ($types == null) {
-			$this->types = $this->types();
+			$this->setTypes($this->types());
 		} else {
-			$this->types = $types;
+            $this->setTypes($types);
 		}
 		if ($this->types) {
 			$this->fillable = array_unique(array_merge($this->fillable, $this->types->names()));
 		}
-		if ($values) {
-			$this->fill($values);
-		}
-		if ($entity) {
-		    $this->setEntity($entity);
+        if ($values) {
+            $this->fill($values);
         }
 	}
+
+    /**
+     * Sets the types and links them up with this inputs class
+     *
+     * @param InputTypeCollection $types
+     * @return $this
+     */
+	public function setTypes(InputTypeCollection $types)
+    {
+        $this->types = $types;
+        /** @var InputType $type */
+        foreach($this->types as &$type) {
+            $type->setInputs($this);
+        }
+        return $this;
+    }
 
 	/**
 	 * Validates the Inputs
@@ -84,7 +104,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 		if (!$rules) {
 			$rules = $this->rules();
 		}
-        $validator = Validator::make($this->values(), $rules, $this->messages());
+        $validator = Validator::make($this->values, $rules, $this->messages());
         if ($validator->fails()) {
             throw new ValidationException($validator);
         }
@@ -97,33 +117,46 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
     }
 
 	/**
-	 * Gets the inputs
-	 *
-	 * @return array The inputs type cast to their correct values types
-	 * @deprecated Use values() method instead
-	 */
-	public function inputs()
-	{
-		Log::warning('Inputs::inputs() is deprecated. Please change to calling the values() method.');
-		return $this->values();
-	}
-
-	/**
-	 * Gets the values for this class
+	 * Gets the values that were set into the input
 	 *
 	 * @return array
 	 */
 	public function values()
 	{
-		return $this->values;
+        return $this->values;
 	}
 
+    /**
+     * Merges the entity values with the values of the inputs
+     *
+     * @return array
+     */
+    public function all()
+    {
+        $values = [];
+        /** @var InputType $input */
+        foreach($this->types as $input) {
+            if ($input->isVisible() && !$input->isHidden()) {
+                $value = $input->getValue();
+                if ($value === null) {
+                    $value = $input->getDefault();
+                }
+                Arr::set($values, $input->getName(), $value );
+            }
+        }
+        return array_merge($this->values, $values);
+    }
+
+    /**
+     * Get only the inputs for the given keys
+     *
+     * @param $keys
+     * @return array
+     */
     public function only($keys)
     {
         $results = [];
-
         $placeholder = null;
-
         foreach (is_array($keys) ? $keys : func_get_args() as $key) {
             $value = data_get($this->values, $key, $placeholder);
 
@@ -131,22 +164,8 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
                 Arr::set($results, $key, $value);
             }
         }
-
         return $results;
     }
-
-
-//    /**
-//	 * Only extract the desired value
-//	 *
-//	 * @param array $keys
-//	 *
-//	 * @return array
-//	 */
-//	public function only($keys = [])
-//	{
-//		return Arr::only($this->values, $keys);
-//	}
 
 	/**
      * Get a value
@@ -215,7 +234,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 * @param $values
 	 */
 	public function cast(&$values) {
-		foreach ($this->getTypes() as $type) {
+		foreach ($this->types as $type) {
             $this->castInput($values, $type);
 		}
 	}
@@ -236,7 +255,6 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 
         if ($type instanceof Castable) {
         	$value = $type->getCastValue($value);
-
         } else {
             $cast = $type->getCast();
             if ($type instanceof IsMultiple && $type->isMultiple()) {
@@ -255,21 +273,31 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 
     /**
 	 * Fill the values of this class
+     *
+     * We fill the values through the types
+     *
+     * Each type will ultimately call the setValue on this class, which will then cast the value correctly
 	 *
 	 * @param $values
 	 */
 	public function fill($values)
 	{
-		if (!empty($this->fillable)) {
-			foreach ($this->fillable as $name) {
-				Arr::set($this->values, $name, Arr::get($values, $name));
-			}
-		} else {
-			$this->values = $values;
-		}
-		$this->cast($this->values);
+	    $keys = !empty($this->fillable) ? $this->fillable : array_keys($values);
+        foreach ($keys as $key) {
+            /** @var InputType $type */
+            $type = $this->getType($key);
+            if ($type && $value = Arr::get($values, $key)) {
+                $type->setValue($value);
+            }
+        }
 	}
 
+    /**
+     * Set a value in the inputs
+     *
+     * @param $key
+     * @param $value
+     */
 	public function setValue($key, $value)
     {
         Arr::set($this->values, $key, $value);
@@ -278,16 +306,21 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
         }
     }
 
-	/**
-	 * Get all the values
-	 *
-	 * @return array
-	 */
-	public function all()
-	{
-		return $this->values();
-	}
+    /**
+     * Alias for fill()
+     *
+     * @param array $values
+     */
+    public function setValues($values = [])
+    {
+        $this->fill($values);
+    }
 
+    /**
+     * Get's a list of all the keys for the input types
+     *
+     * @return array
+     */
 	public function keys()
 	{
 		return $this->types()->keys()->toArray();
@@ -358,11 +391,22 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	public function getType($key)
 	{
 		if ($this->types->has($key)) {
-			return $this->types->get($key);
+			return $this->types[$key];
 		} else {
 			return false;
 		}
 	}
+
+    /**
+     * Checks if the inputs have an input type of the given name
+     *
+     * @param $key
+     * @return bool
+     */
+	public function hasType($key)
+    {
+        return $this->types->has($key);
+    }
 
 	/**
 	 * @return InputTypeCollection|null
@@ -426,15 +470,15 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
      */
     public function viewOrValidate(Request $request)
     {
+        if ($request instanceof EntityRequestInterface && ($entity = $request->getEntity())) {
+            $this->setEntity( $entity );
+        }
         if ($request->input('_form', false)) {
             if ( $this instanceof ViewableInputInterface ) {
                 return $this->view($request);
             } else {
                 throw new \Exception( sprintf( 'Input %s must be an instance of ViewableInputInterface to be viewable', get_class( $this ) ) );
             }
-        }
-        if ($request instanceof EntityRequestInterface && ($entity = $request->getEntity())) {
-            $this->setEntity( $entity );
         }
         $this->validate();
     }
@@ -457,5 +501,91 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
     public function getEntity() {
         return $this->entity;
     }
+
+    /**
+     * Determines if the input has an entity
+     *
+     * @return bool
+     */
+    public function hasEntity(){
+        return $this->entity !== null;
+    }
+
+    /**
+     * Get the value for a given key on the entity / values
+     *
+     * It will first find the entity value if set and then look at the inputs->values for any override of that vaue
+     *
+     * @param string $key The key name of the input type
+     *
+     * @return mixed|null
+     */
+    public function getValue( $key ) {
+        $value = null;
+        if ( $this->entity ) {
+            $value = obj_arr_get($this->entity, $key);
+        }
+        $_value = Arr::get($this->values, $key);
+        if ($_value !== null) {
+            $value = $_value;
+        }
+        return $value;
+    }
+
+    /**
+     * Get the fields visible state off the entity
+     *
+     * @param $key
+     *
+     * @return bool
+     */
+    public function isVisible($key)
+    {
+        $entity = $this->getEntity();
+        if ($entity && $entity instanceof HasVisibility) {
+            if (strpos($key, '.') !== false) {
+                $parts = explode('.', $key);
+                $key = array_pop($parts);
+                foreach($parts as $part){
+                    if ($entity->{$part} && $entity->{$part} instanceof HasVisibility) {
+                        $entity = $entity->{$part};
+                    } else {
+                        return true;
+                    }
+                }
+            }
+            return $entity->isVisible($key);
+        }
+        return true;
+    }
+
+    /**
+     * Get the fields hidden state off the entity
+     *
+     * @param $key
+     *
+     * @return bool
+     */
+    public function isHidden($key)
+    {
+        $entity = $this->getEntity();
+        if ($entity && $entity instanceof HasVisibility) {
+            if (strpos($key, '.') !== false) {
+                $parts = explode('.', $key);
+                $key = array_pop($parts);
+                foreach($parts as $part){
+                    if ($entity->{$part} && $entity->{$part} instanceof HasVisibility) {
+                        $entity = $entity->{$part};
+                    } else {
+                        return false;
+                    }
+                }
+            }
+            return $entity->isHidden($key);
+        }
+        return false;
+    }
+
+
 
 }

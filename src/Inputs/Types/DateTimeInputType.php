@@ -10,6 +10,17 @@ use Illuminate\Support\Carbon;
 /**
  * Class DateTimeType
  *
+ * Because DateTimes have been a difficult concept to get right, the following is the correct understanding to ensure
+ * DateTime values remain consistent:
+ *
+ * - ALWAYS save the datetime in UTC timezone +0000
+ * - ALWAYS ensure the value coming in as a timezone on it
+ * - ALWAYS normalise the input value to UTC timezone
+ *
+ * DateTime values on the server must ALWAYS be in UTC timezone.
+ *
+ * What is DISPLAYED to the user can be the datetime in their timezone.
+ *
  * @package Foundry\Requests\Types
  * @method setMin($value = null, $add_rule = true) Set the minimum date. This should be a string in the DATE_ATOM format.
  * @method setMax($value = null, $add_rule = true) Set the maximum date. This should be a string in the DATE_ATOM format.
@@ -27,7 +38,7 @@ class DateTimeInputType extends InputType implements Castable {
      * @see https://www.php.net/manual/en/class.datetimeinterface.php#datetime.constants.types
      * @var string The date format
      */
-	protected $format = DATE_ATOM;
+	protected $format = "Y-m-d\TH:i:s+0000";
 
 	public function __construct(
 		string $name,
@@ -71,7 +82,6 @@ class DateTimeInputType extends InputType implements Castable {
 	}
 
 	public function getCastValue( $value ) {
-
 		if ($value) {
 			if ($value instanceof \DateTime) {
 				return $value;

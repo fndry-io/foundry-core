@@ -202,7 +202,8 @@ class InputTypeCollection extends Collection {
 	public function values() {
 		$values = [];
 
-		foreach ($this->items as $item) {
+		/** @var InputType $item */
+        foreach ($this->items as $item) {
 			Arr::set($values, $item->getName(), $item->getValue());
 		}
 

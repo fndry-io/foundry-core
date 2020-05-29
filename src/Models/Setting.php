@@ -5,6 +5,7 @@ namespace Foundry\Core\Models;
 use Foundry\Core\Events\SettingSaved;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Arr;
 
 /**
  * Class Setting
@@ -116,6 +117,11 @@ class Setting extends Model {
     private function getSettings()
     {
         return call_user_func([$this->model, 'settings']);
+    }
+
+    public function setting()
+    {
+        return Arr::get($this->model::settings(), $this->domain . '.' . $this->name);
     }
 
 }

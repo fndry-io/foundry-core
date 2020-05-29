@@ -22,20 +22,10 @@ trait ViewableInput
     public function form(Request $request, array $params = []): FormType {
 
         $form = new FormType( uniqid('form_') );
-
-        if ($request instanceof EntityRequestInterface && ($entity = $request->getEntity())) {
-            $form->setEntity( $entity );
-        }
-
-        $form->attachInputCollection( $this->getTypes() );
-        $inputs = $this->only($this->keys());
-        $this->cast($inputs);
-        $form->setValues( $inputs );
-
+        $form->attachInputs( $this );
         $form->setAction( '/' . $request->route()->uri() );
         $form->setParams( $request->route()->parameters() );
         $form->setRequest( $request );
-
         return $form;
     }
 }

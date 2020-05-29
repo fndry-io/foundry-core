@@ -29,7 +29,6 @@ abstract class FormRequest extends FoundryFormRequest implements FormRequestInte
 
 		if ($this instanceof EntityRequestInterface && ($entity = $this->getEntity())) {
 			$params['_entity'] = $entity->getKey();
-			$form->setEntity( $entity );
 		}
 
 		if ( $this instanceof InputInterface) {

@@ -2,9 +2,9 @@
 
 namespace Foundry\Core\Inputs\Types;
 
+use Foundry\Core\Inputs\Inputs;
 use Foundry\Core\Inputs\Types\Contracts\Entityable;
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
-use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
 use Foundry\Core\Inputs\Types\Traits\HasClass;
 use Foundry\Core\Inputs\Types\Traits\HasErrors;
@@ -14,11 +14,9 @@ use Foundry\Core\Inputs\Types\Traits\HasParams;
 use Foundry\Core\Inputs\Types\Traits\HasRules;
 use Foundry\Core\Inputs\Types\Traits\HasTitle;
 use Foundry\Core\Entities\Contracts\HasVisibility;
-use Foundry\Core\Support\InputTypeCollection;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\MessageBag;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 
 /**
  * Class FormRow
@@ -37,6 +35,9 @@ class FormType extends ParentType implements Entityable {
         HasParams
 	;
 
+    /**
+     * @var Request
+     */
 	protected $request;
 
 	/**
@@ -45,14 +46,9 @@ class FormType extends ParentType implements Entityable {
 	protected $entity;
 
 	/**
-	 * @var InputType[]
+	 * @var Inputs
 	 */
 	protected $inputs;
-
-	/**
-	 * @var array
-	 */
-	protected $values = [];
 
 	/**
 	 * FormType constructor.
@@ -99,24 +95,10 @@ class FormType extends ParentType implements Entityable {
 	}
 
 	/**
-	 * Set the entity for this form
-	 *
-	 * The object must be an instance of Arrayable
-	 *
-	 * @param Arrayable $entity
-	 *
-	 * @return $this
-	 */
-	public function setEntity( Arrayable $entity = null ) {
-		$this->entity = $entity;
-		return $this;
-	}
-
-	/**
 	 * @return Arrayable|object|null
 	 */
 	public function getEntity() {
-		return $this->entity;
+		return ($this->inputs) ? $this->inputs->getEntity() : null;
 	}
 
 	/**
@@ -124,53 +106,55 @@ class FormType extends ParentType implements Entityable {
 	 */
 	public function hasEntity()
 	{
-		return !!($this->entity);
+        return ($this->inputs) ? $this->inputs->hasEntity() : false;
 	}
 
-	public function attachInputCollection( $collection ) {
-		/**
-		 * @var InputTypeCollection $collection
-		 */
-		$this->attachInputs( ...array_values( $collection->all() ) );
-
+    /**
+     * Attaches an Inputs class to the Form
+     *
+     * @param Inputs $inputs
+     * @return $this
+     */
+	public function attachInputs( Inputs $inputs ) {
+		$this->inputs = $inputs;
 		return $this;
 	}
-
-	/**
-	 * Attached a series of inputs to this Form
-	 *
-	 * @param Inputable ...$inputs
-	 *
-	 * @return $this
-	 */
-	public function attachInputs( Inputable ...$inputs ) {
-
-		foreach ( $inputs as &$input ) {
-
-			$input->setForm($this);
-
-            /**
-			 * @var InputType $input
-			 */
-			$this->inputs[ $input->getName() ] = $input;
-
-            /**
-             * If a reference type and have an entity, we we need to get the reference value and set it to the input
-             */
-            if ($this->hasEntity() && $input instanceof Referencable) {
-                $reference = object_get($this->entity, $input->getName());
-                $input->setReference($reference);
-            }
-
-        }
-
-		return $this;
-	}
+//
+//	/**
+//	 * Attached a series of inputs to this Form
+//	 *
+//	 * @param Inputable ...$inputs
+//	 *
+//	 * @return $this
+//	 */
+//	public function attachInputs( Inputable ...$inputs ) {
+//
+//		foreach ( $inputs as &$input ) {
+//
+//			$input->setForm($this);
+//
+//            /**
+//			 * @var InputType $input
+//			 */
+//			$this->inputs[ $input->getName() ] = $input;
+//
+//            /**
+//             * If a reference type and have an entity, we we need to get the reference value and set it to the input
+//             */
+//            if ($this->hasEntity() && $input instanceof Referencable) {
+//                $reference = object_get($this->entity, $input->getName());
+//                $input->setReference($reference);
+//            }
+//
+//        }
+//
+//		return $this;
+//	}
 
 	/**
 	 * Get the attached inputs
 	 *
-	 * @return InputType[]
+	 * @return Inputs|null
 	 */
 	public function getInputs() {
 		return $this->inputs;
@@ -184,13 +168,7 @@ class FormType extends ParentType implements Entityable {
 	 * @return InputType|null
 	 */
 	public function &getInput( $name ) {
-		foreach ( $this->inputs as &$input ) {
-			if ( $name === $input->getName() ) {
-				return $input;
-			}
-		}
-
-		return null;
+		return $this->inputs->getType($name);
 	}
 
 	/**
@@ -201,15 +179,7 @@ class FormType extends ParentType implements Entityable {
 	 * @return mixed|null
 	 */
 	public function getValue( $key ) {
-		$value = null;
-		if ( $this->entity ) {
-			$value = obj_arr_get($this->entity, $key);
-		}
-		$_value = Arr::get($this->values, $key);
-		if ($_value !== null) {
-			$value = $_value;
-		}
-		return $value;
+		return ($this->inputs) ? $this->inputs->getValue($key) : null;
 	}
 
 	/**
@@ -217,24 +187,30 @@ class FormType extends ParentType implements Entityable {
 	 *
 	 * @param $key
 	 * @param $value
-	 */
+     * @throws \Exception
+     */
 	public function setValue($key, $value)
 	{
-		Arr::set($this->values, $key, $value);
+	    if (!$this->inputs) {
+	        throw new \Exception(sprintf('Inputs class not set on Form ?', self::class));
+        }
+	    $this->inputs->setValue($key, $value);
 	}
 
 	/**
-	 * Set values
+	 * Set the values on the form
+     *
+     * Passthrough to the inputs object
 	 *
-	 * @param $values
-	 *
-	 * @return $this
-	 */
+     * @param array $values
+     * @return $this
+     * @throws \Exception
+     */
 	public function setValues( $values = [] ) {
-        foreach($this->getInputs() as $input) {
-            $value = Arr::get($values, $input->getName(), null );
-            $input->setValue($value);
+        if (!$this->inputs) {
+            throw new \Exception(sprintf('Inputs class not set on Form ?', self::class));
         }
+        $this->inputs->setValue($values);
 		return $this;
 	}
 
@@ -244,18 +220,7 @@ class FormType extends ParentType implements Entityable {
 	 * @return array
 	 */
 	public function getValues() {
-		$values = [];
-		foreach($this->getInputs() as $input) {
-			if ($input->isVisible() && !$input->isHidden()) {
-				$value = $input->getValue();
-				if ($value === null) {
-					$value = $input->getDefault();
-				}
-				Arr::set($values, $input->getName(), $value );
-			}
-		}
-
-        return array_merge($this->values, $values);
+		return ($this->inputs) ? $this->inputs->values() : [];
 	}
 
 	/**
@@ -267,7 +232,7 @@ class FormType extends ParentType implements Entityable {
 	 */
 	public function isVisible($key)
 	{
-		if ($this->entity && $this->entity instanceof HasVisibility) {
+		if ($this->hasEntity() && $this->getEntity() instanceof HasVisibility) {
             $entity = $this->getEntity();
 		    if (strpos($key, '.') !== false) {
                 $parts = explode('.', $key);
@@ -294,7 +259,7 @@ class FormType extends ParentType implements Entityable {
 	 */
 	public function isHidden($key)
 	{
-		if ($this->entity && $this->entity instanceof HasVisibility) {
+        if ($this->hasEntity() && $this->getEntity() instanceof HasVisibility) {
             $entity = $this->getEntity();
             if (strpos($key, '.') !== false) {
                 $parts = explode('.', $key);
@@ -363,26 +328,26 @@ class FormType extends ParentType implements Entityable {
 	 * @return int
 	 */
 	public function inputCount(): int {
-		return count( $this->inputs );
+		return ($this->inputs) ? $this->inputs->getTypes()->count() : 0;
 	}
 
-	/**
-	 * Sets the rules for the form and its inputs
-	 *
-	 * @param $rules
-	 *
-	 * @return $this
-	 */
-	public function setRules( $rules = [] ) {
-		$this->rules = $rules;
-		foreach ( $this->getRules() as $key => $rules ) {
-			if ( $input =& $this->getInput( $key ) ) {
-				/**@var InputType $input */
-				$input->setRules( $rules );
-			}
-		}
-		return $this;
-	}
+//	/**
+//	 * Sets the rules for the form and its inputs
+//	 *
+//	 * @param $rules
+//	 *
+//	 * @return $this
+//	 */
+//	public function setRules( $rules = [] ) {
+//		$this->rules = $rules;
+//		foreach ( $this->getRules() as $key => $rules ) {
+//			if ( $input =& $this->getInput( $key ) ) {
+//				/**@var InputType $input */
+//				$input->setRules( $rules );
+//			}
+//		}
+//		return $this;
+//	}
 
 	/**
 	 * Set the request
@@ -426,11 +391,15 @@ class FormType extends ParentType implements Entityable {
      */
 	public function &get( $key ) {
 
-        if (Arr::exists($this->inputs, $key)) {
-            return $this->inputs[$key];
+        if (!$this->inputs) {
+            throw new \Exception(sprintf('Inputs class not set on Form ?', self::class));
         }
 
-        $value =& recursive_get_by_reference($this->inputs, $key);
+        if ($this->inputs->hasType( $key )) {
+            return $this->inputs->getTypes()[$key];
+        }
+
+        $value =& recursive_get_by_reference($this->inputs->getTypes(), $key);
 
         if ($value === null) {
             throw new \Exception(sprintf('Input "%s" not found!', $key));
@@ -447,7 +416,7 @@ class FormType extends ParentType implements Entityable {
      */
 	public function hasInput($key)
     {
-        return Arr::exists($this->inputs, $key);
+        return ($this->inputs) ? $this->inputs->hasType($key) : false;
     }
 
 	/**
@@ -463,11 +432,11 @@ class FormType extends ParentType implements Entityable {
 			}
 		}
 		if ($this->inputs) {
-			$json['values'] = $this->getValues();
+			$json['values'] = $this->inputs->all();
 		}
 
         if ($this->inputs) {
-            $json['inputs'] = $this->getInputs();
+            $json['inputs'] = $this->inputs->getTypes()->all();
         }
 
 		return $json;
