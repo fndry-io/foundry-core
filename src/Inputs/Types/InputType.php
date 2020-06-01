@@ -83,22 +83,27 @@ abstract class InputType extends BaseType implements Inputable {
 		//set the rules
 		if ( $field['rules'] || $field['required'] ) {
 			$_rules = [];
-			$rules  = $this->getRules();
+			$rules  = $this->getRulesForFrontend();
 			if ( $rules ) {
 				foreach ( $rules as $rule ) {
 					if ( $rule instanceof \Closure ) {
 						continue;
 					}
 					if ( is_object( $rule ) ) {
-						$_rules[] = (string) $rule;
+                        $rule = (string) $rule;
 					} elseif ( is_string( $rule ) ) {
-						if (strpos($rule, 'exists:') || $rule === 'file') {
+						if (strpos($rule, 'exists:') !== false || $rule === 'file') {
 							continue;
 						}
-						$_rules[] = $rule;
 					}
+					$_rule = explode(':', $rule);
+					if (isset($_rule[1])) {
+                        $_rules[$_rule[0]] = $_rule[1];
+                    } else {
+                        $_rules[$_rule[0]] = true;
+                    }
+
 				}
-				$_rules = implode( '|', $_rules );
 			}
 			$field['rules'] = $_rules;
 		}

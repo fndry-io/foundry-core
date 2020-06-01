@@ -2,12 +2,14 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-use Foundry\Core\Inputs\Types\ReferenceInputType;
 use Illuminate\Contracts\Validation\Rule;
-use Illuminate\Support\Arr;
 use Illuminate\Validation\Rules\In;
 
 trait HasRules {
+
+    protected $server_rules = [];
+
+    protected $front_rules = [];
 
 	/**
 	 * @return string|array
@@ -29,6 +31,32 @@ trait HasRules {
 
 		return $this->getAttribute('rules');
 	}
+
+    /**
+     * @return string|array
+     */
+    public function getRulesForServer() {
+        $rules = $this->getRules();
+
+        if (!empty($this->server_rules) && is_array($rules)) {
+            $rules = array_merge($rules, $this->server_rules);
+        }
+
+        return $rules;
+    }
+
+    /**
+     * @return string|array
+     */
+    public function getRulesForFrontend() {
+        $rules = $this->getRules();
+
+        if (!empty($this->front_rules) && is_array($rules)) {
+            $rules = array_merge($rules, $this->front_rules);
+        }
+
+        return $rules;
+    }
 
 	/**
 	 * @param string|array $rules
@@ -73,6 +101,48 @@ trait HasRules {
 		return $this;
 	}
 
+    /**
+     * Adds a rule to the server only rules
+     *
+     * @param string|Rule $rule The rule to add
+     * @param null $key If the key given is a string, it will use it, if an integer it will ignore and just add the rule to the existing array
+     *
+     * @return $this
+     */
+    public function addServerRule( $rule, $key = null ) {
+        if (!$this->serverRuleExists($rule)) {
+
+            if ( $key && is_string( $key ) ) {
+                $this->server_rules[ $key ] = $rule;
+            } else {
+                $this->server_rules[] = $rule;
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds a rule to the front end only rules
+     *
+     * @param string|Rule $rule The rule to add
+     * @param null $key If the key given is a string, it will use it, if an integer it will ignore and just add the rule to the existing array
+     *
+     * @return $this
+     */
+    public function addFrontRule( $rule, $key = null ) {
+        if (!$this->frontRuleExists($rule)) {
+
+            if ( $key && is_string( $key ) ) {
+                $this->front_rules[ $key ] = $rule;
+            } else {
+                $this->front_rules[] = $rule;
+            }
+        }
+
+        return $this;
+    }
+
 	/**
 	 * Removes rules based on their value
 	 *
@@ -103,4 +173,28 @@ trait HasRules {
 	{
 		return (isset($this->attributes['rules']) && in_array($rule, $this->attributes['rules']));
 	}
+
+    /**
+     * Does the specified rule exist
+     *
+     * @param In $rule
+     *
+     * @return bool
+     */
+    public function serverRuleExists($rule)
+    {
+        return (isset($this->server_rules) && in_array($rule, $this->server_rules));
+    }
+
+    /**
+     * Does the specified rule exist
+     *
+     * @param In $rule
+     *
+     * @return bool
+     */
+    public function frontRuleExists($rule)
+    {
+        return (isset($this->front_rules) && in_array($rule, $this->front_rules));
+    }
 }

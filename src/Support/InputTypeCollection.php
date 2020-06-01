@@ -98,9 +98,9 @@ class InputTypeCollection extends Collection {
 				if ($item->isRequired()) {
 					$rules[ $item->getName() ] = 'array';
 				}
-				$rules[ $item->getName() . '.*' ] = $item->getRules();
+				$rules[ $item->getName() . '.*' ] = $item->getRulesForServer();
 			} else {
-				$rules[ $item->getName() ] = $item->getRules();
+				$rules[ $item->getName() ] = $item->getRulesForServer();
 			}
 		}
 		return $rules;
