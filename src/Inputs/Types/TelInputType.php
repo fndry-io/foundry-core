@@ -50,6 +50,12 @@ class TelInputType extends InputType {
 		return $this->getAttribute('country');
 	}
 
+	public function setValue($value)
+    {
+        $value = preg_replace("/[^\+\d]/i", '', $value);
+        parent::setValue($value);
+    }
+
 	public function display( $value = null ) {
 		if ($value == null) {
 			$value = $this->getValue();
