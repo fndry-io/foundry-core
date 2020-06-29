@@ -11,6 +11,9 @@ use Foundry\Core\Inputs\Types\Traits\HasValue;
 use Foundry\Core\Requests\Contracts\EntityRequestInterface;
 use Foundry\Core\Requests\Contracts\ViewableInputInterface;
 use Foundry\Core\Support\InputTypeCollection;
+use Foundry\System\Events\BeforeInputValidate;
+use Foundry\System\Events\FormCreated;
+use Foundry\System\Events\InputCreated;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -74,6 +77,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
         if ($values) {
             $this->fill($values);
         }
+        event(new InputCreated($this));
 	}
 
     /**
@@ -475,11 +479,14 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
         }
         if ($request->input('_form', false)) {
             if ( $this instanceof ViewableInputInterface ) {
-                return $this->view($request);
+                $form = $this->view($request);
+                event(new FormCreated($form));
+                return $form;
             } else {
                 throw new \Exception( sprintf( 'Input %s must be an instance of ViewableInputInterface to be viewable', get_class( $this ) ) );
             }
         }
+        event(new BeforeInputValidate($this));
         $this->validate();
     }
 

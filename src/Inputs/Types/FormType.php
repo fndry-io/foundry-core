@@ -399,11 +399,13 @@ class FormType extends ParentType implements Entityable {
             return $this->inputs->getTypes()[$key];
         }
 
-        $value =& recursive_get_by_reference($this->inputs->getTypes(), $key);
+//        $value =& recursive_get_by_reference($this->inputs->getTypes(), $key);
+        $value = $this->inputs->getTypes()->get($key);
 
         if ($value === null) {
-            throw new \Exception(sprintf('Input "%s" not found!', $key));
+            throw new \Exception(sprintf('Input "%s" not found in %s', $key, get_class($this->inputs)));
         }
+
 
         return $value;
 	}

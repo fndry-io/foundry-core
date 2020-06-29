@@ -65,7 +65,7 @@ class ModuleServiceProvider extends ServiceProvider
 			$config => config_path('{{PROVIDER}}/{{NAME}}.php')
 		], 'config');
 
-		$this->mergeConfigFrom($config, 'foundry.policies');
+		$this->mergeConfigFrom($config, '{{PROVIDER}}.{{NAME}}');
 	}
 
 	/**

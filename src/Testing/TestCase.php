@@ -19,7 +19,7 @@ abstract class TestCase extends BaseTestCase
 
     protected function login()
     {
-        $this->loginAs('admin');
+        $this->loginAs('admin', 'system');
     }
 
     /**

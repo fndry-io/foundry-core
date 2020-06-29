@@ -3,7 +3,6 @@
 namespace Foundry\Core\Inputs\Traits;
 
 use Foundry\Core\Inputs\Types\FormType;
-use Foundry\Core\Requests\Contracts\EntityRequestInterface;
 use Illuminate\Http\Request;
 
 trait ViewableInput

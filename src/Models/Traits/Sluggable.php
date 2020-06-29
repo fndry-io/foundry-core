@@ -73,6 +73,10 @@ trait Sluggable {
 		}
 		$query->select( $this->getQualifiedSluggableColumn(), $this->getQualifiedSluggableSourceColumn() )->where( $this->getQualifiedSluggableColumn(), 'like', $slug . '%' );
 
+		if ($namespaced = $this->getSluggableNamespaceColumn()) {
+		    $query->where($this->getQualifiedSluggableNamespaceColumn(), '=', $this->$namespaced);
+        }
+
 		//ensure not the same record
 		if ( $key = $this->getKey() ) {
 			$query->where( $this->getQualifiedKeyName(), '!=', $key );
@@ -89,6 +93,16 @@ trait Sluggable {
     public function getSluggableColumn()
     {
         return defined('static::SLUGGABLE_COLUMN') ? static::SLUGGABLE_COLUMN : 'slug';
+    }
+
+    /**
+     * Get the name of the "deleted at" column.
+     *
+     * @return string
+     */
+    public function getSluggableNamespaceColumn()
+    {
+        return defined('static::SLUGGABLE_NAMESPACE_COLUMN') ? static::SLUGGABLE_NAMESPACE_COLUMN : null;
     }
 
     /**
@@ -119,6 +133,17 @@ trait Sluggable {
     public function getQualifiedSluggableSourceColumn()
     {
         return $this->qualifyColumn($this->getSluggableSourceColumn());
+    }
+
+
+    /**
+     * Get the fully qualified "namespaced at" column.
+     *
+     * @return string
+     */
+    public function getQualifiedSluggableNamespaceColumn()
+    {
+        return $this->qualifyColumn($this->getSluggableNamespaceColumn());
     }
 
 }
