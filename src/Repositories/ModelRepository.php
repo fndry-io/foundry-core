@@ -65,6 +65,11 @@ abstract class ModelRepository implements RepositoryInterface
 		return $this->query()->find($id);
 	}
 
+    public function read($id)
+    {
+        return $this->getModel($id);
+    }
+
 	/**
 	 * Find the record or throws an exception
 	 *
