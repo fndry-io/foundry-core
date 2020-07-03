@@ -204,7 +204,7 @@ class Response {
             $this->data->additional($array);
             return $this->data->toResponse($request);
         } else {
-			return new JsonResponse($this->jsonSerialize());
+            return new JsonResponse($this->jsonSerialize());
 		}
 	}
 
@@ -229,7 +229,7 @@ class Response {
 			$data = [
 				'line' => $exception->getLine(),
 				'file' => $exception->getFile(),
-				'trace' => $exception->getTrace()
+				'trace' => $exception->getTraceAsString()
 			];
 		}
 
