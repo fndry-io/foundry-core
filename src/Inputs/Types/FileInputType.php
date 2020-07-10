@@ -21,6 +21,8 @@ class FileInputType extends InputType implements IsMultiple {
 	use HasMinMax;
 	use HasMultiple;
 
+	protected $cast = "array";
+
 	/**
 	 * @var IsFolder|null
 	 */
