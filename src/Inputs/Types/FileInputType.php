@@ -8,6 +8,8 @@ use Foundry\Core\Inputs\Types\Traits\HasAction;
 use Foundry\Core\Inputs\Types\Traits\HasMinMax;
 use Foundry\Core\Inputs\Types\Traits\HasMultiple;
 use Foundry\Core\Inputs\Types\Traits\HasParams;
+use Foundry\System\Models\File;
+use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Class FileType
@@ -44,7 +46,23 @@ class FileInputType extends InputType implements IsMultiple {
 		$this->setAction($action);
 	}
 
-	public function setDeleteUrl($url){
+	public function getValue()
+    {
+        $value = parent::getValue();
+        if ($this->isMultiple() && $value instanceof Collection) {
+            $array = [];
+            /** @var File $item */
+            foreach($value as $item) {
+                array_push($array, $item->onlyForInput());
+            }
+            return $array;
+        } else if ($value instanceof File) {
+            return $value->onlyForInput();
+        }
+        return $value;
+    }
+
+    public function setDeleteUrl($url){
 		$this->setAttribute('deleteUrl', $url);
 		return $this;
 	}
