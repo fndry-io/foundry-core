@@ -10,6 +10,7 @@ use Foundry\Core\Repositories\SettingRepository;
 use Foundry\Core\Requests\FormRequestHandler;
 use Illuminate\Support\Facades\Cache;
 use Foundry\Core\Console\Commands\MakeModuleCommand;
+use Foundry\Core\EmailVerifier\ServiceProvider as EmailVerifierServiceProvider;
 use Illuminate\Support\ServiceProvider;
 
 class CoreServiceProvider extends ServiceProvider {
@@ -84,6 +85,7 @@ class CoreServiceProvider extends ServiceProvider {
 	protected function registerProviders(): void {
 		$this->app->register( ConsoleServiceProvider::class );
 		$this->app->register( EventServiceProvider::class );
+        $this->app->register(EmailVerifierServiceProvider::class);
 	}
 
     /**
