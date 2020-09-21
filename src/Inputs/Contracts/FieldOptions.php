@@ -14,9 +14,6 @@ interface FieldOptions {
 	/**
 	 * The input options
 	 *
-	 * @param \Closure $closure A query builder to modify the query if needed
-	 * @param mixed $value
-	 *
 	 * @return array
 	 */
 	static function options(): array;

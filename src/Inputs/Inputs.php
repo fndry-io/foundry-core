@@ -290,7 +290,8 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
         foreach ($keys as $key) {
             /** @var InputType $type */
             $type = $this->getType($key);
-            if ($type && $value = Arr::get($values, $key)) {
+            $value = Arr::get($values, $key);
+            if ($type && $value !== null) {
                 $type->setValue($value);
             }
         }
@@ -469,12 +470,19 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 
     /**
      * @param Request $request
+     * @param boolean $with_entity If the entity in the request should be loaded into the inputs
      * @return FormType|void
      * @throws ValidationException If the request is not to view the form and the validation fails
      */
-    public function viewOrValidate(Request $request)
+    public function viewOrValidate(Request $request, $with_entity = true)
     {
-        if ($request instanceof EntityRequestInterface && ($entity = $request->getEntity())) {
+        /**
+         * todo This should be removed from here as it is better to control the setting of the entity through the
+         *  calling code rather than assuming it here. It was found that a request could be for an entity, but the form
+         *  is for a child of that entity or related to that entity, but the input isn't. This would result in the form
+         *  being filled with values not related to the input itself.
+         */
+        if ($with_entity && $request instanceof EntityRequestInterface && ($entity = $request->getEntity())) {
             $this->setEntity( $entity );
         }
         if ($request->input('_form', false)) {

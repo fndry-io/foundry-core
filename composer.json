@@ -14,7 +14,8 @@
         "laravel/framework": "^6.2",
         "laravel/tinker": "^2.0",
         "endyjasmi/cuid": "^2.0",
-        "kalnoy/nestedset": "^5.0"
+        "kalnoy/nestedset": "^5.0",
+        "erusev/parsedown": "^1.7"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.0"

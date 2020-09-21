@@ -59,7 +59,6 @@ class DateTimeInputType extends InputType implements Castable {
         $this->setDateFormat("YYYY-MM-DDTHH:mm:ssZZ");
         $this->setMode("calendar");
 		$this->setHelp(__('Date/time in 24 hour format as yyyy-mm-dd hh:mm'));
-		$this->disabledAutoUpdate();
 	}
 
 	static function cast()
