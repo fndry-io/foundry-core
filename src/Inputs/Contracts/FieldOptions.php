@@ -18,4 +18,13 @@ interface FieldOptions {
 	 */
 	static function options(): array;
 
+    /**
+     * Get the label for the given value
+     *
+     * @param $value
+     * @param null $default
+     * @return mixed
+     */
+    static function getSelectedLabel($value, $default = null);
+
 }

@@ -341,33 +341,13 @@ if ( ! function_exists( 'field_options_label' ) ) {
      * @param string $valueKey
      * @param string $textKey
      * @return mixed
+     *
+     * @deprecated Use the class::getSelectedLabel method instead
      */
     function field_options_label( $class, $value, $default = null, $valueKey = 'value', $textKey = 'text') {
 
-        if (is_array($value)) {
-            $_options = [];
-            foreach ($value as $_value) {
-                $_option = field_options_label( $class, $_value, null, $valueKey, $textKey);
-                if ($_option !== null) {
-                    $_options[] = $_option;
-                }
-            }
-            if (!empty($_options)) {
-                return $_options;
-            }
-            return $default;
-        }
-
-        /** @var \Foundry\Core\Inputs\Contracts\FieldOptions|string $class */
-        /** @var array $options */
-        $options = Cache::remember('options::' . $class, 30, function() use ($class, $textKey, $valueKey){
-            return \Illuminate\Support\Arr::pluck($class::options(), $textKey, $valueKey);
-        });
-        if (isset($options[$value])) {
-            return $options[$value];
-        } else {
-            return $default;
-        }
+        /** @var \Foundry\Core\Inputs\Types\ChoiceInputType $class */
+        return $class::getSelectedLabel($value, $default);
     }
 
 }
@@ -386,7 +366,8 @@ if ( ! function_exists( 'field_option' ) ) {
      */
     function field_option( $class, $value, $default = null, $valueKey = 'value', $textKey = 'text') {
 
-        if ($label = field_options_label($class, $value, $default, $valueKey, $textKey)) {
+        /** @var \Foundry\Core\Inputs\Types\ChoiceInputType $class */
+        if ($label = $class::getSelectedLabel($value, $default)) {
             return [
                 'text' => $label,
                 'value' => $value

@@ -35,12 +35,7 @@ abstract class ModelRepository implements RepositoryInterface
 	 */
 	public static function repository()
 	{
-		$class = get_called_class();
-		if ( ! isset(self::$instance[$class])) {
-			self::$instance[$class] = new $class();
-		}
-
-		return self::$instance[$class];
+	    return app(static::class);
 	}
 
 	/**

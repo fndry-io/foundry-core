@@ -12,7 +12,9 @@ use Foundry\Core\Inputs\Types\Traits\HasParams;
 use Foundry\Core\Inputs\Types\Traits\HasQueryOptions;
 use Foundry\Core\Inputs\Types\Traits\HasTaggable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class ChoiceType
@@ -143,4 +145,34 @@ class ChoiceInputType extends InputType implements Choosable, IsMultiple {
 			return $values;
 		}
 	}
+
+    /**
+     * @param mixed $value
+     * @param null $default
+     * @return array|mixed|null
+     */
+	static function getSelectedLabel($value, $default = null)
+    {
+        if (is_array($value)) {
+            $_options = [];
+            foreach ($value as $_value) {
+                $_option = static::getSelectedLabel( $_value, null);
+                if ($_option !== null) {
+                    $_options[] = $_option;
+                }
+            }
+            if (!empty($_options)) {
+                return $_options;
+            }
+            return $default;
+        }
+
+        /** @var array $options */
+        $options = Cache::remember('options::' . static::class, 30, function(){
+            /** @var HasOptions|ChoiceInputType $input */
+            $input = static::input();
+            return \Illuminate\Support\Arr::pluck(static::options(), $input->getTextKey(), $input->getValueKey());
+        });
+        return ($options[$value]) ?? $default;
+    }
 }
