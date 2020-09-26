@@ -26,8 +26,6 @@ trait HasRequired {
 			} else {
 				$this->addRule( 'nullable' );
 			}
-		} elseif ($rule) {
-			$this->addRule( $rule );
 		}
 
 		return $this;

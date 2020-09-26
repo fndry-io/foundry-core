@@ -19,6 +19,7 @@ use Foundry\Core\Inputs\Types\Traits\HasRequired;
 use Foundry\Core\Inputs\Types\Traits\HasRules;
 use Foundry\Core\Inputs\Types\Traits\HasValue;
 use Foundry\Core\Inputs\Types\Traits\HasSortable;
+use Foundry\Core\Inputs\Types\Traits\IsOverridable;
 
 /**
  * Class Type

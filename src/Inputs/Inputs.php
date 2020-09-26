@@ -8,6 +8,7 @@ use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\FormType;
 use Foundry\Core\Inputs\Types\InputType;
 use Foundry\Core\Inputs\Types\Traits\HasValue;
+use Foundry\Core\Inputs\Types\Traits\IsOverridable;
 use Foundry\Core\Requests\Contracts\EntityRequestInterface;
 use Foundry\Core\Requests\Contracts\ViewableInputInterface;
 use Foundry\Core\Support\InputTypeCollection;
@@ -18,6 +19,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -54,6 +56,11 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 * @var array The array of fillable input names
 	 */
 	protected $fillable = [];
+
+    /**
+     * @var array The fields that were enabled in the form (these are fields the user wants to override the value for some reason)
+     */
+	protected $_override = [];
 
 	/**
 	 * Inputs constructor.
@@ -129,6 +136,53 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	{
         return $this->values;
 	}
+
+    /**
+     * @return array
+     */
+    public function getNonOverriddenValues()
+    {
+        $keys = $this->getOverriddenKeys();
+        return Arr::except($this->values, $keys);
+    }
+
+    /**
+     * @return array
+     */
+	public function getOverriddenValues()
+    {
+        $keys = $this->getTypes()->filter(function($type){
+            /** @var InputType $type */
+            if (in_array(IsOverridable::class, class_uses($type))){
+                return in_array($type->getName(), $this->_override, true);
+            }
+            return false;
+        })->map(function($type){
+            return $type->getName();
+        });
+
+        $values = [];
+        foreach ($keys as $key) {
+            Arr::set($values, $key, Arr::get($this->values, $key));
+        }
+        return $values;
+    }
+
+    /**
+     * @return array
+     */
+    public function getOverriddenKeys()
+    {
+        return $this->getTypes()->filter(function($type){
+            /** @var IsOverridable $type */
+            if (in_array(IsOverridable::class, class_uses($type))){
+                return $type->getOverridable();
+            }
+            return false;
+        })->map(function($type){
+            return $type->getName();
+        })->toArray();
+    }
 
     /**
      * Merges the entity values with the values of the inputs
@@ -286,6 +340,7 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	 */
 	public function fill($values)
 	{
+        $this->_override = Arr::get($values, '_override', []);
 	    $keys = !empty($this->fillable) ? $this->fillable : array_keys($values);
         foreach ($keys as $key) {
             /** @var InputType $type */
