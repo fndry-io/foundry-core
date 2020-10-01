@@ -38,11 +38,18 @@ class MediumHtmlType extends TextInputType
         'removeFormat'
     ];
 
+    /**
+     * @var array The extensions toolbar options
+     */
+    protected $extensionsToolbar = [
+        'highlighter',
+    ];
+
     public function __construct(string $name, string $label = null, bool $required = true, $value = null, string $position = 'full', string $rules = null, string $id = null, string $placeholder = null)
     {
         $type = 'html';
         parent::__construct($name, $label, $required, $value, $position, $rules, $id, $placeholder, $type);
-        $this->setConfig('editor.toolbar', $this->toolbar);
+        $this->setConfig('editor.toolbar', $this->getFullToolbar());
     }
 
     /**
@@ -56,11 +63,24 @@ class MediumHtmlType extends TextInputType
         return $this;
     }
 
+    /**
+     * Returns default and extensions toolbar
+     *
+     * @return array
+     */
+    public function getFullToolbar()
+    {
+        return array_merge($this->toolbar, $this->extensionsToolbar);
+    }
+
     public function setSimpleMode()
     {
         $this->toolbar = [
             'bold', 'italic', 'underline'
         ];
+
+        $this->toolbar = $this->getFullToolbar();
+
         $this->setConfig('editor.toolbar', $this->toolbar);
         $this->setConfig('editor.disableReturn', true);
     }
@@ -95,8 +115,10 @@ class MediumHtmlType extends TextInputType
             'removeFormat',
             'html'
         ];
+
+        $this->toolbar = $this->getFullToolbar();
+
         $this->setConfig('editor.toolbar', $this->toolbar);
         $this->setConfig('editor.disableReturn', false);
     }
-
 }
