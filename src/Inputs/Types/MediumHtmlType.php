@@ -82,7 +82,7 @@ class MediumHtmlType extends TextInputType
         $this->toolbar = $this->getFullToolbar();
 
         $this->setConfig('editor.toolbar', $this->toolbar);
-        $this->setConfig('editor.disableReturn', true);
+        $this->disableReturn();
     }
 
     public function setAdvancedMode()
@@ -121,4 +121,15 @@ class MediumHtmlType extends TextInputType
         $this->setConfig('editor.toolbar', $this->toolbar);
         $this->setConfig('editor.disableReturn', false);
     }
+
+    public function enableReturn()
+    {
+        $this->setConfig('editor.disableReturn', false);
+    }
+
+    public function disableReturn()
+    {
+        $this->setConfig('editor.disableReturn', true);
+    }
+
 }
