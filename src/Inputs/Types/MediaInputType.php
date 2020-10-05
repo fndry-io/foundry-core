@@ -32,6 +32,7 @@ class MediaInputType extends InputType implements IsMultiple {
 		$type = 'media';
 		parent::__construct( $name, $label, $required, $value, $position, $rules, $id, $placeholder, $type );
         $this->setAttribute('mimeTypes', []);
+        $this->setAttribute('grid', false);
 	}
 
 	public function setMimeTypes(array $types = [])
@@ -76,4 +77,9 @@ class MediaInputType extends InputType implements IsMultiple {
         return $extensions;
     }
 
+    public function enableGrid()
+    {
+        $this->setAttribute('grid', true);
+        return $this;
+    }
 }
