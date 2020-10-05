@@ -125,11 +125,13 @@ class MediumHtmlType extends TextInputType
     public function enableReturn()
     {
         $this->setConfig('editor.disableReturn', false);
+        return $this;
     }
 
     public function disableReturn()
     {
         $this->setConfig('editor.disableReturn', true);
+        return $this;
     }
 
 }
