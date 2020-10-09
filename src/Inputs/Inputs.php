@@ -344,10 +344,8 @@ abstract class Inputs implements Arrayable, \ArrayAccess, \IteratorAggregate {
 	    $keys = !empty($this->fillable) ? $this->fillable : array_keys($values);
         foreach ($keys as $key) {
             /** @var InputType $type */
-            $type = $this->getType($key);
-            $value = Arr::get($values, $key);
-            if ($type && $value !== null) {
-                $type->setValue($value);
+            if (($type = $this->getType($key)) && Arr::exists($values, $key)) {
+                $type->setValue(Arr::get($values, $key));
             }
         }
 	}
