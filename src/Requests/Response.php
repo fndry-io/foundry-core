@@ -244,7 +244,9 @@ class Response {
 			$code = 401;
 		} else if ($exception instanceof AuthorizationException){
 			$code = 403;
-		}
+		} else if ($exception instanceof QueryException && !config('app.debug')) {
+            $error = __('Internal Error Occurred');
+        }
 
 		return static::error($error, $code, $data);
 	}
