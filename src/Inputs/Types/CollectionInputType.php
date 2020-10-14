@@ -2,11 +2,18 @@
 
 namespace Foundry\Core\Inputs\Types;
 
-use Foundry\Core\Inputs\InputCollection;
+use Foundry\Core\Inputs\Inputs;
 use Foundry\Core\Inputs\Types\Traits\HasLabel;
 use Foundry\Core\Inputs\Types\Traits\HasMinMax;
 use Foundry\Core\Inputs\Types\Traits\HasMultiple;
 
+/**
+ * Class CollectionInputType
+ *
+ * Allows us to display a form to the user for completion
+ *
+ * @package Foundry\Core\Inputs\Types
+ */
 class CollectionInputType extends InputType {
 
 	use HasMinMax,
@@ -16,48 +23,36 @@ class CollectionInputType extends InputType {
 
 	protected $cast = 'array';
 
-    /**
-     * @var null|InputCollection
-     */
-	protected $collection;
+	protected Inputs $collection;
 
     /**
-     * CollectionType constructor.
-     * @param InputCollection $collection
+     * FormInputType constructor.
+     * @param Inputs $inputs
      * @param null $name
      * @param null $label
      * @param bool $required
      */
-	public function __construct( InputCollection $collection, $name = null, $label = null, $required = false) {
+	public function __construct(Inputs $inputs, $name = null, $label = null, $required = false) {
 		parent::__construct($name, $label, $required);
 		$this->setType('collection');
-		$this->setCollection($collection);
+		$this->setCollection($inputs);
 	}
 
-    /**
-     * @param InputCollection|null $collection
-     * @return $this
-     */
-    public function setCollection(?InputCollection $collection)
+	public function setCollection(Inputs $inputs): CollectionInputType
     {
-        $this->collection = $collection;
+        $this->collection = $inputs;
         return $this;
     }
 
-    /**
-     * @return InputCollection|null
-     */
-    public function getCollection(): ?InputCollection
+    public function getCollection(): Inputs
     {
         return $this->collection;
     }
 
-    /**
-     * @param string $noContentText
-     */
-    public function setNoContentText(string $noContentText): void
+    public function setNoContentText(string $text): CollectionInputType
     {
-        $this->setAttribute('noContentText', $noContentText);
+        $this->setAttribute('no_content_text', $text);
+        return $this;
     }
 
     /**
@@ -65,33 +60,32 @@ class CollectionInputType extends InputType {
      */
     public function getNoContentText(): string
     {
-        return $this->attributes['noContentText'];
+        return $this->attributes['no_content_text'];
     }
 
     /**
      * @return mixed
      */
-    public function getTitleInput()
+    public function getItemLabel()
     {
-        return $this->getAttribute('title_input');
+        return $this->getAttribute('item_label');
     }
 
     /**
-     * @param mixed $title_input
+     * @param string $item_label
      * @return CollectionInputType
      */
-    public function setTitleInput($title_input): CollectionInputType
+    public function setItemLabel($item_label): CollectionInputType
     {
-        $this->setAttribute('title_input', $title_input);
-
+        $this->setAttribute('item_label', $item_label);
         return $this;
     }
 
     public function jsonSerialize(): array
     {
         $json = parent::jsonSerialize();
-        if (!empty($this->collection)) {
-            $json['form'] = $this->collection->view();
+        if (!empty($this->inputs)) {
+            $json['schema'] = $this->collection->view(app('request'));
         }
         return $json;
     }
