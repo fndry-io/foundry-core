@@ -40,4 +40,12 @@ trait SoftDeleteable
 	{
 		return !!($this->deleted_at);
 	}
+
+    /**
+     * @return bool
+     */
+	public function getIsDeletedAttribute()
+    {
+        return $this->isDeleted();
+    }
 }
