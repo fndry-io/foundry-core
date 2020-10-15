@@ -38,6 +38,12 @@ class CollectionInputType extends InputType {
 		$this->setCollection($inputs);
 	}
 
+    /**
+     * Sets the the collection/form schema to use for rendering this form in the front end
+     *
+     * @param Inputs $inputs
+     * @return CollectionInputType
+     */
 	public function setCollection(Inputs $inputs): CollectionInputType
     {
         $this->collection = $inputs;
@@ -49,6 +55,12 @@ class CollectionInputType extends InputType {
         return $this->collection;
     }
 
+    /**
+     * Sets the no items found text when no items have been added
+     *
+     * @param string $text
+     * @return CollectionInputType
+     */
     public function setNoContentText(string $text): CollectionInputType
     {
         $this->setAttribute('no_content_text', $text);
@@ -72,6 +84,8 @@ class CollectionInputType extends InputType {
     }
 
     /**
+     * Sets the legend used on each form fieldset
+     *
      * @param string $item_label
      * @return CollectionInputType
      */
