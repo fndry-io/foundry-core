@@ -1,8 +1,8 @@
 <?php
 
-namespace Foundry\Core\EmailVerifier;
+namespace Foundry\Core\Auth\EmailVerifier;
 
-use Foundry\Core\EmailVerifier\EmailVerifier;
+use Foundry\Core\Auth\EmailVerifier\EmailVerifier;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider

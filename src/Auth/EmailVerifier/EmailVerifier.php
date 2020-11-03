@@ -1,9 +1,9 @@
 <?php
 
-namespace Foundry\Core\EmailVerifier;
+namespace Foundry\Core\Auth\EmailVerifier;
 
 use Exception;
-use Foundry\Core\EmailVerifier\Notifier;
+use Foundry\Core\Auth\EmailVerifier\Notifier;
 
 /**
  * Service for notifying and validating EmailVerifiable objects

@@ -1,8 +1,8 @@
 <?php
 
-namespace Foundry\Core\EmailVerifier;
+namespace Foundry\Core\Auth\EmailVerifier;
 
-use Foundry\Core\EmailVerifier\EmailNotification;
+use Foundry\Core\Auth\EmailVerifier\EmailNotification;
 use Illuminate\Contracts\Notifications\Dispatcher;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Lang;

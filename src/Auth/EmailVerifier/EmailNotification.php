@@ -1,6 +1,6 @@
 <?php
 
-namespace Foundry\Core\EmailVerifier;
+namespace Foundry\Core\Auth\EmailVerifier;
 
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;

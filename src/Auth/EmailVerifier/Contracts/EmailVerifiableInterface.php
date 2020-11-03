@@ -1,6 +1,6 @@
 <?php
 
-namespace Foundry\Core\EmailVerifier\Contracts;
+namespace Foundry\Core\Auth\EmailVerifier\Contracts;
 
 /**
  * Contract for classes with verifiable emails using a code
