@@ -2,10 +2,9 @@
 
 namespace {{CONTRACT_NAMESPACE}};
 
-use Foundry\Core\Entities\Contracts\IsEntity;
-use Foundry\Core\Entities\Contracts\IsSoftDeletable;
+use Foundry\Core\Models\Contracts\IsSoftDeletable;
 
-interface {{CONTRACT_NAME}} extends IsEntity, IsSoftDeletable
+interface {{CONTRACT_NAME}} extends IsSoftDeletable
 {
 
 }

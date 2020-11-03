@@ -575,7 +575,7 @@ trait Relational {
 	 * Generates a key > name list of values in this table
 	 *
 	 * @param array|\Closure|null $condition The conditions to apply to the list query or a closure if you wish to modify or add conditions to the query before the selection is made
-	 * @param \Illuminate\Database\Eloquent\Builder|null (Optional) query to use instead of creating a new one off the current Model
+	 * @param Builder|null (Optional) query to use instead of creating a new one off the current Model
 	 * @param Model|null (Optional) Model to use for the table containing the display and key values This is needed with
 	 *  using a query which is from the root of a dot notation get list and helps use ensure we use the correct alias
 	 *  for the list

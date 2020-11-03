@@ -2,7 +2,6 @@
 
 namespace Foundry\Core\Inputs\Types;
 
-use Foundry\Core\Entities\Contracts\IsEntity;
 use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\Referencable;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
@@ -11,6 +10,7 @@ use Foundry\Core\Inputs\Types\Traits\HasParams;
 use Foundry\Core\Inputs\Types\Traits\HasQueryOptions;
 use Foundry\Core\Inputs\Types\Traits\HasReference;
 use Foundry\Core\Inputs\Types\Traits\HasRoute;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 
 /**
@@ -66,7 +66,7 @@ class ReferenceInputType extends TextInputType implements Referencable, Castable
 	}
 
 	public function setValue( $value = null ) {
-		if ($value instanceof IsEntity) {
+		if ($value instanceof Model) {
 			return $this->setReference($value);
 		} else {
             return parent::setValue($value);
@@ -76,7 +76,7 @@ class ReferenceInputType extends TextInputType implements Referencable, Castable
     public function getValue()
     {
         $value = parent::getValue();
-        if ($value instanceof IsEntity) {
+        if ($value instanceof Model) {
             $value = $value->getKey();
         }
         return $value;

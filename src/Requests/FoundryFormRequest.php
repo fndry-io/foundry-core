@@ -2,7 +2,6 @@
 
 namespace Foundry\Core\Requests;
 
-use Closure;
 use Foundry\Core\Requests\Contracts\EntityRequestInterface;
 use Foundry\Core\Requests\Contracts\InputInterface;
 use Illuminate\Foundation\Http\FormRequest as LaravelFormRequest;

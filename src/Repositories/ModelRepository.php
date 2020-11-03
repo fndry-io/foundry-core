@@ -2,9 +2,8 @@
 
 namespace Foundry\Core\Repositories;
 
-use Foundry\Core\Entities\Contracts\IsSoftDeletable;
+use Foundry\Core\Models\Contracts\IsSoftDeletable;
 use Foundry\Core\Models\Model;
-use Foundry\Core\Entities\Contracts\IsEntity;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -53,7 +52,7 @@ abstract class ModelRepository implements RepositoryInterface
 	 *
 	 * @param mixed $id The identifier.
 	 *
-	 * @return Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|object|IsEntity|Model
+	 * @return Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|object|Model
 	 */
 	public function find($id)
 	{
@@ -71,7 +70,7 @@ abstract class ModelRepository implements RepositoryInterface
 	 * @param int|Model $id
      * @param bool $fail If true, calls findOrFail and throws a not found exception if not found
 	 *
-	 * @return Model|IsEntity|Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|object
+	 * @return Model|Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|object
      * @throws \Exception|ModelNotFoundException
 	 */
 	protected function getModel($id, $fail = true)

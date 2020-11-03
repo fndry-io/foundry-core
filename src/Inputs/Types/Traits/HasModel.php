@@ -23,7 +23,7 @@ trait HasModel {
 	 *
 	 * @return $this
 	 */
-	public function setModel( Model &$model = null ) {
+	public function setModel( Model $model = null ) {
 		$this->model = $model;
 
 		return $this;

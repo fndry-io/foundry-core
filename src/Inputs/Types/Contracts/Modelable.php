@@ -2,7 +2,6 @@
 
 namespace Foundry\Core\Inputs\Types\Contracts;
 
-use Foundry\Core\Inputs\Types\InputType;
 use Illuminate\Database\Eloquent\Model;
 
 interface Modelable {

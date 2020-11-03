@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Inputs\Types;
 
-use Foundry\Core\Entities\Contracts\IsFolder;
+use Foundry\Core\Models\Contracts\IsFolder;
 use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\Traits\HasAction;
 use Foundry\Core\Inputs\Types\Traits\HasMinMax;
@@ -85,7 +85,7 @@ class FileInputType extends InputType implements IsMultiple {
     }
 
     /**
-     * @return IsFolder|null
+     * @return \Foundry\Core\Models\Contracts\IsFolder|null
      */
     public function getFolder(): ?IsFolder
     {

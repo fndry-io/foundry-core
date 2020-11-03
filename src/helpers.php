@@ -1,58 +1,6 @@
 <?php
 
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Cache;
-
-if ( ! function_exists( 'setting' ) ) {
-	/**
-	 * Get / set the specified setting value.
-	 *
-	 * If an array is passed as the key, we will assume you want to set an array of settings key => values.
-	 *
-	 * @param  array|string $key
-	 * @param  mixed $default
-	 *
-	 * @return mixed|\Foundry\Core\Config\SettingRepository
-	 */
-	function setting( $key = null, $default = null ) {
-		if ( is_null( $key ) ) {
-			return app( 'settings' );
-		}
-
-		if ( is_array( $key ) ) {
-			return app( 'settings' )->set( $key );
-		}
-
-		return app( 'settings' )->get( $key, $default );
-	}
-
-}
-
-if ( ! function_exists( 'request_merge' ) ) {
-
-	/**
-	 * Merge additional fields into a request object
-	 *
-	 * @param \Illuminate\Http\Request $request | the actual request object
-	 * @param array $values | associative array of key = value to be merged into the request
-	 * @param null|string $key The key containing values in the request object
-	 *
-	 * @return \Illuminate\Http\Request
-	 */
-	function request_merge( \Illuminate\Http\Request $request, $values, $key = null ) {
-		if ( $key ) {
-			$new = $request->only( $key )[ $key ];
-			foreach ( $values as $k => $v ) {
-				$new[ $k ] = $v;
-				$request->merge( [ $key => $new ] );
-			}
-		} else {
-			$request->merge( $values );
-		}
-
-		return $request;
-	}
-}
 
 
 if ( ! function_exists( 'routeUri' ) ) {
@@ -97,16 +45,6 @@ if ( ! function_exists( 'strip_non_utf8' ) ) {
 	}
 }
 
-if ( ! function_exists( 'plugin_path' ) ) {
-	function plugin_path( $plugin, $path = '' ) {
-
-		$base_path = module_path( $plugin );
-
-		return $base_path . ( $path ? DIRECTORY_SEPARATOR . $path : $path );
-
-	}
-}
-
 if ( ! function_exists( 'get_UTC_offset' ) ) {
 	/**
 	 * Gets the utc offset for a given php timezone
@@ -117,17 +55,11 @@ if ( ! function_exists( 'get_UTC_offset' ) ) {
 	 */
 	function get_UTC_offset( $timezone ) {
 		$current      = timezone_open( $timezone );
-		$utcTime      = new \DateTime( 'now', new \DateTimeZone( 'UTC' ) );
+		$utcTime      = new DateTime( 'now', new DateTimeZone( 'UTC' ) );
 		$offsetInSecs = $current->getOffset( $utcTime );
 		$hoursAndSec  = gmdate( 'H:i', abs( $offsetInSecs ) );
 
 		return stripos( $offsetInSecs, '-' ) === false ? "+{$hoursAndSec}" : "-{$hoursAndSec}";
-	}
-}
-
-if ( ! function_exists( 'view_component' ) ) {
-	function view_component( $name, $params ) {
-		return app('view-component-handler')->handle($name, $params);
 	}
 }
 
@@ -182,7 +114,7 @@ if ( ! function_exists( 'array_from_object' ) ) {
 	function array_from_object( $object, array $keys ) {
 		$_object = [];
 		foreach ($keys as $key) {
-			\Illuminate\Support\Arr::set($_object, $key, object_get($object, $key));
+			Arr::set($_object, $key, object_get($object, $key));
 		}
 		return $_object;
 	}
@@ -230,31 +162,10 @@ if ( ! function_exists( 'convert_to_moment_js' ) ) {
 			'r' => '', // no equivalent
 			'U' => 'X',
 		];
-		$momentFormat = strtr( $format, $replacements );
-
-		return $momentFormat;
+        return strtr( $format, $replacements );
 	}
 }
 
-
-if ( ! function_exists( 'get_entity_class' ) ) {
-	/**
-	 * Get the class name of a given entity
-	 *
-	 * In Doctrine, relationships are instances of proxy classes
-	 *
-	 * @param  $entity
-	 *
-	 * @return string
-	 */
-	function get_entity_class( $entity ) {
-		if ($entity instanceof \Doctrine\ORM\Proxy\Proxy) {
-			return get_parent_class($entity);
-		} else {
-			return get_class($entity);
-		}
-	}
-}
 
 if (! function_exists('object_extract')) {
 	/**
@@ -268,7 +179,7 @@ if (! function_exists('object_extract')) {
 	{
 		$return = [];
 		foreach ($keys as $key) {
-			\Illuminate\Support\Arr::set($return, $key, object_get($object, $key));
+			Arr::set($return, $key, object_get($object, $key));
 		}
 		return $return;
 	}
@@ -439,7 +350,7 @@ if (!function_exists('array_merge_recursive_distinct')) {
      * @author Daniel <daniel (at) danielsmedegaardbuus (dot) dk>
      * @author Gabriel Sobrinho <gabriel (dot) sobrinho (at) gmail (dot) com>
      */
-    function array_merge_recursive_distinct(array &$array1, array &$array2)
+    function array_merge_recursive_distinct(array $array1, array &$array2)
     {
         $merged = $array1;
 

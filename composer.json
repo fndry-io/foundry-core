@@ -14,7 +14,8 @@
         "laravel/framework": "^8.12",
         "laravel/tinker": "^2.5",
         "endyjasmi/cuid": "^2.0",
-        "erusev/parsedown": "^1.7"
+        "erusev/parsedown": "^1.7",
+        "ext-json": "*"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.3.3"

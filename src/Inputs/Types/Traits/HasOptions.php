@@ -2,7 +2,6 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Illuminate\Support\Arr;
 
 trait HasOptions {

@@ -4,7 +4,6 @@ namespace Foundry\Core\Inputs\Types\Contracts;
 
 use Foundry\Core\Entities\Entity;
 use Foundry\Core\Inputs\Inputs;
-use Foundry\Core\Inputs\Types\FormType;
 
 /**
  * Interface Inputable

@@ -2,9 +2,8 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-use Foundry\Core\Entities\Contracts\HasIdentity;
-use Foundry\Core\Entities\Contracts\IsEntity;
 use Foundry\Core\Inputs\Types\ButtonType;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 trait HasReference {
@@ -24,7 +23,7 @@ trait HasReference {
 	public function setReference($reference)
 	{
 	    $this->setAttribute('reference', $reference);
-		if (is_object($reference) && $reference instanceof IsEntity) {
+		if (is_object($reference) && $reference instanceof Model) {
 			$this->setValue($reference->getKey());
 		}
 		return $this;

@@ -2,8 +2,8 @@
 
 namespace Foundry\Core\Models;
 
-use Foundry\Core\Entities\Contracts\HasNode;
-use Foundry\Core\Entities\Contracts\IsNodeable;
+use Foundry\Core\Models\Contracts\HasNode;
+use Foundry\Core\Models\Contracts\IsNodeable;
 use Foundry\Core\Models\Traits\Nodeable;
 
 /**

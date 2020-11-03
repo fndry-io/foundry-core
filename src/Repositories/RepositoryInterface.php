@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Repositories;
 
-use Foundry\Core\Entities\Contracts\IsEntity;
+use Illuminate\Database\Eloquent\Model;
 
 interface RepositoryInterface {
 
@@ -60,7 +60,7 @@ interface RepositoryInterface {
 	/**
 	 * @param $data
 	 *
-	 * @return IsEntity|boolean
+	 * @return Model|boolean
 	 */
 	public function insert($data);
 
@@ -68,14 +68,14 @@ interface RepositoryInterface {
 	 * @param $id
 	 * @param $data
 	 *
-	 * @return IsEntity|boolean
+	 * @return Model|boolean
 	 */
 	public function update($id, $data);
 
 	/**
 	 * @param $id
 	 *
-	 * @return IsEntity|boolean
+	 * @return Model|boolean
 	 */
 	public function delete($id, bool $force = false);
 

@@ -18,7 +18,7 @@ trait BrowseableRequest {
         $page = $this->input('page', $page);
         $limit = $this->input('limit', $limit);
         $sortBy = $this->input('sortBy', $sortBy);
-        $sortDesc = ($this->input('sortDesc', $sortDesc) === 'true') ? true : false;
+        $sortDesc = $this->input('sortDesc', $sortDesc) === 'true';
         return array($page, $limit, $sortBy, $sortDesc);
     }
 

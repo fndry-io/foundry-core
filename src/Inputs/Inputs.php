@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Inputs;
 
-use Foundry\Core\Entities\Contracts\HasVisibility;
+use Foundry\Core\Models\Contracts\HasVisibility;
 use Foundry\Core\Inputs\Types\Contracts\Castable;
 use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\FormType;
@@ -19,7 +19,6 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 

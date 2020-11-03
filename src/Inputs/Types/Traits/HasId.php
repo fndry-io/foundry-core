@@ -2,7 +2,6 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-use Foundry\Core\Inputs\Types\InputType;
 use Illuminate\Support\Str;
 
 trait HasId {

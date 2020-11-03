@@ -2,12 +2,7 @@
 
 namespace Foundry\Core\Inputs\Types\Traits;
 
-use Foundry\Core\Inputs\Types\Contracts\Castable;
-use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
-use Foundry\Core\Inputs\Types\InputType;
 use Foundry\Core\Entities\Entity;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 
 trait HasValue {
 

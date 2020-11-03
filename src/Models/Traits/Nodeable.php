@@ -3,8 +3,8 @@
 namespace Foundry\Core\Models\Traits;
 
 use Foundry\Core\Models\Node;
-use Foundry\Core\Entities\Contracts\HasNode;
-use Foundry\Core\Entities\Contracts\IsNode;
+use Foundry\Core\Models\Contracts\HasNode;
+use Foundry\Core\Models\Contracts\IsNode;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**

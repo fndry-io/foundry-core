@@ -28,7 +28,7 @@ trait SoftDeleteable
 	/**
 	 * @param DateTime|null $deleted_at
 	 */
-	public function setDeletedAt(\DateTime $deleted_at = null)
+	public function setDeletedAt(DateTime $deleted_at = null)
 	{
 		$this->deleted_at = $deleted_at;
 	}

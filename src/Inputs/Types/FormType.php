@@ -13,7 +13,7 @@ use Foundry\Core\Inputs\Types\Traits\HasName;
 use Foundry\Core\Inputs\Types\Traits\HasParams;
 use Foundry\Core\Inputs\Types\Traits\HasRules;
 use Foundry\Core\Inputs\Types\Traits\HasTitle;
-use Foundry\Core\Entities\Contracts\HasVisibility;
+use Foundry\Core\Models\Contracts\HasVisibility;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\MessageBag;
 use Illuminate\Http\Request;
@@ -167,7 +167,7 @@ class FormType extends ParentType implements Entityable {
 	 *
 	 * @return InputType|null
 	 */
-	public function &getInput( $name ) {
+	public function getInput( $name ) {
 		return $this->inputs->getType($name);
 	}
 
@@ -192,7 +192,7 @@ class FormType extends ParentType implements Entityable {
 	public function setValue($key, $value)
 	{
 	    if (!$this->inputs) {
-	        throw new \Exception(sprintf('Inputs class not set on Form ?', self::class));
+	        throw new \Exception(sprintf('Inputs class not set on Form ?', static::class));
         }
 	    $this->inputs->setValue($key, $value);
 	}
@@ -208,7 +208,7 @@ class FormType extends ParentType implements Entityable {
      */
 	public function setValues( $values = [] ) {
         if (!$this->inputs) {
-            throw new \Exception(sprintf('Inputs class not set on Form ?', self::class));
+            throw new \Exception(sprintf('Inputs class not set on Form ?', static::class));
         }
         $this->inputs->setValue($values);
 		return $this;
@@ -392,7 +392,7 @@ class FormType extends ParentType implements Entityable {
 	public function &get( $key ) {
 
         if (!$this->inputs) {
-            throw new \Exception(sprintf('Inputs class not set on Form ?', self::class));
+            throw new \Exception(sprintf('Inputs class not set on Form ?', static::class));
         }
 
         if ($this->inputs->hasType( $key )) {

@@ -2,12 +2,10 @@
 
 namespace Foundry\Core\Models\Traits;
 
-use Foundry\Core\Entities\Contracts\HasIdentity;
-use Foundry\Core\Entities\Contracts\HasNode;
-use Foundry\Core\Entities\Contracts\IsEntity;
+use Foundry\Core\Models\Contracts\HasIdentity;
+use Foundry\Core\Models\Contracts\HasNode;
 use Foundry\Core\Models\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use ReflectionClass;
 
 /**
  * Trait Referencable
@@ -34,15 +32,15 @@ trait Referencable {
         return $this->reference;
     }
 
-    public function setReference(IsEntity $model)
+    public function setReference(\Illuminate\Database\Eloquent\Model $model)
     {
         $this->attachReference($model);
     }
 
     /**
-     * @param HasIdentity|Model $model
+     * @param Model $model
      */
-	public function attachReference(HasIdentity $model)
+	public function attachReference(Model $model)
     {
         $this->reference()->associate($model);
         $this->setRelation('reference', $model);

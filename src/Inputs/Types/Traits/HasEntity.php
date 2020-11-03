@@ -5,7 +5,6 @@ namespace Foundry\Core\Inputs\Types\Traits;
 
 use Foundry\Core\Entities\Entity;
 use Foundry\Core\Models\Model;
-use Illuminate\Support\Arr;
 
 trait HasEntity {
 
@@ -26,7 +25,7 @@ trait HasEntity {
 	 *
 	 * @return $this
 	 */
-	public function setEntity( &$entity = null ) {
+	public function setEntity( $entity = null ) {
 		$this->entity = $entity;
 		$value = $this->entity->get($this->getName());
 		$this->setValue($value);

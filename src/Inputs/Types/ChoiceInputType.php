@@ -2,7 +2,6 @@
 
 namespace Foundry\Core\Inputs\Types;
 
-use Foundry\Core\Entities\Contracts\IsEntity;
 use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Foundry\Core\Inputs\Types\Contracts\IsMultiple;
 use Foundry\Core\Inputs\Types\Traits\HasButtons;
@@ -12,7 +11,6 @@ use Foundry\Core\Inputs\Types\Traits\HasParams;
 use Foundry\Core\Inputs\Types\Traits\HasQueryOptions;
 use Foundry\Core\Inputs\Types\Traits\HasTaggable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 

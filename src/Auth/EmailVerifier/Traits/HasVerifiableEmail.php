@@ -2,7 +2,6 @@
 
 namespace Foundry\Core\Auth\EmailVerifier\Traits;
 
-use Exception;
 use Illuminate\Support\Facades\Date;
 
 /**

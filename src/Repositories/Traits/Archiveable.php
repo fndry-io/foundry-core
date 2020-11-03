@@ -2,7 +2,7 @@
 
 namespace Foundry\Core\Repositories\Traits;
 
-use Foundry\Core\Entities\Contracts\IsArchiveable;
+use Foundry\Core\Models\Contracts\IsArchiveable;
 use Illuminate\Database\Eloquent\Model;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
