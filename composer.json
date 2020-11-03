@@ -2,6 +2,7 @@
     "name": "foundry/core",
     "description": "Foundry Framework core package for managing central contracts across the Foundry Framework.",
     "keywords": [
+        "fndry.io",
         "foundry",
         "framework",
         "laravel"
