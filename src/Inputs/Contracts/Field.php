@@ -3,7 +3,6 @@
 namespace Foundry\Core\Inputs\Contracts;
 
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
-use Foundry\Core\Entities\Entity;
 
 /**
  * Interface Field

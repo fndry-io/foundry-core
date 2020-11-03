@@ -2,12 +2,12 @@
 
 namespace Foundry\Core\Models\Contracts;
 
-use Foundry\Core\Entities\Entity;
+use Illuminate\Database\Eloquent\Model;
 
 interface IsReferenceable {
 
 	/**
-	 * @return Entity|object|null
+	 * @return Model|object|null
 	 */
 	public function getReference();
 
@@ -19,7 +19,7 @@ interface IsReferenceable {
 	public function detachReference();
 
 	/**
-	 * @param HasIdentity $reference
+	 * @param Model $reference
 	 */
-	public function attachReference( HasIdentity $reference);
+	public function attachReference( Model $reference);
 }

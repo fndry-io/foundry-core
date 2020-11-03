@@ -3,25 +3,24 @@
 namespace Foundry\Core\Inputs\Types\Traits;
 
 
-use Foundry\Core\Entities\Entity;
-use Foundry\Core\Models\Model;
+use Illuminate\Database\Eloquent\Model;
 
 trait HasEntity {
 
 	/**
-	 * @var Entity|Model
+	 * @var Model
 	 */
 	protected $entity;
 
 	/**
-	 * @return null|Entity|Model
+	 * @return null|Model
 	 */
 	public function getEntity() {
 		return $this->entity;
 	}
 
 	/**
-	 * @param Entity|Model|null $entity
+	 * @param Model|null $entity
 	 *
 	 * @return $this
 	 */

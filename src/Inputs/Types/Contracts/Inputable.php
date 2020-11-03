@@ -2,7 +2,6 @@
 
 namespace Foundry\Core\Inputs\Types\Contracts;
 
-use Foundry\Core\Entities\Entity;
 use Foundry\Core\Inputs\Inputs;
 
 /**
@@ -10,8 +9,8 @@ use Foundry\Core\Inputs\Inputs;
  *
  * Inputable represents an input type that can receive data from user input in some way
  *
- * It also means the data can be linked to an entity and the name property of the inputable should map to the property
- * on the Entity.
+ * It also means the data can be linked to an model and the name property of the inputable should map to the property
+ * on the Model.
  *
  * @package Foundry\Core\Inputs\Types\Contracts
  */
@@ -26,7 +25,7 @@ interface Inputable
 	/**
 	 * Set the name of the inputable
 	 *
-	 * This should map to the Entity property name
+	 * This should map to the Model property name
 	 *
 	 * @param string $name
 	 *

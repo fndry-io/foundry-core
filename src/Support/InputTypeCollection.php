@@ -7,7 +7,8 @@ use Foundry\Core\Inputs\Types\Contracts\Choosable;
 use Foundry\Core\Inputs\Types\Contracts\Inputable;
 use Foundry\Core\Inputs\Types\FormType;
 use Foundry\Core\Inputs\Types\InputType;
-use Foundry\Core\Entities\Entity;
+use Foundry\Core\Inputs\Types\Traits\HasEntity;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -160,12 +161,12 @@ class InputTypeCollection extends Collection {
 	/**
 	 * Set the entity attached to each of the inputs
 	 *
-	 * @param Entity $entity
+	 * @param Model $entity
 	 */
-	public function setEntity(Entity $entity) {
+	public function setEntity(Model $entity) {
 		foreach ($this->keys() as $key) {
 			/**
-			 * @var InputType $item
+			 * @var InputType|HasEntity $item
 			 */
 			$item = $this->get($key);
 
