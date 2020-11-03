@@ -2,8 +2,8 @@
 
 namespace Foundry\Core\Testing;
 
-use Illuminate\Foundation\Testing\TestResponse;
-use Illuminate\Foundation\Testing\Assert as PHPUnit;
+use Illuminate\Testing\TestResponse;
+use Illuminate\Testing\Assert as PHPUnit;
 
 class FoundryResponse
 {
@@ -84,7 +84,7 @@ class FoundryResponse
         $this->assertHasMeta();
 
         PHPUnit::assertArraySubset(
-            ['current_page', 'from', 'last_page', 'path', 'per_page', 'to', 'total'],
+            ['current_page', 'from', 'last_page', 'links', 'path', 'per_page', 'to', 'total'],
             array_keys((array) $this->response->meta),
             'Foundry response does not have the required pagination.'
         );

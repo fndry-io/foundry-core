@@ -16,7 +16,7 @@ trait HasInputs
 		return $this->inputs;
 	}
 
-	public function setInputs(Inputs $inputs)
+	public function setInputs(Inputs &$inputs)
 	{
 		$this->inputs = $inputs;
 	}

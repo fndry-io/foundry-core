@@ -39,7 +39,6 @@ abstract class InputType extends BaseType implements Inputable {
 		HasHelp,
 		HasReadOnly,
 		HasErrors,
-		HasSortable,
 		HasMask,
 		HasAutocomplete,
         HasInputs

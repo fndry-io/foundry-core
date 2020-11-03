@@ -3,10 +3,10 @@
 namespace Foundry\Core\Repositories;
 
 use Foundry\Core\Models\Contracts\IsSoftDeletable;
-use Foundry\Core\Models\Model;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Contracts\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -20,22 +20,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 abstract class ModelRepository implements RepositoryInterface
 {
 
-	protected static $instance;
-
     protected $dispatchesEvents = [];
 
 	/**
 	 * @return string|Model
 	 */
 	abstract public function getClassName();
-
-	/**
-	 * @return ModelRepository|self|static
-	 */
-	public static function repository()
-	{
-	    return app(static::class);
-	}
 
 	/**
 	 * Get a Query to execute with
@@ -52,7 +42,7 @@ abstract class ModelRepository implements RepositoryInterface
 	 *
 	 * @param mixed $id The identifier.
 	 *
-	 * @return Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|object|Model
+	 * @return Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|Model|null|object
 	 */
 	public function find($id)
 	{
@@ -70,12 +60,12 @@ abstract class ModelRepository implements RepositoryInterface
 	 * @param int|Model $id
      * @param bool $fail If true, calls findOrFail and throws a not found exception if not found
 	 *
-	 * @return Model|Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Model|null|object
+	 * @return Model|Builder|Builder[]|\Illuminate\Database\Eloquent\Collection|null|object
      * @throws \Exception|ModelNotFoundException
 	 */
 	protected function getModel($id, $fail = true)
 	{
-		if ($id instanceof \Illuminate\Database\Eloquent\Model) {
+		if ($id instanceof Model) {
 			return $id;
 		} else if (is_int($id) || is_string($id)) {
             $model = $this->query()->find($id);

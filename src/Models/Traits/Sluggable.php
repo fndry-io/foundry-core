@@ -3,6 +3,7 @@
 namespace Foundry\Core\Models\Traits;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 /**
  * Trait Sluggable
@@ -38,7 +39,7 @@ trait Sluggable {
 	 */
 	public function createSlug( string $text ) {
 		//Create slug
-		$slug  = str_slug( $text );
+		$slug  = Str::slug( $text );
 		$column = $this->getSluggableColumn();
 		// Get any that could possibly be related.
 		$allSlugs = $this->getRelatedSlugs( $slug );

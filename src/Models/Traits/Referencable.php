@@ -4,7 +4,7 @@ namespace Foundry\Core\Models\Traits;
 
 use Foundry\Core\Models\Contracts\HasIdentity;
 use Foundry\Core\Models\Contracts\HasNode;
-use Foundry\Core\Models\Model;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 /**
@@ -32,7 +32,7 @@ trait Referencable {
         return $this->reference;
     }
 
-    public function setReference(\Illuminate\Database\Eloquent\Model $model)
+    public function setReference(Model $model)
     {
         $this->attachReference($model);
     }
