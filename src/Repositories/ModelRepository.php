@@ -235,7 +235,7 @@ abstract class ModelRepository implements RepositoryInterface
 	 */
 	static function make($values)
 	{
-		$class = self::repository()->getClassName();
+		$class = app(static::class)->getClassName();
 
 		return new $class($values);
 	}
