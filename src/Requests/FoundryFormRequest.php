@@ -25,6 +25,11 @@ abstract class FoundryFormRequest extends LaravelFormRequest {
     protected $throwNotFoundException = true;
 
     /**
+     * @var string The default entity key to use to pull the entity from the route
+     */
+    protected $entityRouteKey = '_entity';
+
+    /**
      * @var null The entity id if there is one in the request
      */
     protected $entityId = null;
@@ -55,21 +60,14 @@ abstract class FoundryFormRequest extends LaravelFormRequest {
         /**
          * Get the entity associated with the request
          */
-        $this->entityId = $this->route('_entity', $this->input('_entity', null));
+        $this->entityId = $this->route($this->entityRouteKey, $this->input($this->entityRouteKey, null));
         if ($this instanceof EntityRequestInterface) {
             $entity = $this->findEntity($this->entityId);
             if (!$entity && $this->throwNotFoundException) {
-                throw new NotFoundHttpException(__('Entity not found'));
+                throw new NotFoundHttpException(__('Record not found'));
             } else {
                 $this->setEntity($entity);
             }
-        }
-
-        /**
-         * Set the Input
-         */
-        if ( $this instanceof InputInterface) {
-            $this->setInput( $this->makeInput( $this->all() ) );
         }
 
     }
