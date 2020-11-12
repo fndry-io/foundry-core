@@ -6,7 +6,7 @@ use Foundry\Core\Inputs\Inputs;
 use Foundry\Core\Inputs\Types\Traits\HasLabel;
 
 /**
- * Class CollectionInputType
+ * Class FormInputType
  *
  * Allows us to display a form to the user for completion
  *
@@ -37,9 +37,9 @@ class FormInputType extends InputType {
      * Sets the the collection/form schema to use for rendering this form in the front end
      *
      * @param Inputs $inputs
-     * @return CollectionInputType
+     * @return FormInputType
      */
-	public function setForm(Inputs $inputs): CollectionInputType
+	public function setForm(Inputs $inputs): FormInputType
     {
         $this->form = $inputs;
         return $this;
