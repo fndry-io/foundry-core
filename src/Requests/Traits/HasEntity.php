@@ -4,6 +4,11 @@ namespace Foundry\Core\Requests\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Trait HasEntity
+ * @package Foundry\Core\Requests\Traits
+ * @deprecated Use HasModel instead
+ */
 trait HasEntity {
 
 	/**

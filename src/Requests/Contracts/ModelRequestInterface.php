@@ -20,7 +20,7 @@ interface ModelRequestInterface {
      * @param Model $model
      * @return mixed
      */
-	public function setModel($model);
+	public function setModel(Model $model);
 
 	/**
 	 * Find the Model for the request
