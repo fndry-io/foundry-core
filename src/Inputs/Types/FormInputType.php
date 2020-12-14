@@ -29,7 +29,7 @@ class FormInputType extends InputType {
      */
 	public function __construct(Inputs $inputs, $name = null, $label = null, $required = false) {
 		parent::__construct($name, $label, $required);
-		$this->setType('collection');
+		$this->setType('subform');
 		$this->setForm($inputs);
 	}
 
