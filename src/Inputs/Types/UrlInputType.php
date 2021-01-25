@@ -19,4 +19,19 @@ class UrlInputType extends InputType {
 		$this->addRule('url');
 	}
 
+    public function setValue($value)
+    {
+        if ($this->inputs) {
+            if ($value) {
+                $parsedUrl = parse_url($value);
+
+                if (empty($parsedUrl['scheme'])) {
+                    $value = 'http://' . $value;
+                }
+            }
+
+            $this->getInputs()->setValue($this->getName(), $value);
+        }
+        return $this;
+    }
 }
